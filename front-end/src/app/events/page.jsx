@@ -10,15 +10,11 @@ const Events = () => {
     const [events, setEvents] = useState([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState(null)
-    const router = useRouter()
-    const api = process.env.API_URL
-    
+    const router = useRouter()  
     useEffect(()=>{
-        // console.log(api);
         const getEvents = async ()=>{
             try{
-                const resp = await axios.get('http://localhost:3002/api/events');
-                // const resp = await axios.get('/api/events')
+                const resp = await axios.get('/api/events');
                 setEvents(resp.data)
                 console.log(resp.data);
                 
@@ -104,7 +100,7 @@ const Events = () => {
         return (
             <>
                 <HeaderCompanent/>
-                <section className='w-full h-[64rem]'>
+                <section className='w-full h-[32rem]'>
                     <div className='text-6xl text-center font-semibold mt-[16rem]'>Загрузка...</div>
                 </section>
                 <FooterCompanent/>
@@ -116,7 +112,7 @@ const Events = () => {
         return (
             <>
                 <HeaderCompanent/>
-                <section className='w-full h-[64rem]'>
+                <section className='w-full h-[32rem]'>
                     <div className='text-6xl text-center font-semibold mt-[16rem]'>Ошибка {error}</div>
                 </section>
                 <FooterCompanent/>
@@ -128,7 +124,7 @@ const Events = () => {
         return (
             <>
                 <HeaderCompanent/>  
-                <section className='w-full h-[64rem]'>
+                <section className='w-full h-[32rem]'>
                     <div className='text-6xl text-center font-semibold mt-[16rem]'>
                         Событий не найдено
                     </div>
@@ -146,8 +142,8 @@ const Events = () => {
                 <div>
                     <h2 className='text-3xl font-bold text-[#151515]'>События</h2>
                 </div>
-                <div className='mt-4 flex items-center gap-4'>
-                    {array.map((event,index)=>(
+                <div className='mt-4 flex items-center gap-4 overflow-x-scroll whitespace-nowrap'>
+                    {events.map((event,index)=>(
                         <div onClick={()=>navigationToEvent(event.id)}>
                             <EventCompanent object={event} key={index} style=''/>
                         </div>

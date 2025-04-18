@@ -7,9 +7,9 @@ const EventCompanent = ({object,style}) => {
       <div>
         <Image src={object.image} alt='not found' width={224} height={224} className='w-full h-[14rem] rounded-[1rem]'/>
       </div>
-      <div className='px-2 py-3 flex flex-col gap-1'>
-        <h2 className=''>name: {object.name}</h2>
-        <h3 className=''>desc: {object.desc}</h3>
+      <div className='p-2 flex flex-col gap-1'>
+        <h2 className='whitespace-normal break-words'>{object.title}</h2>
+        <h3 className=''>{object.genre}</h3>
       </div>
     </div>
   )

@@ -5,6 +5,13 @@ require('dotenv').config()
 
 const app = express();
 
+app.use(cors({
+  origin: 'http://localhost:3000',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true,
+}))
+
 // Подключение к MongoDB
 mongoose.connect(`mongodb+srv://${process.env.LOGIN}:${process.env.PASSWORD}@cluster0.pirt6.mongodb.net/TicketFlow?retryWrites=true&w=majority`)
 .then(() => console.log('Успешное подключение к MongoDB'))
@@ -21,11 +28,6 @@ const PORT = process.env.PORT || 3002
 app.listen(PORT, () => {
     console.log(`Сервер запущен на порту ${PORT}`);
 });
-app.use(cors({
-  origin: 'http://localhost:3000',
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization']
-}))
 app.use(cors({
   origin: 'http://localhost:3000'
 }));
