@@ -14,12 +14,21 @@ mongoose.connect(`mongodb+srv://${process.env.LOGIN}:${process.env.PASSWORD}@clu
 app.use(express.json());
 
 // Маршруты
-app.use('/api/events', eventRoutes);
+app.use('/api/events', eventRoutes)
+const cors = require('cors')
+const PORT = process.env.PORT || 3002
 
-const PORT = process.env.PORT || 3002;
 app.listen(PORT, () => {
     console.log(`Сервер запущен на порту ${PORT}`);
 });
+app.use(cors({
+  origin: 'http://localhost:3000',
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}))
+app.use(cors({
+  origin: 'http://localhost:3000'
+}));
 // fetch('http://localhost:3002/api/events')
 // .then(response => response.json())
 // .then(data => console.log(data));

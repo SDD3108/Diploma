@@ -1,11 +1,39 @@
 "use client"
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { useRouter } from "next/navigation";
 import EventCompanent from '../../companents/event/Event';
 import HeaderCompanent from '@/src/companents/header/HeaderCompanent';
 import FooterCompanent from '@/src/companents/footer/FooterCompanent';
+import axios from 'axios';
+
 const Events = () => {
+    const [events, setEvents] = useState([])
+    const [loading, setLoading] = useState(true)
+    const [error, setError] = useState(null)
     const router = useRouter()
+    const api = process.env.API_URL
+    
+    useEffect(()=>{
+        // console.log(api);
+        const getEvents = async ()=>{
+            try{
+                const resp = await axios.get('http://localhost:3002/api/events');
+                // const resp = await axios.get('/api/events')
+                setEvents(resp.data)
+                console.log(resp.data);
+                
+            }
+            catch(err){
+                setError(err.response?.data?.message || err.message || 'Unknown error')
+            }
+            finally{
+                setLoading(false)
+            }
+        }
+        getEvents()
+        console.log(events);
+    },[])
+
     const array = [
         {
             id:1,
@@ -44,7 +72,7 @@ const Events = () => {
     const obj = {
         id:1,
         type:'movie',
-        rating:'',
+        rating:'9.1',
         isRating:true,
         age:16,
         genre:'action',
@@ -71,6 +99,44 @@ const Events = () => {
         reviews:[],
         isLocation:true,
         location:'Бар "skvôt."',
+    }
+    if(loading){
+        return (
+            <>
+                <HeaderCompanent/>
+                <section className='w-full h-[64rem]'>
+                    <div className='text-6xl text-center font-semibold mt-[16rem]'>Загрузка...</div>
+                </section>
+                <FooterCompanent/>
+            </>
+            
+        )
+    }
+    else if(error){
+        return (
+            <>
+                <HeaderCompanent/>
+                <section className='w-full h-[64rem]'>
+                    <div className='text-6xl text-center font-semibold mt-[16rem]'>Ошибка {error}</div>
+                </section>
+                <FooterCompanent/>
+            </>
+            
+        )
+    }
+    else if(!loading && !error && events.length == 0){
+        return (
+            <>
+                <HeaderCompanent/>  
+                <section className='w-full h-[64rem]'>
+                    <div className='text-6xl text-center font-semibold mt-[16rem]'>
+                        Событий не найдено
+                    </div>
+                </section>
+                <FooterCompanent/>
+            </>
+            
+        )
     }
   return (
     <div>
