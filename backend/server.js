@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const eventRoutes = require('./src/routes');
 require('dotenv').config()
+const cors = require('cors')
 
 const app = express();
 
@@ -22,7 +23,6 @@ app.use(express.json());
 
 // Маршруты
 app.use('/api/events', eventRoutes)
-const cors = require('cors')
 const PORT = process.env.PORT || 3002
 
 app.listen(PORT, () => {
@@ -32,5 +32,17 @@ app.use(cors({
   origin: 'http://localhost:3000'
 }));
 // fetch('http://localhost:3002/api/events')
+// .then(response => response.json())
+// .then(data => console.log(data));
+
+// fetch('http://localhost:3002/api/events', {
+//   method: 'POST',
+//   headers: {
+//     'Content-Type': 'application/json',
+//   },
+//   body: JSON.stringify(
+    
+//   )
+// })
 // .then(response => response.json())
 // .then(data => console.log(data));

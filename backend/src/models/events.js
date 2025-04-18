@@ -5,7 +5,7 @@ const eventSchema = new Schema({
     type: {
         type: String,
         required: true,
-        enum: ['movie', 'theater', 'concert', 'sport', 'vacation', 'festival', 'exhibition', 'workshop','action']
+        enum: ['movie', 'theater', 'concert', 'sport', 'vacation', 'festival', 'exhibition', 'workshop']
     },
     rating: { type: Number },
     isRating: { type: Boolean, default: false },
@@ -34,7 +34,7 @@ const eventSchema = new Schema({
     roles: [String],
     reviews: { type: [Object], default: [] },
     isLocation: { type: Boolean, default: false },
-    location: String
+    location: String,
 },{timestamps: true})
 
 const TicketFlow = mongoose.model('events',eventSchema)

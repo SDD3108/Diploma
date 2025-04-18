@@ -1,67 +1,89 @@
 "use client"
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useMemo  } from 'react'
 import { useRouter } from "next/navigation";
 import EventCompanent from '../../companents/event/Event';
 import HeaderCompanent from '@/src/companents/header/HeaderCompanent';
 import FooterCompanent from '@/src/companents/footer/FooterCompanent';
 import axios from 'axios';
+import { Card, CardContent } from "@/components/ui/card"
+import { Carousel,CarouselContent,CarouselItem,CarouselNext,CarouselPrevious, } from "@/components/ui/carousel"
+// import { Skeleton } from "@/components/ui/skeleton"
 
 const Events = () => {
     const [events, setEvents] = useState([])
+    const eventsTypes = [
+        {
+            engType:'movie',
+            ruType:'Кино',
+        },
+        {
+            engType:'theater',
+            ruType:'Театры',
+        },
+        {
+            engType:'concert',
+            ruType:'Концерты',
+        },
+        {
+            engType:'sport',
+            ruType:'Спорт',  
+        },
+        {
+            engType:'vacation',
+            ruType:'Отдых',
+        },
+        {
+            engType:'festival',
+            ruType:'Фестиваль', 
+        },
+        {
+            engType:'exhibition',
+            ruType:'Выставки',
+        },
+        {
+            engType:'workshop',
+            ruType:'Семинары',
+        },
+    ]
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState(null)
     const router = useRouter()  
     useEffect(()=>{
         const getEvents = async ()=>{
             try{
-                const resp = await axios.get('/api/events');
+                const resp = await axios.get('/api/events')
                 setEvents(resp.data)
-                console.log(resp.data);
-                
+                setTimeout(() => {
+                    console.log('main',resp.data);
+                    console.log('1',resp.data.filter((event) => event.type == 'movie'));
+                    console.log('2',resp.data.filter((event) => event.type == 'theater'));
+
+                    console.log('3',resp.data.filter((event) => event.type == 'concert'));
+                    console.log('4',resp.data.filter((event) => event.type == 'sport'));
+                    
+                    console.log('5',resp.data.filter((event) => event.type == 'vacation'));
+                    console.log('6',resp.data.filter((event) => event.type == 'festival'));
+                        
+                    console.log('7',resp.data.filter((event) => event.type == 'exhibition'));
+                    console.log('8',resp.data.filter((event) => event.type == 'workshop'));
+                }, 2000);
             }
             catch(err){
-                setError(err.response?.data?.message || err.message || 'Unknown error')
+                setError(err.resp?.data?.message || err.message || 'Unknown error')
             }
             finally{
                 setLoading(false)
             }
         }
         getEvents()
-        console.log(events);
+        
     },[])
-
-    const array = [
-        {
-            id:1,
-            name:'event 1',
-            desc:'event desc 1',
-            image:'https://static.wikia.nocookie.net/netflix/images/5/54/Netflix_logo.png/revision/latest?cb=20190623201834&path-prefix=ru',
-        },
-        {
-            id:2,
-            name:'event 2',
-            desc:'event desc 2',
-            image:'https://static.wikia.nocookie.net/netflix/images/5/54/Netflix_logo.png/revision/latest?cb=20190623201834&path-prefix=ru',
-        },
-        {
-            id:3,
-            name:'event 3',
-            desc:'event desc 3',
-            image:'https://static.wikia.nocookie.net/netflix/images/5/54/Netflix_logo.png/revision/latest?cb=20190623201834&path-prefix=ru',
-        },
-        {
-            id:4,
-            name:'event 4',
-            desc:'event desc 4',
-            image:'https://static.wikia.nocookie.net/netflix/images/5/54/Netflix_logo.png/revision/latest?cb=20190623201834&path-prefix=ru',
-        },
-        {
-            id:5,
-            name:'event 5',
-            desc:'event desc 5',
-            image:'https://static.wikia.nocookie.net/netflix/images/5/54/Netflix_logo.png/revision/latest?cb=20190623201834&path-prefix=ru',
-        },
-    ]
+    const eventsByType = useMemo(() => 
+        events.reduce((cash, event)=>{
+            (cash[event.type] = cash[event.type] || []).push(event)
+            return cash
+        }, {}),
+    [events])
     const navigationToEvent = (id)=>{
         router.push(`events/${id}`)
     }
@@ -135,22 +157,36 @@ const Events = () => {
         )
     }
   return (
-    <div>
+    <div className='space-y-4'>
         <HeaderCompanent/>
-        <section className='px-5'>
+        {eventsTypes.slice(0,3).map((type,index)=>{
+            const list = eventsByType[type.engType] || []
+            return(
+            <section className='px-5' key={index}>
             <div className='w-full flex flex-col'>
                 <div>
-                    <h2 className='text-3xl font-bold text-[#151515]'>События</h2>
+                    <h2 className='text-3xl font-bold text-[#151515]'>{type.ruType}</h2>
                 </div>
-                <div className='mt-4 flex items-center gap-4 overflow-x-scroll whitespace-nowrap'>
-                    {events.map((event,index)=>(
-                        <div onClick={()=>navigationToEvent(event.id)}>
-                            <EventCompanent object={event} key={index} style=''/>
-                        </div>
-                    ))}
-                </div>    
+                <Carousel className="w-full mt-4">
+                    <CarouselContent className='w-full px-[1rem] gap-4'>
+                      {list.map((event, index2) => (
+                        <CarouselItem key={index2} onClick={()=>navigationToEvent(event._id)} className="basis-[calc(100%/7)] xl:basis-[calc(100%/7)] lg:basis-[calc(100%/5)] md:basis-[calc(100%/4)] sm:basis-[calc(100%/3)] max-sm:basis-[calc(100%/1.5)] p-0 py-2 hover:scale-101">
+                          <div className="p-0">
+                            <Card className="p-0 relative">
+                              <CardContent className="flex aspect-square items-center justify-center p-0">
+                              <EventCompanent object={event} style=''/>
+                              </CardContent>
+                            </Card>
+                          </div>
+                        </CarouselItem>
+                      ))}
+                    </CarouselContent>
+                    <CarouselPrevious className='w-[3rem] h-[3rem] disabled:hidden opacity-50 left-[3rem] '/>
+                    <CarouselNext className='w-[3rem] h-[3rem] disabled:hidden opacity-50 right-[3rem]'/>
+                </Carousel>    
             </div>        
-        </section>
+            </section>
+        )})}
         <FooterCompanent/>
     </div>
   )

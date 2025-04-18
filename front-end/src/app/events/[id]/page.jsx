@@ -11,7 +11,7 @@ const Event = ({params}) => {
     }
   return (
     <div className='w-[64rem] lg:w-[64rem] max-sm:w-auto mx-auto flex flex-col justify-center'>
-        <h2 className='text-center'>event{params.id}</h2>
+        <h2 className='text-center'>event {params.id}</h2>
         <MyButton className='w-[16rem] max-sm:w-1/3 mx-auto cursor-pointer' onClick={()=>{navigationToEventDescription(params.id+1)}} children='description'/>
     </div>
   )

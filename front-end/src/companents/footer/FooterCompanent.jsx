@@ -20,7 +20,7 @@ const FooterCompanent = () => {
     router.push('/natisfaction')
   }
   return (
-    <footer className='bg-[#141414] h-[24rem] mt-[2rem] px-5 py-10 text-[#FFFFFF] sm:h-[52rem] md:h-[24rem]'>
+    <footer className='bg-[#141414] h-[24rem] mt-[2rem] px-5 py-10 text-[#FFFFFF] sm:h-[52rem] md:h-[24rem] max-sm:h-[52rem]'>
       <div className="container grid grid-cols-1 md:grid-cols-4 gap-8 border-b border-[#3D3D3D] pb-8">
         <div className="space-y-4">
           <h2 className="text-2xl font-bold text-[#00F000]">TicketFlow</h2>

@@ -5,7 +5,7 @@ import HeaderCompanent from '../companents/header/HeaderCompanent';
 import FooterCompanent from '../companents/footer/FooterCompanent';
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-
+import Events from "./events/page";
 
 export default function Home() {
   const router = useRouter()
@@ -69,7 +69,7 @@ export default function Home() {
           </div>
         </div>
       </section>
-      <section className="px-5 mt-20">
+      <section className="px-5 mt-20 hidden">
         <div className="w-full h-[48rem]">
           <div>
             <h2></h2>
