@@ -6,6 +6,8 @@ import FooterCompanent from '../companents/footer/FooterCompanent';
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import Events from "./events/page";
+import EventsCompanent from '@/src/companents/events/EventsCompanent';
+import { Accordion,AccordionContent,AccordionItem,AccordionTrigger,} from "@/components/ui/accordion"
 
 export default function Home() {
   const router = useRouter()
@@ -38,6 +40,7 @@ export default function Home() {
   return (
     <div>
       <HeaderCompanent/>
+
       <section className="px-5">
         <div className="w-full flex flex-col gap-[1.5rem]">
           <div className="overflow-hidden">
@@ -69,13 +72,17 @@ export default function Home() {
           </div>
         </div>
       </section>
-      <section className="px-5 mt-20 hidden">
-        <div className="w-full h-[48rem]">
+      <section className="px-5 mt-20">
+        <div className="w-full h-[24rem]">
           <div>
             <h2></h2>
           </div>
         </div>
       </section>
+      <section className="mt-10">
+        <EventsCompanent/>
+      </section>
+      
       <FooterCompanent/>
     </div>
   );
