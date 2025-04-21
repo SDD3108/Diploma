@@ -5,7 +5,8 @@ import { Sheet, SheetTrigger, SheetContent, SheetHeader, SheetTitle } from '@/co
 import { Button } from '@/components/ui/button'
 import { Menu,X,Tickets } from 'lucide-react'
 import { useRouter } from "next/navigation";
-import { Separator } from "@/components/ui/separator"
+import { Separator } from "@/components/ui/separator";
+import NavigationToNatisfaction from "@/src/feature/NavigationToNatisfaction/page";
 
 const HeaderCompanent = () => {
   const router = useRouter()
@@ -18,11 +19,11 @@ const HeaderCompanent = () => {
   const NavigationToEvents = ()=>{
     router.push('/events')
   }
-  const NavigationToNatisfaction = ()=>{
-    router.push('/natisfaction')
-  }
+  // const NavigationToNatisfaction = ()=>{
+  //   router.push('/natisfaction')
+  // }
   return (
-    <header className='h-[8rem] bg-[#1A1A1A] text-[#FFFFFF] shadow-md mb-[4rem] px-5 flex items-center'>
+    <header className='h-[8rem] bg-[#1A1A1A] text-[#FFFFFF] shadow-md px-5 flex items-center'>
       <div className='flex flex-col items-center w-full'>
         <div className="flex justify-between w-full">
           <div className="flex items-center gap-2 cursor-pointer">
