@@ -129,11 +129,9 @@ const EventsCompanent = () => {
     if(error){
         return (
             <>
-                <HeaderCompanent/>
                 <section className='w-full h-[32rem]'>
                     <div className='text-6xl text-center font-semibold mt-[16rem]'>Ошибка {error}</div>
                 </section>
-                <FooterCompanent/>
             </>
             
         )
@@ -141,13 +139,11 @@ const EventsCompanent = () => {
     else if(!loading && !error && events.length == 0){
         return (
             <>
-                <HeaderCompanent/>  
                 <section className='w-full h-[32rem]'>
                     <div className='text-6xl text-center font-semibold mt-[16rem]'>
                         Событий не найдено
                     </div>
                 </section>
-                <FooterCompanent/>
             </>
             
         )
