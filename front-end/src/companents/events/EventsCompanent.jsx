@@ -7,6 +7,9 @@ import FooterCompanent from '@/src/companents/footer/FooterCompanent';
 import axios from 'axios';
 import { Card, CardContent } from "@/components/ui/card"
 import { Carousel,CarouselContent,CarouselItem,CarouselNext,CarouselPrevious, } from "@/components/ui/carousel"
+import ErrorCompanent from "@/src/companents/error/ErrorCompanent"
+import NotFoundCompanent from "@/src/companents/not found/NotFoundCompanent"
+// import NavToEvent from "@/src/fea`ture/Navigations/navToEvent/NavToEvent"
 
 const EventsCompanent = () => {
     const [events, setEvents] = useState([])
@@ -77,12 +80,12 @@ const EventsCompanent = () => {
         getEvents()
         
     },[])
-    const eventsByType = useMemo(() => 
+    const eventsByType = useMemo(() =>
         events.reduce((cash, event)=>{
             (cash[event.type] = cash[event.type] || []).push(event)
             return cash
-        }, {}),
-    [events])
+        }, {}),[events]
+    )
     const navigationToEvent = (id)=>{
         router.push(`events/${id}`)
     }
@@ -128,24 +131,12 @@ const EventsCompanent = () => {
     }
     if(error){
         return (
-            <>
-                <section className='w-full h-[32rem]'>
-                    <div className='text-6xl text-center font-semibold mt-[16rem]'>Ошибка {error}</div>
-                </section>
-            </>
-            
+            <ErrorCompanent error={error} />
         )
     }
     else if(!loading && !error && events.length == 0){
         return (
-            <>
-                <section className='w-full h-[32rem]'>
-                    <div className='text-6xl text-center font-semibold mt-[16rem]'>
-                        Событий не найдено
-                    </div>
-                </section>
-            </>
-            
+            <NotFoundCompanent/>     
         )
     }
   return (

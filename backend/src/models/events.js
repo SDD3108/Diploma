@@ -35,6 +35,22 @@ const eventSchema = new Schema({
     reviews: { type: [Object], default: [] },
     isLocation: { type: Boolean, default: false },
     location: String,
+    sessions: [{
+        id: Math.floor(Math.random() * 1000000),
+        time: { type: String, required: true },
+        sessionLocation: { type: String, required: true },
+        hall: { type: String, required: true },
+        isLanguage: { type: Boolean, default: false},
+        sessionLaunguage: { type: String,enum: ['Русс', 'Кзх', 'Англ'] },
+        isSubtitles: { type: Boolean, default: false },
+        sessionSubtitles: { type: String },
+        isAdultPrice: { type: Boolean, default: false },
+        adultPrice: { type: Number },
+        isChildPrice: { type: Boolean, default: false },
+        childPrice: { type: Number },
+        isVIPPrice: { type: Boolean, default: false },
+        vipPrice: { type: Number },
+    }],
 },{timestamps: true})
 
 const TicketFlow = mongoose.model('events',eventSchema)
