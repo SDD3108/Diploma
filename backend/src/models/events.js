@@ -36,12 +36,11 @@ const eventSchema = new Schema({
     isLocation: { type: Boolean, default: false },
     location: String,
     sessions: [{
-        id: { type:Number,require: true },
         time: { type: String, required: true },
         sessionLocation: { type: String, required: true },
         hall: { type: String, required: true },
         isLanguage: { type: Boolean, default: false},
-        sessionLaunguage: { type: String,enum: ['Русс', 'Кзх', 'Англ'] },
+        sessionLaunguage: { type: String,enum: ['Русс', 'Кзх', 'Англ'],default: 'Русс' },
         isSubtitles: { type: Boolean, default: false },
         sessionSubtitles: { type: String },
         isAdultPrice: { type: Boolean, default: false },
