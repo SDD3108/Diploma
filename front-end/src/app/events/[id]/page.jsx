@@ -39,6 +39,7 @@ const Event = () => {
   const [event,setEvent] = useState({})
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const [imageError, setImageError] = useState(false)
   const restoreFocus =()=>{
     const active = document.activeElement
     if(menuRef.current && !menuRef.current.contains(active)){
@@ -183,7 +184,11 @@ const Event = () => {
       <section className='flex md:flex-row sm:flex-col max-sm:flex-col gap-0 md:gap-8 sm:gap-5 max-sm:gap-5 px-5 w-full'>
         <div className='w-1/3 md:w-1/3 sm:w-full max-sm:w-full relative md:relative sm:absolute max-sm:absolute left-0'>
           <div className='sticky top-8'>
-            <img src={event?.image} alt={event?.title} className='w-full h-auto md:h-auto sm:h-[24rem] max-sm:h-[24rem] object-cover rounded-xl md:rounded-xl sm:rounded-none max-sm:rounded-none'/>
+            {loading || imageError || !event?.image ? (
+              <Skeleton className='w-full h-auto md:h-auto sm:h-[24rem] max-sm:h-[24rem] object-cover rounded-xl md:rounded-xl sm:rounded-none max-sm:rounded-none'/>
+            ) : (
+              <img src={event?.image} alt={event?.title} onError={()=> setImageError(true)} className='w-full h-auto md:h-auto sm:h-[24rem] max-sm:h-[24rem] object-cover rounded-xl md:rounded-xl sm:rounded-none max-sm:rounded-none'/>
+            )}
             {/* как сделать эту картинку на всю длину экрана когда sm? */}
             {/* <Image src={event?.image} alt={event?.title} width={224} height={224} className='w-full h-auto md:h-auto sm:h-[24rem] object-cover rounded-xl md:rounded-xl sm:rounded-none'/> */}
             <div className='absolute top-4 right-4 bg-[#00F000] rounded-md w-1/5 md:w-1/5 sm:w-1/8 max-sm:w-1/8 flex justify-center items-center px-3 py-1'>

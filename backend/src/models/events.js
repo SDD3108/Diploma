@@ -36,7 +36,7 @@ const eventSchema = new Schema({
     isLocation: { type: Boolean, default: false },
     location: String,
     sessions: [{
-        id: Math.floor(Math.random() * 1000000),
+        id: { type:Number,require: true },
         time: { type: String, required: true },
         sessionLocation: { type: String, required: true },
         hall: { type: String, required: true },
