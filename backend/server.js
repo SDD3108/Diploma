@@ -1,10 +1,12 @@
-const express = require('express');
-const mongoose = require('mongoose');
-const eventRoutes = require('./src/routes');
+const express = require('express')
+const mongoose = require('mongoose')
+const eventRoutes = require('./src/routes/events')
+const cinemaRoutes = require('./src/routes/cinemas')
+// const cinemaRoutes = require('./src/routes/');
 require('dotenv').config()
 const cors = require('cors')
 
-const app = express();
+const app = express()
 
 app.use(cors({
   origin: 'http://localhost:3000',
@@ -15,11 +17,11 @@ app.use(cors({
 
 mongoose.connect(`mongodb+srv://${process.env.LOGIN}:${process.env.PASSWORD}@cluster0.pirt6.mongodb.net/TicketFlow?retryWrites=true&w=majority`)
 .then(() => console.log('Успешное подключение к MongoDB'))
-.catch(err => console.error('Ошибка подключения:', err));
+.catch(err => console.error('Ошибка подключения:', err))
 
 
 // выходит проблема дубликации ключа
-const AutoIncrement = require('mongoose-sequence')(mongoose);
+const AutoIncrement = require('mongoose-sequence')(mongoose)
 const sessionSchema = new mongoose.Schema({
   time: { type: String, required: true },
   sessionLocation: { type: String, required: true },
@@ -36,39 +38,15 @@ const sessionSchema = new mongoose.Schema({
   vipPrice: { type: Number }
 });
 
-sessionSchema.plugin(AutoIncrement, { inc_field: 'cinemaId' });
+sessionSchema.plugin(AutoIncrement, { inc_field: 'cinemaId' })
 
-const Session = mongoose.model('Session', sessionSchema);
-Session.createIndexes({ cinemaId: 1 }, { unique: true });
-  // что делает весь код выше?
-// он создает новую схему для сессий и добавляет автоинкрементный id для каждой новой сессии
-// и сохраняет новую сессию в базу данных
-// и добавляет автоинкрементный id для каждой новой сессии
-// и сохраняет новую сессию в базу данных
-// получается после первого раза можно убрать newSession?
-// да, можно убрать newSession, но тогда id будет одинаковым для всех объектов в массиве sessions
-// и будет ошибка при сохранении в базу данных newSession?
-// да, будет ошибка, потому что id будет одинаковым для всех объектов в массиве sessions
-// а что еще надо убрать?
-// надо убрать newSession и оставить только Session.createIndexes({ cinemaId: 1 }, { unique: true });
-// а что делает Session.createIndexes({ cinemaId: 1 }, { unique: true });?
-// оно создает уникальный индекс для поля cinemaId в коллекции sessions, чтобы избежать дублирования id
-
-// и что оно сделает если я запушу сервер?
-// оно создаст новый id для каждого нового объекта в массиве sessions?
-// понял,а мне это всегда должно быть рабочим? или после первого раза можно закоментить?
-// оно всегда должно быть рабочим, чтобы каждый раз при создании нового объекта в массиве sessions id увеличивался на 1
-// и не повторялся, а если закоментить, то id будет одинаковым для всех объектов в массиве sessions
-// и будет ошибка при сохранении в базу данных newSession?
-// да, будет ошибка, потому что id будет одинаковым для всех объектов в массиве sessions
-// а что еще надо убрать?
-
-
-
-app.use(express.json());
+const Session = mongoose.model('Session', sessionSchema)
+Session.createIndexes({ cinemaId: 1 },{ unique: true })
+app.use(express.json())
 
 // Маршруты
 app.use('/api/events', eventRoutes)
+app.use('/api/cinemas', cinemaRoutes)
 const PORT = process.env.PORT || 3002
 
 app.listen(PORT, () => {
@@ -86,48 +64,46 @@ app.use(cors({
 //   headers: {
 //     'Content-Type': 'application/json',
 //   },
-//   body: JSON.stringify(
-//   {
-//     type: 'movie',
-//     rating: 5,
-//     isRating: true,
-//     age: 18,
-//     genre: 'action',
-//     image: 'https://example.com/image.jpg',
-//     title: 'Example Movie',
-//     description: 'This is an example movie description.',
-//     isDetails: true,
-//     details: {
-//       engTitle: 'Example Movie Title',
-//       duration: 120,
-//       releaseDate: '2023-01-01',
-//       production: 'Example Production Company',
-//       director: 'John Doe'
-//     },
-//     isRoles: true,
-//     roles: ['Actor 1', 'Actor 2'],
-//     reviews: [],
-//     isLocation: true,
-//     location: 'Example Location',
-//     sessions: [
-//       {
-//         time: '12:00',
-//         sessionLocation: 'Main Hall',
-//         hall: 'Hall 1',
-//         isLanguage: true,
-//         sessionLaunguage: 'Русс',
-//         isSubtitles: false,
-//         sessionSubtitles: '',
-//         isAdultPrice: true,
-//         adultPrice: 1000,
-//         isChildPrice: true,
-//         childPrice: 500,
-//         isVIPPrice: true,
-//         vipPrice: 1500,
-//       }
-//     ]
-//   }
-//   )
+//   body: JSON.stringify({})
 // })
 // .then(response => response.json())
 // .then(data => console.log(data));
+
+// fetch('http://localhost:3002/api/cinemas',{
+//   method: 'POST',
+//   headers: {
+//     'Content-Type': 'application/json',
+//   },
+  // body: JSON.stringify({
+  //   cinemaName: 'Chaplin MEGA Silk Way',
+  //   cinemaAddress: 'г. Алматы, пр. Достык, 4',
+  //   cinemaRate: 4.5,
+  //   reviewsCount: 120,
+  //   reviews:[
+  //     { user: 'User1', text: 'Отличный кинотеатр!', grade: 5 },
+  //     { user: 'User2', text: 'Хорошее качество изображения.', grade: 4 },
+  //   ],
+  //   halls: [
+  //     {
+  //       name: 'Зал 1',
+  //       capacity: 100,
+  //       rows: 10,
+  //       seatsPerRow: 10,
+  //       reservedSeats: [
+  //         { row: 1, seat: 1 },
+  //         { row: 2, seat: 2 },
+  //       ],
+  //     },
+  //     {
+  //       name: 'Зал 2',
+  //       capacity: 80,
+  //       rows: 8,
+  //       seatsPerRow: 10,
+  //       reservedSeats: [],
+  //     },
+  //   ],
+  // })
+// })
+// .then(response => response.json())
+// .then(data => console.log(data));
+

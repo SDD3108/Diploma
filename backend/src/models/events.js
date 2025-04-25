@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
 const eventSchema = new Schema({
@@ -37,8 +37,8 @@ const eventSchema = new Schema({
     location: String,
     sessions: [{
         time: { type: String, required: true },
-        sessionLocation: { type: String, required: true },
-        hall: { type: String, required: true },
+        sessionLocation: { type: String, required: true,enum: ['Chaplin MEGA Silk Way','Arman Asia Park','Kinopark 6 Keruencity','Dostar Cinema','Aru Cinema','Arsenal','Chaplin Khan Shatyr','Kinopark 8 IMAX Saryarka','Kinopark 7 IMAX Keruen','Keruen Cinema (Talan Gallery)','Eurasia Cinema7'] },
+        hall: { type: String, required: true,enum: ['Зал 1', 'Зал 2', 'Зал 3', 'Зал 4', 'Зал 5','Зал 6']},
         isLanguage: { type: Boolean, default: false},
         sessionLaunguage: { type: String,enum: ['Русс', 'Кзх', 'Англ'],default: 'Русс' },
         isSubtitles: { type: Boolean, default: false },
@@ -51,6 +51,9 @@ const eventSchema = new Schema({
         vipPrice: { type: Number },
     }],
 },{timestamps: true})
+
+// можно както сделать что если cinemaName == 'Arsenal' то cinemaAddress был "ул. Ы. Алтынсарин, 4"
+
 
 const TicketFlow = mongoose.model('events',eventSchema)
 module.exports = TicketFlow

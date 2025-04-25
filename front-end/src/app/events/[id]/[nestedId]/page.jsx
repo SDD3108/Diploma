@@ -41,16 +41,45 @@
 // export default page
 
 "use client"
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState,useCallback } from 'react'
 import { useParams, useRouter } from "next/navigation"
 import axios from 'axios'
 
 const cinemas = [
-  { id: 1, name: 'Кинотеатр 1' },
-  { id: 2, name: 'Кинотеатр 2' },
-  { id: 3, name: 'Кинотеатр 3' },
-  { id: 4, name: 'Кинотеатр 4' },
-  { id: 5, name: 'Кинотеатр 5' },
+  {
+    id: 1,
+    name: 'Кинотеатр 1',
+    cinemaAddress:'',
+    cinemaRate: 4.5,
+    reviewsCount: 120,
+    reviews: [
+      { user: 'User1', text: 'Отличный кинотеатр!',grade: 5 },
+      { user: 'User2', text: 'Хорошее качество изображения.',grade: 4 },
+    ],
+    halls: [
+      {
+        id: 1,
+        name: 'Зал 1',
+        capacity: 100,
+        rows: 10,
+        seatsPerRow: 10,
+        reservedSeats:[
+          {
+            row: 1,
+            seat: 1,
+          },
+          {
+            row: 1,
+            seat: 2,
+          },
+          {
+            row: 2,
+            seat: 3,
+          },
+        ],
+      },
+    ],
+  },
 ]
 
 const SeatsPage = () => {
@@ -58,102 +87,40 @@ const SeatsPage = () => {
   const router = useRouter()
   const canvasRef = useRef(null)
   const [session, setSession] = useState(null)
+  const [cinema,setCinema] = useState(null)
   const [selectedSeats, setSelectedSeats] = useState([])
   const [seatsConfig, setSeatsConfig] = useState({
-    rows: 10,
-    seatsPerRow: 15,
     seatWidth: 30,
     seatHeight: 30,
-    gap: 10
+    gap: 10,
+    rows: 0,
+    seatsPerRow: 0
   })
 
   // Загрузка данных о сеансе
-  useEffect(() => {
+useEffect(() => {
     const fetchSession = async () => {
       try {
-        const response = await axios.get(`/api/events/${params.id}/${params.nestedId}`)
-        setSession(response.data)
-      } catch (error) {
+        const eventResp = await axios.get(`/api/events/${params.id}`)
+        const sessions = eventResp.data.sessions
+        const findSessionById = sessions.find((session)=>session._id == params.nestedId)
+        const cinemaResp = await axios.get(`/api/cinemas`)
+        const findCinemaByName = cinemaResp.data.find((cinema)=>cinema.cinemaName == findSessionById.sessionLocation)
+        if (!findCinemaByName || !findSessionById) {
+          throw new Error('Data not found')
+        }
+        const hallConfig = targetCinema.halls.find((hall) => hall.name == findSessionById.hall)
+        setSession(findSessionById)
+        setCinema(findCinemaByName)
+        setSeatsConfig((prev) => ({...prev, rows: hallConfig.rows,seatsPerRow: hallConfig.seatsPerRow}))
+        
+      }
+      catch (error) {
         console.error('Error fetching session:', error)
       }
-    }
-    fetchSession()
-  }, [params.nestedId])
-
-  // Отрисовка мест при изменении данных
-  useEffect(() => {
-    if (!session) return
-    
-    const canvas = canvasRef.current
-    const ctx = canvas.getContext('2d')
-    
-    // Настройки Canvas
-    const { rows, seatsPerRow, seatWidth, seatHeight, gap } = seatsConfig
-    canvas.width = seatsPerRow * (seatWidth + gap) + gap
-    canvas.height = rows * (seatHeight + gap) + gap
-
-    // Функция отрисовки одного места
-    const drawSeat = (row, seatNum, isSelected = false, isReserved = false) => {
-      const x = gap + (seatNum - 1) * (seatWidth + gap)
-      const y = gap + (row - 1) * (seatHeight + gap)
-      
-      ctx.fillStyle = isReserved ? '#ff0000' : 
-                     isSelected ? '#00ff00' : 
-                     '#cccccc'
-      ctx.fillRect(x, y, seatWidth, seatHeight)
-    }
-
-    // Очистка и перерисовка
-    ctx.clearRect(0, 0, canvas.width, canvas.height)
-    
-    // Рисуем все места
-    for (let row = 1; row <= rows; row++) {
-      for (let seatNum = 1; seatNum <= seatsPerRow; seatNum++) {
-        const isReserved = session.reservedSeats?.some(s => 
-          s.row === row && s.seat === seatNum
-        )
-        const isSelected = selectedSeats.some(s => 
-          s.row === row && s.seat === seatNum
-        )
-        drawSeat(row, seatNum, isSelected, isReserved)
-      }
-    }
-  }, [session, selectedSeats, seatsConfig])
-
-  // Обработчик клика по Canvas
-  const handleCanvasClick = (e) => {
-    const rect = canvasRef.current.getBoundingClientRect()
-    const x = e.clientX - rect.left
-    const y = e.clientY - rect.top
-
-    const { rows, seatsPerRow, seatWidth, seatHeight, gap } = seatsConfig
-    
-    const row = Math.floor(y / (seatHeight + gap)) + 1
-    const seatNum = Math.floor(x / (seatWidth + gap)) + 1
-
-    // Проверка на валидность места
-    if (row > rows || seatNum > seatsPerRow) return
-
-    // Проверка занятости
-    const isReserved = session.reservedSeats?.some(s => 
-      s.row === row && s.seat === seatNum
-    )
-    if (isReserved) return
-
-    // Обновление выбранных мест
-    setSelectedSeats(prev => {
-      const existing = prev.find(s => s.row === row && s.seat === seatNum)
-      return existing 
-        ? prev.filter(s => !(s.row === row && s.seat === seatNum))
-        : [...prev, { row, seat: seatNum }]
-    })
   }
-
-  // Расчет общей стоимости
-  const totalPrice = selectedSeats.reduce((acc, seat) => {
-    return acc + (session?.seatPrice || 300)
-  }, 0)
-
+  fetchSession()
+},[params.nestedId,params.nestedId])
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-3xl mb-8 text-center">{session?.movieTitle}</h1>
@@ -162,7 +129,7 @@ const SeatsPage = () => {
         <canvas 
           ref={canvasRef}
           onClick={handleCanvasClick}
-          className="border-2 border-gray-300 cursor-pointer"
+          className="border-2 border-gray-300 w-full cursor-pointer"
         />
       </div>
 
