@@ -1,45 +1,3 @@
-// "use client"
-// import React, { useEffect, useState, useMemo,useRef } from 'react'
-// import { useParams,useRouter } from "next/navigation";
-// const page = () => {
-//   const params = useParams()
-//   const router = useRouter()
-//   const [event, setEvent] = useState({})
-  // const [session,setSession] = useState({})
-  // const [loading, setLoading] = useState(true)
-  // const [error, setError] = useState(null)
-//   useEffect(()=>{
-//     const getEvents = async ()=>{
-//       try{
-//         const resp = await axios.get('/api/events')
-//         const findEventById = resp.data.find((event)=>event._id == params.id)
-//         if(!findEventById){
-//           return router.push(`/events/${params.id}`)
-//         }
-//         setEvent(findEventById)
-//         const findSessionById = findEventById.sessions.find((session)=>session.cinemaId == params.nestedId)
-//         if(!findSessionById){
-//           return router.push(`/events/${params.id}`)
-//         }
-//         setSession(findSessionById)
-//       }
-//       catch(err){
-//         setError(err.resp?.data?.message || err.message || 'Unknown error')
-//       }
-//       finally{
-//         setLoading(false)
-//       }
-//     }
-//     getEvents()
-//   },[])
-
-//   return (
-//     <div>desc{params.nestedId}</div>
-//   )
-// }
-
-// export default page
-
 "use client"
 import React, { useEffect, useRef, useState,useCallback } from 'react'
 import { useParams, useRouter } from "next/navigation"
@@ -48,7 +6,13 @@ import ErrorCompanent from "@/src/companents/error/ErrorCompanent"
 import NotFoundCompanent from "@/src/companents/not found/NotFoundCompanent"
 import HeaderCompanent from '@/src/companents/header/HeaderCompanent'
 import FooterCompanent from '@/src/companents/footer/FooterCompanent'
-
+import { Skeleton } from "@/components/ui/skeleton"
+import Image from 'next/image'
+import { Button } from '@/components/ui/button'
+import { X } from 'lucide-react';
+import { Dialog,DialogContent,DialogHeader,DialogTitle,DialogFooter,DialogClose } from "@/components/ui/dialog"
+import { Label } from "@/components/ui/label"
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 
 const cinemas = [
   {
@@ -68,6 +32,19 @@ const cinemas = [
         capacity: 100,
         rows: 10,
         seatsPerRow: 10,
+        isVipSeats: true,
+        vipSeats: [
+          { row: 1, seat: 1 },
+          { row: 1, seat: 2 },
+          { row: 2, seat: 3 },
+          { row: 2, seat: 4 },
+          { row: 3, seat: 5 },
+          { row: 3, seat: 6 },
+          { row: 4, seat: 7 },
+          { row: 4, seat: 8 },
+          { row: 5, seat: 9 },
+          { row: 5, seat: 10 },
+        ],
         reservedSeats:[
           {
             row: 1,
@@ -87,19 +64,32 @@ const cinemas = [
   },
 ]
 
+// 1. isVipSeats
+// 2. vipSeats
+// 3. reservedSeats
+// 4. WebPack / Socket IO
+// 5. synchronize
+
+
 const SeatsPage = () => {
   const params = useParams()
   const router = useRouter()
   const canvasRef = useRef(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const [event, setEvent] = useState(null)
   const [session, setSession] = useState(null)
   const [cinema,setCinema] = useState(null)
   const [selectedSeats, setSelectedSeats] = useState([])
   const [seatsConfig, setSeatsConfig] = useState({})
+  const [imageError, setImageError] = useState(false)
+  const [tempSeat, setTempSeat] = useState(null) // Добавляем состояние для временного хранения места
+  const [ticketType, setTicketType] = useState('adult') // Состояние для выбранного типа билета
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
+
 
   const GAP = 5
-  const SEAT_SIZE = 30
+  const SEAT_SIZE = 40
   const COLORS = {
     free: '#cccccc',
     reserved: '#5F5D5D',
@@ -120,6 +110,7 @@ useEffect(() => {
         return
       }
       const hallConfig = findCinemaByName.halls.find((hall) => hall.name == findSessionById.hall)
+      setEvent(eventResp.data)
       setSession(findSessionById)
       setCinema(findCinemaByName)
       setSeatsConfig((prev) => ({
@@ -131,7 +122,6 @@ useEffect(() => {
     }
     catch (error){
       setError(error)
-      // console.error('Error fetching session:', error)
     }
     finally{
       setLoading(false)
@@ -149,16 +139,18 @@ const drawSeats = useCallback(() => {
   const ctx = canvas.getContext('2d')
   const { rows, seatsPerRow } = seatsConfig
 
-  const canvasWidth = seatsPerRow * (SEAT_SIZE + GAP) + GAP
-  const canvasHeight = rows * (SEAT_SIZE + GAP) + GAP
-  
-  // Рассчёт размеров canvas
-  canvas.width = canvasWidth
-  canvas.height = canvasHeight
-  console.log(canvas.width,canvas.height);
+  const rect = canvas.getBoundingClientRect()
+  const displayWidth = rect.width
+  const displayHeight = rect.height
 
-  // Очистка
-  ctx.clearRect(0, 0, canvas.width, canvas.height)
+  const devicePixelRatio = window.devicePixelRatio || 1
+  canvas.width = displayWidth * devicePixelRatio
+  canvas.height = displayHeight * devicePixelRatio
+  ctx.scale(devicePixelRatio, devicePixelRatio)
+  
+  const seatWidth = (displayWidth - GAP) / seatsPerRow - GAP
+  const seatHeight = (displayHeight - GAP) / rows - GAP
+  ctx.clearRect(0, 0, displayWidth, displayHeight)
 
   // Получение текущего зала
   const currentHall = cinema.halls.find((hall) => hall.name == session.hall)
@@ -169,11 +161,12 @@ const drawSeats = useCallback(() => {
     for(let seat = 1; seat <= seatsPerRow; seat++){
       const isReserved = currentHall.reservedSeats.some((s) => s.row == row && s.seat == seat)
       const isSelected = selectedSeats.some((s) => s.row == row && s.seat == seat)
-      const x = GAP + (seat - 1) * (SEAT_SIZE + GAP)
-      const y = GAP + (row - 1) * (SEAT_SIZE + GAP)
+      const x = GAP + (seat - 1) * (seatWidth + GAP)
+      const y = GAP + (row - 1) * (seatHeight + GAP)
 
       ctx.fillStyle = isReserved ? COLORS.reserved : isSelected ? COLORS.selected : COLORS.free
-      ctx.fillRect(x, y, SEAT_SIZE, SEAT_SIZE)
+      ctx.fillRect(x, y, seatWidth, seatHeight)
+      // ctx.fillRect(x, y, SEAT_SIZE, SEAT_SIZE)
     }
   }
 },[cinema,session,selectedSeats,seatsConfig])
@@ -181,40 +174,50 @@ useEffect(() => {
   drawSeats()
 },[drawSeats])
 
+// console.log();
+
+
 // Обработка клика
-const handleCanvasClick =(e)=>{
+const handleCanvasClick = (e) => {
+  // console.log(e);
+  
   if(!session || !cinema){
     return
   }
+
   const canvas = canvasRef.current
   const rect = canvas.getBoundingClientRect()
-  const x = e.clientX - rect.left
-  const y = e.clientY - rect.top
+  
+  const scaleX = canvas.width / rect.width
+  const scaleY = canvas.height / rect.height
 
+  const x = (e.clientX - rect.left) * scaleX
+  const y = (e.clientY - rect.top) * scaleY
   const { rows, seatsPerRow } = seatsConfig
 
-  const clickedRow = Math.floor(y / (SEAT_SIZE + GAP)) + 1
-  const clickedSeat = Math.floor(x / (SEAT_SIZE + GAP)) + 1
+  const seatWidth = (canvas.width - GAP) / seatsPerRow - GAP
+  const seatHeight = (canvas.height - GAP) / rows - GAP
+
+  const clickedRow = Math.floor(y / (seatHeight + GAP)) + 1
+  const clickedSeat = Math.floor(x / (seatWidth + GAP)) + 1
   if(clickedRow > rows || clickedSeat > seatsPerRow){
     return
   }
-  const currentHall = cinema.halls.find(h => h.name == session.hall)
-  const isReserved = currentHall.reservedSeats.some(
-    s => s.row == clickedRow && s.seat == clickedSeat
-  )
-  if(isReserved){
-    return
+  const currentHall = cinema.halls.find((hall) => hall.name == session.hall)
+  const isReserved = currentHall.reservedSeats.some((seats) => seats.row == clickedRow && seats.seat == clickedSeat)
+  if(!isReserved){
+    setTempSeat({row: clickedRow,seat: clickedSeat })
+    setIsDialogOpen(true)
   }
-
-  // Обновление выбранных мест
-  setSelectedSeats(prev => {
-    const exists = prev.some((s) => s.row == clickedRow && s.seat == clickedSeat)
-    return exists ? prev.filter((s) => !(s.row == clickedRow && s.seat == clickedSeat)) : [...prev,{ row: clickedRow, seat: clickedSeat}]
-  })
 }
-const totalPrice = selectedSeats.reduce((acc,seat)=>{
-  return acc + (session?.adultPrice || 0)
-},0)
+
+const addTicket = () => {
+  setSelectedSeats(prev => [...prev,{...tempSeat,ticketType,price: ticketType == 'adult' ? session.adultPrice : session.childPrice}])
+  setIsDialogOpen(false)
+  setTicketType('adult')
+}
+
+const totalPrice = selectedSeats.reduce((acc, seat) => acc + seat.price, 0)
 
 if(!session || !cinema){
   return (
@@ -230,41 +233,109 @@ if(!session || !cinema){
 
   return (
     <div className='flex flex-col gap-20'>
-    <HeaderCompanent/>
-    <div  className='mx-auto'>
-      <h1 >{session?.movieTitle}</h1>
-      <div className='overflow-auto'>
-        <canvas 
-          ref={canvasRef}
-          onClick={handleCanvasClick}
-          className="mx-auto border-2 border-gray-300 cursor-pointer"
-          style={{
-            minWidth: '350px',
-            minHeight: '350px',
-          }}
-        />
-      </div>
-
-      {selectedSeats.length > 0 && (
-        <div >
-          <div className="grid grid-cols-2">
-            {selectedSeats.map((seat, index) => (
-              <div key={index} className="bg-white rounded shadow">
-                <p>{seat.row} Ряд, {seat.seat} Место</p>
-                <p>Цена: {session?.adultPrice} KZT</p>
-              </div>
-            ))}
-          </div>
-          <div className="mt-4 text-xl font-bold">
-            Общая сумма: {totalPrice} KZT
-          </div>
-          <button className="mt-4 bg-blue-600 text-white rounded hover:bg-blue-700" onClick={() => console.log('Переход к оплате', selectedSeats)}>
-            Перейти к оплате
-          </button>
+      <HeaderCompanent/>
+      <section  className='w-full px-5 flex flex-col gap-4'>
+      <div className='flex gap-4 sm:flex-row max-sm:flex-col'>
+        <div>
+          {imageError ? (
+            <Skeleton className='w-[10rem] sm:w-[10rem] max-sm:w-full h-[10rem] rounded-xl'/>
+            ) : (
+            <Image src={event?.image} alt='not found' onError={() => setImageError(true)} width={112} height={112} className='w-[10rem] sm:w-[10rem] max-sm:w-[5rem] h-auto rounded-xl'/>
+          )}
         </div>
-      )}
-    </div>
-    <FooterCompanent/>
+        <div className='flex flex-col justify-center gap-2 w-1/4 lg:w-1/4 md:w-1/3 sm:w-1/2 max-sm:w-full'>
+          <div>
+            <h1 className='text-2xl font-bold'>{event?.title}</h1>
+          </div>
+          <div className='flex gap-3'>
+            <div>26.04.25 • {session?.time}</div>
+            <div>{session?.sessionLaunguage}</div>
+            <div>{event?.age}+</div>
+          </div>
+          <div>
+            <div>{session?.sessionLocation} • {session?.hall}</div>
+          </div>
+        </div>
+      </div>
+      <div className='w-full'>
+        <div className='w-full border border-gray-300 rounded-lg flex justify-center items-center py-12'>
+          <canvas ref={canvasRef} onClick={handleCanvasClick} className=" cursor-pointer rounded-lg"style={{minWidth: '255px',minHeight: '255px',maxWidth:'455px',maxHeight:'455px',}}/>
+        </div>
+        <div>
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Выберите тип билета</DialogTitle>
+            </DialogHeader>
+            
+            <RadioGroup 
+              value={ticketType} 
+              onValueChange={setTicketType}
+              className="flex flex-col gap-4"
+            >
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="adult" id="adult" />
+                <Label htmlFor="adult">
+                  Взрослый - {session?.adultPrice} ₸
+                </Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="child" id="child" />
+                <Label htmlFor="child">
+                  Детский - {session?.childPrice} ₸
+                </Label>
+              </div>
+            </RadioGroup>
+
+            <DialogFooter>
+              <DialogClose asChild>
+                <Button variant="outline">Отмена</Button>
+              </DialogClose>
+              <Button onClick={addTicket}>Подтвердить</Button>
+            </DialogFooter>
+          </DialogContent>
+          </Dialog>
+        </div>
+      </div>
+      <div className='w-full'>
+        {selectedSeats.length > 0 && (
+          <div className='flex flex-col gap-3'>
+            <div className="mt-4 text-xl font-bold">
+              {selectedSeats.length == 1 ? (
+                <h2>{selectedSeats.length} билет: {totalPrice} ₸</h2>
+              ) : (
+                selectedSeats.length <= 4 && selectedSeats.length >= 1 ? (
+                  <h2>{selectedSeats.length} билета: {totalPrice} ₸</h2>
+                ) : (
+                  <h2>{selectedSeats.length} билетов: {totalPrice} ₸</h2>
+                )
+              )}
+              
+            </div>
+            <div className="grid grid-cols-6 gap-2 lg:grid-cols-6 sm:grid-cols-3 max-sm:grid-cols-2">
+              {selectedSeats.map((seat, index) => (
+                <div key={index} className="bg-white rounded-lg shadow px-4 py-6 lg:px-4 lg:py-6 sm:px-3 sm:py-4 max-sm:px-3 max-sm:py-4 flex justify-between">
+                  <div>
+                    <h2>{seat.row} Ряд, {seat.seat} Место</h2>
+                    <p>{seat.ticketType == 'adult' ? 'Взрослый' : 'Детский'} • {seat.price} ₸</p>
+                  </div>
+                  <div>
+                    <X className='cursor-pointer w-[1.5rem] h-auto' onClick={() => setSelectedSeats((prev) => prev.filter((s) => !(s.row == seat.row && s.seat == seat.seat)))} />
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className='flex justify-end'>
+              <Button className='w-1/6 lg:w-1/6 md:w-1/4 sm:w-full max-sm:w-full h-[3rem] bg-[#00F000] font-semibold text-lg text-white cursor-pointer rounded-lg hover:bg-[#00C000]' onClick={() => console.log('Переход к оплате', selectedSeats)}>
+                Перейти к оплате
+              </Button>
+            </div>
+          </div>
+        )}
+      </div>
+      
+      </section>
+      <FooterCompanent/>
     </div>
   )
 }
