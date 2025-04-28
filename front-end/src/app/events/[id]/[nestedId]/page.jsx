@@ -83,13 +83,12 @@ const SeatsPage = () => {
   const [selectedSeats, setSelectedSeats] = useState([])
   const [seatsConfig, setSeatsConfig] = useState({})
   const [imageError, setImageError] = useState(false)
-  const [tempSeat, setTempSeat] = useState(null) // Добавляем состояние для временного хранения места
-  const [ticketType, setTicketType] = useState('adult') // Состояние для выбранного типа билета
+  const [tempSeat, setTempSeat] = useState(null)
+  const [ticketType, setTicketType] = useState('adult')
   const [isDialogOpen, setIsDialogOpen] = useState(false)
 
 
   const GAP = 5
-  const SEAT_SIZE = 40
   const COLORS = {
     free: '#cccccc',
     reserved: '#5F5D5D',
