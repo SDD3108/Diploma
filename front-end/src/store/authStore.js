@@ -6,17 +6,18 @@ export const useAuthStore = create((set) => ({
     error: null,
     login: async(email,password)=>{
       set({isLoading:true,error:null})
-      try {
+      try{
         const response = await axios.get('/api/users')
-        const user = response.data.find(u => u.email == email && u.password == password)
+        const user = response.data.find((u) => u.email == email && u.password == password)
         if(user){
-          set({ user, isLoading: false })
+          set({user, isLoading: false })
         }
         else{
-          set({ error: 'неверный email или пароль', isLoading: false });
+          set({error: 'неверный email или пароль', isLoading: false })
         }
-      } catch (error) {
-        set({error:'ошибка авторизации',isLoading:false })
+      }
+      catch(error){
+        set({error:'ошибка авторизации',isLoading:false} )
       }
     },
     register: async(userData)=>{
@@ -29,7 +30,7 @@ export const useAuthStore = create((set) => ({
         set({error: 'ошибка регистрации',isLoading: false})
       }
     },
-    logout: () => {
+    logout:()=>{
       set({user:null})
     },
 }))
