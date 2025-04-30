@@ -75,30 +75,7 @@ app.use(cors({
 // .then(response => response.json())
 // .then(data => console.log(data));
 
-// fetch('http://localhost:3002/api/users',{
-//   method: 'POST',
-//   headers: {
-//     'Content-Type': 'application/json',
-//   },
-//   body: JSON.stringify({
-//   // name: 'John Doe',
-//   // email: 'example@exaple.com',
-//   // password: 'password123',
-//   // isPhoneNumber: true,
-//   // phoneNumber: '1234567890',
-//   // isAdmin: false,
-//   // isDateOfBirth: true,
-//   // dateOfBirth: '2000-01-01',
-//   // isVerified: false,
-//   // reviews: [
-//   //   {
-//   //     eventId: '12345',
-//   //     text: 'Great movie!',
-//   //     grade: 5
-//   //   }
-//   // ]
-//   })
-// })
-// .then(response => response.json())
-// .then(data => console.log(data));
+fetch('http://localhost:3002/api/users')
+.then(response => response.json())
+.then(data => console.log(data));
 
