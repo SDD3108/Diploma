@@ -8,10 +8,10 @@ import { Form,FormControl,FormField,FormItem,FormLabel,FormMessage } from '@/src
 import { Input } from '@/src/ui/input'
 import { Eye,EyeOff,Github,Instagram } from 'lucide-react'
 import { GoogleIcon } from '../../../src/components/icons/icons'
-import useAuthStore from '../../../src/store/AuthStore/authStore'
+import useAuthStore from '@/src/store/AuthStore/authStore'
 import { useRouter } from 'next/navigation'
 import { Skeleton } from "@/src/ui/skeleton"
-
+import Link from 'next/link'
 const loginSchema = z.object({
   email: z.string().email('Некорректный email'),
   password: z.string().min(6, 'Пароль должен быть не менее 6 символов'),
@@ -39,23 +39,7 @@ export const AuthForm = ({isRegister})=>{
     const result = isRegister ? await register(data) : await login(data.email, data.password)
     if(result.success){
       form.reset()
-    }
-  }
-  const NavigationToLogin = ()=>{
-    if(!isRegister){
-      
-    }
-    else{
-      router.push('/authorization/login')
-      // router.push('/authorization/registration')
-    }
-  }
-  const NavigationToRegister =()=>{
-    if(isRegister){
-      router.push('/authorization/registration')
-    }
-    else{
-      router.push('/authorization/registration')
+      router.push(isRegister ? '/login' : '/')
     }
   }
   return (
@@ -111,14 +95,11 @@ export const AuthForm = ({isRegister})=>{
             <div className="flex justify-center">
               <Skeleton className="h-10 w-full" />
             </div>
-          ) : isRegister ? (
-            <Button type="submit" className="w-full" disabled={isLoading} onClick={NavigationToLogin}>
-              Зарегистрироваться
-            </Button>
           ) : (
-            <Button type="submit" className="w-full" disabled={isLoading} onClick={NavigationToLogin}>
-              Войти
-            </Button>
+             <Button type="submit" className="w-full cursor-pointer" disabled={isLoading}>
+               {isRegister ? 'Зарегистрироваться' : 'Войти'}
+             </Button>
+            
           )}
         </form>
       </Form>
@@ -148,7 +129,18 @@ export const AuthForm = ({isRegister})=>{
             Забыли пароль?
           </Button>
         </div>
-
+        <div className='text-center text-sm'>
+          {isRegister ? (
+            <Button variant="link" className='cursor-pointer hover:no-underline'>
+              Уже есть аккаунт?<Link href='/login' className='hover:underline'>Войти</Link>
+            </Button>
+          ) : (
+            <Button variant="link" className='cursor-pointer hover:no-underline'>
+              Ещё нет аккаунта?<Link href='/registration' className='hover:underline'>Зарегистрироваться</Link>
+            </Button>
+          )}
+          
+        </div>
         <p className="text-center text-xs text-muted-foreground">
           Нажимая кнопку, вы соглашаетесь с
           <Button variant="link" className="text-xs h-auto p-0 cursor-pointer">
@@ -158,4 +150,4 @@ export const AuthForm = ({isRegister})=>{
       </div>
     </div>
   );
-};
+}

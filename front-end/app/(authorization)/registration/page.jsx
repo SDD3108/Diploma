@@ -5,18 +5,18 @@ import axios from 'axios';
 import { useEffect } from 'react';
 
 export default function RegisterPage() {
-  const test = async() => {
-    try {
-      const response = await axios.get('/api/users');
-      console.log(response.data);
-    } catch (error) {
-      console.error('Error fetching users:', error);
+  useEffect(() => {
+    const test = async() => {
+      try {
+        const response = await axios.get('/api/users')
+        console.log(response.data);
+      }
+      catch(error){
+        console.error('Error fetching users:', error)
+      }
     }
-    // почему эта функция не вызывается?
-    // const response = await axios.get('/api/users');
-    // console.log(response.data);
-  };
-  test()
+    test()
+  },[])
   return (
     <div className="flex min-h-screen items-center justify-center p-4 bg-gray-100">
       <Card className="w-full max-w-md shadow-lg">

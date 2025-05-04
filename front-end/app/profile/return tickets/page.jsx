@@ -1,8 +1,11 @@
 import React from 'react'
+import ReturnTicketsPageBuilder from "@/src/pageBuilders/ProfileBuilders/ReturnTicketsPageBuilder/ReturnTicketsPageBuilder"
 
 const ReturnTickets = () => {
   return (
-    <div>return tickets</div>
+    <div>
+      <ReturnTicketsPageBuilder/>
+    </div>
   )
 }
 

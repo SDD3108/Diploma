@@ -1,8 +1,11 @@
 import React from 'react'
+import SupportPageBuilder from "@/src/pageBuilders/ProfileBuilders/SupportPageBuilder/SupportPageBuilder"
 
 const Support = () => {
   return (
-    <div>support</div>
+    <div>
+      <SupportPageBuilder/>
+    </div>
   )
 }
 

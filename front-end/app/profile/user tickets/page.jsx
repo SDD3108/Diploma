@@ -1,8 +1,11 @@
 import React from 'react'
+import UserTicketsPageBuilder from "@/src/pageBuilders/ProfileBuilders/UserTicketsPageBuilder/UserTicketsPageBuilder"
 
 const UserTickets = () => {
   return (
-    <div>user tickets</div>
+    <div>
+      <UserTicketsPageBuilder/>
+    </div>
   )
 }
 

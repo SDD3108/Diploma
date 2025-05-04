@@ -52,8 +52,5 @@ const eventSchema = new Schema({
     }],
 },{timestamps: true})
 
-// можно както сделать что если cinemaName == 'Arsenal' то cinemaAddress был "ул. Ы. Алтынсарин, 4"
-
-
 const TicketFlow = mongoose.model('events',eventSchema)
 module.exports = TicketFlow

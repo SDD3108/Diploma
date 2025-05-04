@@ -1,18 +1,14 @@
 "use client"
 import React from 'react'
-import HeaderCompanent from "../../src/common/header/HeaderCompanent"
-import FooterCompanent from '../../src/common/footer/FooterCompanent';
-import EventsPage from "../pages/EventsPage/page"
+import EventsPage from '@/app/(pages)/EventsPage/page';
 // import EventsCom
 
 const Events = () => {
-    return (
-      <div className='space-y-4'>
-          <HeaderCompanent/>
-          <EventsPage/>
-          <FooterCompanent/>
-      </div>
-    )
+  return (
+    <div className='my-20'>
+      <EventsPage/>
+    </div>
+  )
 }
 
 export default Events

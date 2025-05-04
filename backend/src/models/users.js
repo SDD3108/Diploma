@@ -15,7 +15,8 @@ const userSchema = new Schema({
         eventId:{type:String},
         text:{type:String},
         grade:{type:Number,min:0,max:5}
-    }]
+    }], 
+    mode:{type:String,default:'Светлая',required: false,unique:['Светлая','Тёмная']}
 },{timestamps: true})
 
 const TicketFlow = mongoose.model('users',userSchema)

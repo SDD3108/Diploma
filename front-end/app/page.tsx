@@ -1,12 +1,10 @@
 "use client"
 import Image from "next/image";
 import MyButton from "@/src/components/UI/button/MyButton";
-import HeaderCompanent from '@/src/common/header/HeaderCompanent';
-import FooterCompanent from '@/src/common/footer/FooterCompanent';
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import EventsPage from "@/app/pages/EventsPage/page"
-import EventsPageBuilder from '@/src/pageBuilders/EventsPageBuilder/EventsCompanent';
+// import EventsPage from "@/app/pages/EventsPage/page"
+import EventsPage from '@/app/(pages)/EventsPage/page';
 import { Accordion,AccordionContent,AccordionItem,AccordionTrigger,} from "@/src/ui/accordion"
 import { Card, CardContent } from "@/src/ui/card"
 
@@ -40,9 +38,7 @@ export default function Home() {
   ])
   // cot testUrl = 'https://static.wikia.nocookie.net/netflix/images/5/54/Netflix_logo.png/revision/latest?cb=20190623201834&path-prefix=ru'
   return (
-    <div className="flex flex-col gap-20">
-      <HeaderCompanent/>
-
+    <div className="flex flex-col gap-20 my-20">
       <section className="px-5">
         <div className="w-full flex flex-col gap-[1.5rem]">
           <div className="overflow-hidden">
@@ -158,7 +154,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-      <FooterCompanent/>
     </div>
-  );
+  )
 }

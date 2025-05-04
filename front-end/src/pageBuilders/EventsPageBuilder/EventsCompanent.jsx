@@ -127,19 +127,14 @@ const EventsPageBuilder = () => {
         isLocation:true,
         location:'Бар "skvôt."',
     }
-    if(error){
-        return (
-            <ErrorCompanent error={error} />
-        )
-    }
-    else if(!loading && !error && events.length == 0){
+
+    if(!loading && !error && events.length == 0){
         return (
             <NotFoundCompanent/>     
         )
     }
   return (
-    <div className='space-y-4'>
-        {/* <HeaderCompanent/> */}
+    <div className=''>
         {eventsTypes.slice(0,3).map((type,index)=>{
             const list = eventsByType[type.engType] || []
             return(
@@ -156,24 +151,38 @@ const EventsPageBuilder = () => {
                                     <div className="p-0">
                                         <Card className="p-0 relative">
                                             <CardContent className="flex aspect-square items-center justify-normal p-0">
-                                                <EventCompanent object={emptyEvent} loading={true}/>
+                                                <EventCompanent object={emptyEvent} loading={true} error={false}/>
                                             </CardContent>
                                         </Card>
                                     </div>
                                 </CarouselItem>
                             ))
                             :
-                            list.map((event,index3)=>(
-                                <CarouselItem key={index3} onClick={()=>navigationToEvent(event._id)} className="basis-[calc(100%/7)] xl:basis-[calc(100%/7)] lg:basis-[calc(100%/5)] md:basis-[calc(100%/4)] sm:basis-[calc(100%/3)] max-sm:basis-[calc(100%/1.5)] p-0 py-2 hover:scale-101">
-                                    <div className="p-0">
-                                        <Card className="p-0 relative">
-                                            <CardContent className="flex aspect-square items-center justify-normal p-0">
-                                                <EventCompanent object={event} loading={false}/>
-                                            </CardContent>
-                                        </Card>
-                                    </div>
-                                </CarouselItem>
-                            ))
+                            error ? 
+                                loadingEmptyArray.map((emptyEvent, index1)=>(
+                                    <CarouselItem key={index1} className="basis-[calc(100%/7)] xl:basis-[calc(100%/7)] lg:basis-[calc(100%/5)] md:basis-[calc(100%/4)] sm:basis-[calc(100%/3)] max-sm:basis-[calc(100%/1.5)] p-0 py-2 hover:scale-101">
+                                        <div className="p-0">
+                                            <Card className="p-0 relative">
+                                                <CardContent className="flex aspect-square items-center justify-normal p-0">
+                                                    <EventCompanent object={emptyEvent} loading={false} error={true}/>
+                                                </CardContent>
+                                            </Card>
+                                        </div>
+                                    </CarouselItem>
+                                ))
+                                : 
+                                list.map((event,index3)=>(
+                                    <CarouselItem key={index3} onClick={()=>navigationToEvent(event._id)} className="basis-[calc(100%/7)] xl:basis-[calc(100%/7)] lg:basis-[calc(100%/5)] md:basis-[calc(100%/4)] sm:basis-[calc(100%/3)] max-sm:basis-[calc(100%/1.5)] p-0 py-2 hover:scale-101">
+                                        <div className="p-0">
+                                            <Card className="p-0 relative">
+                                                <CardContent className="flex aspect-square items-center justify-normal p-0">
+                                                    <EventCompanent object={event} loading={false} error={false}/>
+                                                </CardContent>
+                                            </Card>
+                                        </div>
+                                    </CarouselItem>
+                                ))
+                            
                         }
                     </CarouselContent>
                     <CarouselPrevious className='w-[3rem] h-[3rem] disabled:hidden opacity-50 left-[3rem] '/>
@@ -182,7 +191,6 @@ const EventsPageBuilder = () => {
             </div>        
             </section>
         )})}
-        {/* <FooterCompanent/> */}
     </div>
   )
 }

@@ -1,8 +1,11 @@
 import React from 'react'
+import ProfileNatisfaction from '../profile/natisfaction/page'
 
 const Natisfaction = () => {
   return (
-    <div>Natisfaction</div>
+    <div className='my-20'>
+      <ProfileNatisfaction/>
+    </div>
   )
 }
 

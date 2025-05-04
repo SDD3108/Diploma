@@ -4,7 +4,7 @@ import EventsPageBuilder from '../../../src/pageBuilders/EventsPageBuilder/Event
 const EventsPage = () => {
   return (
     <div>
-        <EventsPageBuilder/>
+      <EventsPageBuilder/>
     </div>
   )
 }

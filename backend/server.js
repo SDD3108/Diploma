@@ -52,9 +52,9 @@ const PORT = process.env.PORT || 3002
 app.listen(PORT, () => {
     console.log(`Сервер запущен на порту ${PORT}`);
 });
-app.use(cors({
-  origin: 'http://localhost:3000'
-}));
+// app.use(cors({
+//   origin: 'http://localhost:3000'
+// }));
 // fetch('http://localhost:3002/api/events', {
 //   method: 'POST',
 //   headers: {

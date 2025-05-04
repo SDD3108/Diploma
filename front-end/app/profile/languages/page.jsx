@@ -1,8 +1,11 @@
 import React from 'react'
+import LanguagesPageBuilder from "@/src/pageBuilders/ProfileBuilders/LanguagesPageBuilder/LanguagesPageBuilder"
 
 const Languages = () => {
   return (
-    <div>languages</div>
+    <div>
+      <LanguagesPageBuilder/>
+    </div>
   )
 }
 
