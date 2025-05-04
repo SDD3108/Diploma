@@ -202,17 +202,21 @@ const EventItemDescPageBuilder = () => {
                 <NavigationMenuList>
                   <NavigationMenuItem>
                     <Button ref={firstButtonRef} className='bg-white hover:bg-black/5 text-black/5 focus:text-black focus-visible:text-black'>
-                    Item One
+                    {event?.type == 'movie' && (
+                      <span>Билеты</span>
+                    )}
                     </Button>
                   </NavigationMenuItem>
                   <NavigationMenuItem>
                     <Button className='bg-white hover:bg-black/5 text-black/5 focus:text-black focus-visible:text-black'>
-                      Item One
+                    {event?.type == 'movie' && (
+                      <span>О Фильме</span>
+                    )}
                     </Button>
                   </NavigationMenuItem>
                   <NavigationMenuItem>
                     <Button className='bg-white hover:bg-black/5 text-black/5 focus:text-black focus-visible:text-black'>
-                      Item One
+                      Отзывы
                     </Button>
                   </NavigationMenuItem>
                 </NavigationMenuList>

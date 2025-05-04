@@ -84,7 +84,23 @@ const EventItemDescSession = () => {
   const [tempSeat, setTempSeat] = useState(null)
   const [ticketType, setTicketType] = useState('adult')
   const [isDialogOpen, setIsDialogOpen] = useState(false)
-
+  const [fixedDay,setFixedDay] = useState('')
+  const [fixedMounth,setFixedMounth] = useState('')
+  const dateNow = new Date()
+  const year = dateNow.getFullYear()
+  useEffect(()=>{
+    const currentDate = ()=>{
+      const day = dateNow.getDate()
+      const mounth = dateNow.getMonth()+1
+      setFixedDay(day < 10 ? `0${day}` : `${day}`)
+      setFixedMounth(mounth < 10 ? `0${mounth}` : `${mounth}`)
+    }
+    currentDate()
+  },[])
+  const getNormalDate = `${fixedDay}.${fixedMounth}.${year}`
+  console.log(getNormalDate);
+  
+  
 
   const GAP = 5
   const COLORS = {
@@ -93,7 +109,6 @@ const EventItemDescSession = () => {
     selected: '#00ff00',
   }
 
-  // Загрузка данных о сеансе
 useEffect(() => {
   const fetchSession = async ()=>{
     try {
@@ -171,10 +186,6 @@ useEffect(() => {
   drawSeats()
 },[drawSeats])
 
-// console.log();
-
-
-// Обработка клика
 const handleCanvasClick = (e) => {
   // console.log(e);
   
@@ -242,7 +253,7 @@ if(!session || !cinema){
             <h1 className='text-2xl font-bold'>{event?.title}</h1>
           </div>
           <div className='flex gap-3'>
-            <div>26.04.25 • {session?.time}</div>
+            <div>{getNormalDate} • {session?.time}</div>
             <div>{session?.sessionLaunguage}</div>
             <div>{event?.age}+</div>
           </div>
