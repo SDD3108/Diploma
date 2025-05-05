@@ -1,5 +1,9 @@
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
+require('dotenv').config()
+// const jwt = require('jsonwebtoken')
+// const secketKey = process.env.JWT_SECRET
+// const tokenTime = process.env.JWT_EXPIRES_IN
 
 const userSchema = new Schema({
     name: { type: String, required: true },
@@ -17,7 +21,9 @@ const userSchema = new Schema({
         text:{type:String},
         grade:{type:Number,min:0,max:5}
     }], 
-    mode:{type:String,default:'Светлая',required: false,unique:['Светлая','Тёмная']}
+    mode:{type:String,default:'Светлая',required: false,unique:['Светлая','Тёмная']},
+    token:{type:String, required:false,},
+    ownDescription: {type:String,required:false},
 },{timestamps: true})
 
 const TicketFlow = mongoose.model('users',userSchema)

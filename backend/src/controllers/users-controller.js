@@ -12,34 +12,50 @@ const getUserById = async (req,res)=>{
 }
 
 const createUser = async (req,res)=>{
-    const userData = req.body
-    if(userData.rating !== undefined){
-        userData.isRating = true
-    }
-    const newUser = new TicketFlow(userData)
-    await newUser.save()
-    res.status(201).json(newUser)
+    // const userData = req.body
+    // if(userData.rating !== undefined){
+    //     userData.isRating = true
+    // }
+    // const newUser = new TicketFlow(userData)
+    // await newUser.save()
+    // res.status(201).json(newUser)
+    try {
+        const userData = req.body
+        const exists = await TicketFlow.findOne({email:userData.email})
+        if(exists){
+          return res.status(400).json({message:'email уже используется'})
+        }
+        const newUser = await TicketFlow.create(userData)
+        res.status(201).json(newUser)
+      }
+      catch(error){
+        res.status(500).json({message:'Ошибка создания пользователя' })
+      }
 }
 
 const updateUser = async (req,res)=>{
-    const updates = req.body
-    if(updates.rating !== undefined){
-        updates.isRating = true
-    }
-    else if(updates.rating == null){
-        updates.isRating = false
-    }
+    try {
+        const updates = req.body
+    
+        updates.isRating = updates.rating !== undefined
+    
+        const updatedUser = await TicketFlow.findByIdAndUpdate(
+          req.params.id,
+          { $set: updates },
+          { new: true, runValidators: true }
+        )
+    
+        if(!updatedUser){
+          return res.status(404).json({ message: 'Пользователь не найден' })
+        }
 
-    const updatedUser = await TicketFlow.findByIdAndUpdate(
-        req.params.id,
-        updates,
-        { new: true, runValidators: true }
-    )
-    if(!updatedUser){
-        return res.status(404).json({ message: 'Событие не найдено' })
-    }
-    res.status(200).json(updatedUser)
-
+        res.status(200).json(updatedUser)
+      }
+      catch(error){
+        res.status(500).json({ 
+          message: 'Ошибка обновления: ' + error.message 
+        })
+      }
 }
 
 const deleteUser = async (req,res)=>{

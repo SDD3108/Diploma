@@ -75,7 +75,7 @@ app.listen(PORT, () => {
 // .then(response => response.json())
 // .then(data => console.log(data));
 
-fetch('http://localhost:3002/api/users')
-.then(response => response.json())
-.then(data => console.log(data));
+// fetch('http://localhost:3002/api/users')
+// .then(response => response.json())
+// .then(data => console.log(data));
 

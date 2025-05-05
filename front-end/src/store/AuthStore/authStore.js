@@ -1,12 +1,14 @@
 import { create } from 'zustand';
 import axios from 'axios';
-import { persist } from 'zustand/middleware'
+import jwt from 'jsonwebtoken'
+
 const loadUserFromLocalStorage = () => {
-  try {
+  try{
     const userData = localStorage.getItem('user-token')
     return userData ? JSON.parse(userData) : null
-  } catch (error) {
-    return null;
+  }
+  catch(error){
+    return null
   }
 }
 const useAuthStore = create((set) => ({
@@ -14,15 +16,27 @@ const useAuthStore = create((set) => ({
   isLoading: false,
   error: null,
 
+  initialize: ()=>{
+    const token = localStorage.getItem('user-token')
+    if(token){
+      try{
+        const decoded = jwt.decode(token)
+        set({user:decoded })
+      }
+      catch(error){
+        localStorage.removeItem('user-token')
+      }
+    }
+  },
   login: async(email, password)=>{
     set({ isLoading: true, error: null })
     try{
       const response = await axios.get('/api/users')
       const user = response.data.find((u) => u.email == email && u.password == password)
       if(user){
-        localStorage.setItem('user-token',JSON.stringify(user))
-        set({user, isLoading:false})
-        return {success: true }
+        localStorage.setItem('user-token',user.token)
+        set({user: user, isLoading: false})
+        return { success: true }
       }
       set({error: 'неверный email или пароль', isLoading:false})
       return { success: false }
@@ -32,7 +46,7 @@ const useAuthStore = create((set) => ({
       return { success: false }
     }
   },
-  register: async(userData)=>{
+  register: async(userData)=>{  
     set({isLoading:true, error:null})
     try{
       const getUsers = await axios.get('/api/users')
@@ -41,9 +55,19 @@ const useAuthStore = create((set) => ({
         set({ error:'пользователь с таким email уже существует', isLoading:false});
         return { success:false}
       }
-      const response = await axios.post('/api/users',userData)
-      localStorage.setItem('user-token', JSON.stringify(response.data))
-      set({user:response.data,isLoading:false})
+      const secketKey = process.env.JWT_SECRET
+      const tokenTime = process.env.JWT_EXPIRES_IN
+      const { data: newUser } = await axios.post('/api/users',userData)
+      const token = jwt.sign(
+        {userId:newUser._id},
+        secketKey,
+        {expiresIn:tokenTime}
+      )
+      await axios.put(`/api/users/${newUser._id}`,{
+        token:token
+      })
+      localStorage.setItem('user-token', token)
+      set({user:newUser.data,isLoading:false})
       return {success:true}
     }
     catch(error){

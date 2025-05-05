@@ -14,7 +14,6 @@ import Link from 'next/link'
 import { Skeleton } from '@/src/ui/skeleton'
 
 const ProfilePageBuilder = () => {
-    const defaultArray = ['','','','','','']
     const {user,logout,isLoading } = useAuthStore()
     console.log(user);
     const [tabs,setTabs] = useState(['','','','',''])
