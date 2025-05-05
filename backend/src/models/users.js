@@ -7,6 +7,7 @@ const userSchema = new Schema({
     password: { type: String, required: true },
     isPhoneNumber: { type: Boolean, default: false },
     phoneNumber: { type: String, required: false },
+    avatar: {type: String,required:false},
     isAdmin: { type: Boolean, default: false },
     isDateOfBirth: { type: Boolean, default: false },
     dateOfBirth: { type: String, required: false },
