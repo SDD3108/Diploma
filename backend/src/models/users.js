@@ -1,9 +1,6 @@
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 require('dotenv').config()
-// const jwt = require('jsonwebtoken')
-// const secketKey = process.env.JWT_SECRET
-// const tokenTime = process.env.JWT_EXPIRES_IN
 
 const userSchema = new Schema({
     name: { type: String, required: true },
@@ -11,6 +8,7 @@ const userSchema = new Schema({
     password: { type: String, required: true },
     isPhoneNumber: { type: Boolean, default: false },
     phoneNumber: { type: String, required: false },
+    isAvatar:{type:Boolean,required:false,default:false},
     avatar: {type: String,required:false},
     isAdmin: { type: Boolean, default: false },
     isDateOfBirth: { type: Boolean, default: false },
@@ -22,7 +20,7 @@ const userSchema = new Schema({
         grade:{type:Number,min:0,max:5}
     }], 
     mode:{type:String,default:'Светлая',required: false,unique:['Светлая','Тёмная']},
-    token:{type:String, required:false,},
+    token: { type: String },
     ownDescription: {type:String,required:false},
 },{timestamps: true})
 

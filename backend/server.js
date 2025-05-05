@@ -50,8 +50,8 @@ app.use('/api/users', userRoutes)
 const PORT = process.env.PORT || 3002
 
 app.listen(PORT, () => {
-    console.log(`Сервер запущен на порту ${PORT}`);
-});
+  console.log(`Сервер запущен на порту ${PORT}`);
+})
 // app.use(cors({
 //   origin: 'http://localhost:3000'
 // }));

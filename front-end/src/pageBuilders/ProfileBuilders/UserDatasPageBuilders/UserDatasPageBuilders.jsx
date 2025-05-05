@@ -1,13 +1,30 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { Input } from '@/src/ui/input'
 import { Button } from '@/src/ui/button'
 import { Avatar,AvatarFallback, AvatarImage } from '@/src/ui/avatar'
 import { Skeleton } from '@/src/ui/skeleton'
 import { Textarea } from "@/src/ui/textarea"
 import useAuthStore from "@/src/store/AuthStore/authStore"
+import { jwtDecode } from 'jwt-decode'
+import axios from 'axios'
 
 const UserDatasPageBuilders = () => {
   const {user,isLoading } = useAuthStore()
+  const [tokenUser,setTokenUser] = useState({})
+  useEffect(()=>{
+    const setUser = async()=>{
+      if(user){
+        const decoded = jwtDecode(user)
+        const response = await axios.get('/api/users')
+        const currentUser = response.data.find((u) => u._id == decoded.userId)
+        setTokenUser(currentUser)
+      }
+      else{
+        console.error('токен отсутствует')
+      }
+    }
+    setUser()
+  },[])
   return (
     <div>
       <div className='flex gap-[3rem] mb-[1rem] w-1/2 lg:w-1/2 sm:w-full max-sm:w-full'>
@@ -18,7 +35,7 @@ const UserDatasPageBuilders = () => {
           </Avatar>
         </div>
         <div className='flex gap-5 items-center'>
-          {/* логика если есть user?.avatar ? (Убрать && AvatarImage) : (Загрузить AvatarCallBack) */}
+          {/* логика если есть tokenUser?.isAvatar ? (Убрать && AvatarImage) : (Загрузить AvatarCallBack) */}
           <span className='text-gray-400 cursor-pointer'>Убрать</span>
           <span className='cursor-pointer'>Загрузить</span>
         </div>
@@ -26,15 +43,15 @@ const UserDatasPageBuilders = () => {
       <div className='w-1/2 lg:w-1/2 sm:w-full max-sm:w-full flex flex-col gap-1.5'>
         <div className='w-full flex flex-col gap-1.5'>
           <h2>Имя</h2>
-          <Input type='text' placeholder={user.name ? user.name : 'Имя'} className='h-[4rem] px-5'/>
+          <Input type='text' placeholder={tokenUser.name ? tokenUser.name : 'Имя'} className='h-[4rem] px-5'/>
         </div>
         <div className='w-full flex flex-col gap-1.5'>
           <h2>Email</h2>
-          <Input type='email' placeholder={user.email ? user.email : 'sadvakasov.rakhat@gmail.com'} className='h-[4rem] px-5'/>
+          <Input type='email' placeholder={tokenUser.email ? tokenUser.email : 'sadvakasov.rakhat@gmail.com'} className='h-[4rem] px-5'/>
         </div>
         <div className='w-full flex flex-col gap-1.5'>
           <h2>Описание</h2>
-          <Textarea placeholder='Напишите о себе' className='h-[9rem] p-5'/>
+          <Textarea placeholder={tokenUser.ownDescription ? tokenUser.ownDescription : 'Напишите о себе'} className='h-[9rem] p-5'/>
         </div>
       </div>
       <div className='w-1/2 lg:w-1/2 sm:w-full max-sm:w-full mt-[2rem]'>

@@ -20,4 +20,4 @@ catch(error){
 }
 
 const decodeWithoutVerify = jwt.decode(token)
-console.log();
+console.log(decodeWithoutVerify);

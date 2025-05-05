@@ -1,4 +1,7 @@
 const TicketFlow = require('../../src/models/users')
+const jwt = require('jsonwebtoken')
+require('dotenv').config()
+
 const getAllUsers = async (req,res)=>{
     const users = await TicketFlow.find()
     res.status(200).json(users)
@@ -12,25 +15,40 @@ const getUserById = async (req,res)=>{
 }
 
 const createUser = async (req,res)=>{
-    // const userData = req.body
-    // if(userData.rating !== undefined){
-    //     userData.isRating = true
-    // }
-    // const newUser = new TicketFlow(userData)
-    // await newUser.save()
-    // res.status(201).json(newUser)
-    try {
-        const userData = req.body
-        const exists = await TicketFlow.findOne({email:userData.email})
-        if(exists){
-          return res.status(400).json({message:'email уже используется'})
-        }
-        const newUser = await TicketFlow.create(userData)
-        res.status(201).json(newUser)
-      }
-      catch(error){
-        res.status(500).json({message:'Ошибка создания пользователя' })
-      }
+  try{
+    const userData = req.body
+    // console.log(userData);
+    const exists = await TicketFlow.findOne({email:userData.email})
+    if(exists){
+      return res.status(400).json({message:'email уже используется'})
+    }
+    const newUser = await TicketFlow.create(userData)
+    const payload = {
+      userId: newUser._id,
+      email: newUser.email
+    }
+    const token = jwt.sign(
+      payload,
+      process.env.JWT_SECRET,
+      {expiresIn: process.env.JWT_EXPIRES_IN},
+    )
+    console.log(token);
+    
+    const updatedUser = await TicketFlow.findByIdAndUpdate(
+      newUser._id,
+      { token },
+      { new: true }
+    )
+   
+    res.status(201).json({
+      _id: updatedUser._id,
+      email: updatedUser.email,
+      token: updatedUser.token
+    })
+  }
+  catch(error){
+    res.status(500).json({message:'Ошибка создания пользователя' })
+  }
 }
 
 const updateUser = async (req,res)=>{

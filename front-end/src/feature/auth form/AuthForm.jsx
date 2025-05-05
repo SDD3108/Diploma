@@ -25,7 +25,7 @@ export const AuthForm = ({isRegister})=>{
   const {login,register,isLoading,error} = useAuthStore()
   const [showPassword,setShowPassword] = useState(false)
   const router = useRouter()
-  
+  // console.log(1);
   const form = useForm({
     resolver: zodResolver(isRegister ? registerSchema : loginSchema),
     defaultValues:{
@@ -34,11 +34,17 @@ export const AuthForm = ({isRegister})=>{
       ...(isRegister && {name:''}),
     }
   })
-
+  // console.log(2)
   const onSubmit = async(data)=>{
-    const result = isRegister ? await register(data) : await login(data.email, data.password)
+    // console.log(2.1)
+    const result = isRegister ? await register(data) : await login(data.email,data.password)
+    // console.log(2.2)
+    // console.log(2.3);
+    
     if(result.success){
+      console.log(2.3)
       form.reset()
+      console.log(2.4)
       router.push(isRegister ? '/login' : '/')
     }
   }

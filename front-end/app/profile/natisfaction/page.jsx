@@ -5,7 +5,7 @@ import NatisfactionsPageBuilder from "@/src/pageBuilders/ProfileBuilders/Natisfa
 
 const ProfileNatisfaction = () => {
   const user = useAuthStore((state) => state.user)
-  console.log(user);
+  // console.log(user);
   
   return (
     <div>

@@ -15,7 +15,7 @@ import { Skeleton } from '@/src/ui/skeleton'
 
 const ProfilePageBuilder = () => {
     const {user,logout,isLoading } = useAuthStore()
-    console.log(user);
+    // console.log(user)
     const [tabs,setTabs] = useState(['','','','',''])
     const [tab,setTab] = useState('')
     const tabComponents = {

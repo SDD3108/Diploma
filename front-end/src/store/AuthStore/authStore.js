@@ -1,11 +1,15 @@
 import { create } from 'zustand';
 import axios from 'axios';
-import jwt from 'jsonwebtoken'
 
+// const getUsers = async()=>{
+//   const response = await axios.get('/api/users')
+//   console.log(response.data)
+// }
+// getUsers()
 const loadUserFromLocalStorage = () => {
   try{
     const userData = localStorage.getItem('user-token')
-    return userData ? JSON.parse(userData) : null
+    return userData ? userData : null
   }
   catch(error){
     return null
@@ -15,63 +19,77 @@ const useAuthStore = create((set) => ({
   user: loadUserFromLocalStorage(),
   isLoading: false,
   error: null,
-
-  initialize: ()=>{
-    const token = localStorage.getItem('user-token')
-    if(token){
-      try{
-        const decoded = jwt.decode(token)
-        set({user:decoded })
-      }
-      catch(error){
-        localStorage.removeItem('user-token')
-      }
-    }
-  },
+  // SD310807Sd$
+  // @gmail.com
   login: async(email, password)=>{
     set({ isLoading: true, error: null })
     try{
+      console.log('store',1);
       const response = await axios.get('/api/users')
+      console.log('store',2);
       const user = response.data.find((u) => u.email == email && u.password == password)
-      if(user){
-        localStorage.setItem('user-token',user.token)
-        set({user: user, isLoading: false})
-        return { success: true }
+      console.log('store',3);
+      if(!user){
+        console.log('store',3.1);
+        set({error:'Неверные данные', isLoading:false })
+        console.log('store',3.2);
+        return {success:false}
       }
-      set({error: 'неверный email или пароль', isLoading:false})
-      return { success: false }
+      if(!user?.token){
+        set({error:'ошибка авторизации: токен отсутствует', isLoading:false})
+        return {success:false}
+      }
+      localStorage.setItem('user-token', user.token)
+      set({ 
+        user: {
+          _id: user._id,
+          email: user.email,
+          token: user.token,
+          name: user.name,
+          password:user.password,
+        }, 
+        isLoading: false 
+      })
+      return { success: true }
     }
     catch(error){
+      console.log('store',5)
       set({error: 'ошибка сервера при авторизации', isLoading:false})
+      console.log('store',5.1)
       return { success: false }
     }
   },
-  register: async(userData)=>{  
+  register: async(userData)=>{
     set({isLoading:true, error:null})
     try{
       const getUsers = await axios.get('/api/users')
+      console.log('storeReg',1)
       const sameUser = getUsers.data.some((u) => u.email == userData.email)
+      console.log('storeReg',2)
       if(sameUser){
-        set({ error:'пользователь с таким email уже существует', isLoading:false});
+        console.log('storeReg',2.1)
+        set({ error:'пользователь с таким email уже существует', isLoading:false})
+        console.log('storeReg',2.2)
         return { success:false}
       }
-      const secketKey = process.env.JWT_SECRET
-      const tokenTime = process.env.JWT_EXPIRES_IN
-      const { data: newUser } = await axios.post('/api/users',userData)
-      const token = jwt.sign(
-        {userId:newUser._id},
-        secketKey,
-        {expiresIn:tokenTime}
-      )
-      await axios.put(`/api/users/${newUser._id}`,{
-        token:token
-      })
-      localStorage.setItem('user-token', token)
-      set({user:newUser.data,isLoading:false})
+      console.log('storeReg',3)
+      const { data: newUser } = await axios.post('/api/users', userData)
+      console.log('storeReg',4);
+      
+      if(!newUser?.token){
+        set({error:'нету токена у тя',isLoading:false})
+        return {success:false}
+      }
+      console.log('storeReg',5);
+      localStorage.setItem('user-token', newUser.token)
+      set({ user: newUser, isLoading: false })
       return {success:true}
     }
     catch(error){
-      set({error:'ошибка сервера при регистрации',isLoading:false})
+      console.log('storeReg',9)
+      const errorMessage = error.response?.data?.message || error.message || 'Ошибка регистрации'
+      set({error:errorMessage,isLoading:false})
+      console.log('storeReg',10)
       return {success:false}
     }
   },
