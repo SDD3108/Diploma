@@ -4,27 +4,12 @@ import { Button } from '@/src/ui/button'
 import { Avatar,AvatarFallback, AvatarImage } from '@/src/ui/avatar'
 import { Skeleton } from '@/src/ui/skeleton'
 import { Textarea } from "@/src/ui/textarea"
-import useAuthStore from "@/src/store/AuthStore/authStore"
-import { jwtDecode } from 'jwt-decode'
-import axios from 'axios'
+import {GetToken} from '@/src/utils/GetToken/GetToken'
+
 
 const UserDatasPageBuilders = () => {
-  const {user,isLoading } = useAuthStore()
-  const [tokenUser,setTokenUser] = useState({})
-  useEffect(()=>{
-    const setUser = async()=>{
-      if(user){
-        const decoded = jwtDecode(user)
-        const response = await axios.get('/api/users')
-        const currentUser = response.data.find((u) => u._id == decoded.userId)
-        setTokenUser(currentUser)
-      }
-      else{
-        console.error('токен отсутствует')
-      }
-    }
-    setUser()
-  },[])
+  const { tokenUser,loading } = GetToken()
+
   return (
     <div>
       <div className='flex gap-[3rem] mb-[1rem] w-1/2 lg:w-1/2 sm:w-full max-sm:w-full'>

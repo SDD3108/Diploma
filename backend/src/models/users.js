@@ -11,14 +11,17 @@ const userSchema = new Schema({
     isAvatar:{type:Boolean,required:false,default:false},
     avatar: {type: String,required:false},
     isAdmin: { type: Boolean, default: false },
-    isDateOfBirth: { type: Boolean, default: false },
-    dateOfBirth: { type: String, required: false },
-    isVerified: { type: Boolean, default: false },
     reviews:[{
         eventId:{type:String},
         text:{type:String},
         grade:{type:Number,min:0,max:5}
-    }], 
+    }],
+    purchasedTickets:[{
+        eventId:{type:String},
+        ticketId:{type:String},
+        ticketPrice:{type:Number},
+        ticketCount:{type:Number},
+    }],
     mode:{type:String,default:'Светлая',required: false,unique:['Светлая','Тёмная']},
     token: { type: String },
     ownDescription: {type:String,required:false},
