@@ -6,7 +6,6 @@ import { Skeleton } from '@/src/ui/skeleton'
 import { Textarea } from "@/src/ui/textarea"
 import {GetToken} from '@/src/utils/GetToken/GetToken'
 
-
 const UserDatasPageBuilders = () => {
   const { tokenUser,loading } = GetToken()
 

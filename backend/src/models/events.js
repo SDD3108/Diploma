@@ -39,7 +39,7 @@ const eventSchema = new Schema({
         time: { type: String, required: true },
         sessionLocation: { type: String, required: true,enum: ['Chaplin MEGA Silk Way','Arman Asia Park','Kinopark 6 Keruencity','Dostar Cinema','Aru Cinema','Arsenal','Chaplin Khan Shatyr','Kinopark 8 IMAX Saryarka','Kinopark 7 IMAX Keruen','Keruen Cinema (Talan Gallery)','Eurasia Cinema7'] },
         hall: { type: String, required: true,enum: ['Зал 1', 'Зал 2', 'Зал 3', 'Зал 4', 'Зал 5','Зал 6']},
-        isLanguage: { type: Boolean, default: false},
+        isLanguage: { type: Boolean, default: false },
         sessionLaunguage: { type: String,enum: ['Русс', 'Кзх', 'Англ'],default: 'Русс' },
         isSubtitles: { type: Boolean, default: false },
         sessionSubtitles: { type: String },

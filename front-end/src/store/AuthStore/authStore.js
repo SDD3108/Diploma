@@ -77,7 +77,7 @@ const useAuthStore = create((set) => ({
       console.log('storeReg',4);
       
       if(!newUser?.token){
-        set({error:'нету токена у тя',isLoading:false})
+        set({error:'У вас отсутсвует токен',isLoading:false})
         return {success:false}
       }
       console.log('storeReg',5);

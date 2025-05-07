@@ -12,6 +12,8 @@ const UserTicketsPageBuilder = () => {
 // получаем eventId,пробигаемся циклом по events и ищем по eventId нужный нам объект
 // потом выводим event.image и event.title
 
+
+
 // по sessionId ищем нужный нам объект в sessions и выводим session.time,session.sessionLocation,session.hall
   const [purchasedTickets, setPurchasedTickets] = useState([
     {
@@ -42,11 +44,15 @@ const UserTicketsPageBuilder = () => {
         )
         const responses = await Promise.all(eventPromises)
         const eventsData = responses.map((res) => res.data)
-  
+        const sessionsData = responses.map((res) => res.data.sessions)
         setEvents(eventsData)
-        setPurchasedTickets(eventsData.sessions)
-        console.log(eventsData.sessions);
-        
+
+        const allSessions = eventsData.flatMap(event => event.sessions || [])
+        const foundSessions = purchasedTickets.map((ticket) =>
+          allSessions.find(session => session._id == ticket.ticketId)
+        ).filter(Boolean)
+        setSessions(foundSessions)
+
       }
       catch(error){
         console.error('Ошибка при загрузке событий:', error)
@@ -69,10 +75,10 @@ const UserTicketsPageBuilder = () => {
           <div className='grid grid-cols-2 gap-4 mt-4'>
             {loading ? (
               <>
-                <Skeleton className='w-full h-[6rem] rounded-lg'/>
-                <Skeleton className='w-full h-[6rem] rounded-lg'/>
-                <Skeleton className='w-full h-[6rem] rounded-lg'/>
-                <Skeleton className='w-full h-[6rem] rounded-lg'/>
+                <Skeleton className='w-full h-[14rem] rounded-lg'/>
+                <Skeleton className='w-full h-[14rem] rounded-lg'/>
+                <Skeleton className='w-full h-[14rem] rounded-lg'/>
+                <Skeleton className='w-full h-[14rem] rounded-lg'/>
               </>
             ) : (
               tokenUser ? (
@@ -89,7 +95,20 @@ const UserTicketsPageBuilder = () => {
                           </div>
                         </div>
                         <div>
+                        {purchasedTickets.map((ticket) => {
 
+                          const event = events.find((e) => e._id == ticket.eventId)
+                          const session = sessions.find((s) => s._id == ticket.ticketId)
+                          if(!event || !session){
+                            return null
+                          }
+                          return (
+                            <div key={ticket.ticketId} className="ticket-card">
+                              <img src={event.image} alt={event.title} onError={() => setImageError(true)}/>
+                              <p>Время: {session.time}</p>    
+                            </div>
+                          ) 
+                        })}
                         </div>
                       </div>
                     ))
