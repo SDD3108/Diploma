@@ -7,7 +7,7 @@ const eventSchema = new Schema({
         required: true,
         enum: ['movie', 'theater', 'concert', 'sport', 'vacation', 'festival', 'exhibition', 'workshop']
     },
-    rating: { type: Number },
+    rating: { type: Number,min: 0, max: 5, required: true },
     isRating: { type: Boolean, default: false },
     age: { type: Number, required: true },
     genre: { 
@@ -40,7 +40,7 @@ const eventSchema = new Schema({
         sessionLocation: { type: String, required: true,enum: ['Chaplin MEGA Silk Way','Arman Asia Park','Kinopark 6 Keruencity','Dostar Cinema','Aru Cinema','Arsenal','Chaplin Khan Shatyr','Kinopark 8 IMAX Saryarka','Kinopark 7 IMAX Keruen','Keruen Cinema (Talan Gallery)','Eurasia Cinema7'] },
         hall: { type: String, required: true,enum: ['Зал 1', 'Зал 2', 'Зал 3', 'Зал 4', 'Зал 5','Зал 6']},
         isLanguage: { type: Boolean, default: false },
-        sessionLaunguage: { type: String,enum: ['Русс', 'Кзх', 'Англ'],default: 'Русс' },
+        sessionLaunguage: { type: String,enum: ['Русс','Кзх','Англ'],default: 'Русс' },
         isSubtitles: { type: Boolean, default: false },
         sessionSubtitles: { type: String },
         isAdultPrice: { type: Boolean, default: false },

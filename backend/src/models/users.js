@@ -17,10 +17,15 @@ const userSchema = new Schema({
         grade:{type:Number,min:0,max:5}
     }],
     purchasedTickets:[{
+        date:{type:String},
         eventId:{type:String},
-        ticketId:{type:String},
+        sessionId:{type:String},
         ticketPrice:{type:Number},
         ticketCount:{type:Number},
+        ticketArray:[{
+            place:{type:String},
+            ticketType:{type:String,enum:['VIP','Adult','Child'],default:'Adult'},
+        }],
     }],
     mode:{type:String,default:'Светлая',required: false,unique:['Светлая','Тёмная']},
     token: { type: String },

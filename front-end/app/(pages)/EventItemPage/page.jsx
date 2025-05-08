@@ -1,10 +1,10 @@
 import React from 'react'
-import EventItemPageBuilder from '../../../src/pageBuilders/EventItemPageBuilder'
+import EventItemPageBuilder from '@/src/pageBuilders/EventItemPageBuilder/Event'
 
-const EventItemPage = () => {
+const EventItemPage = ({object,loading,error}) => {
   return (
     <div>
-        <EventItemPageBuilder/>
+        <EventItemPageBuilder object={object} loading={loading} error={error}/>
     </div>
   )
 }

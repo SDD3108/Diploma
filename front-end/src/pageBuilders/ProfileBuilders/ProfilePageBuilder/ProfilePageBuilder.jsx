@@ -10,6 +10,7 @@ import ProfileNatisfaction from '../../../../app/profile/natisfaction/page'
 import Mods from '../../../../app/profile/mods/page'
 import Languages from '../../../../app/profile/languages/page'
 import Agreement from '../../../../app/profile/agreement/page'
+import TicketInfo from '@/app/profile/user tickets/ticketInfo/page'
 import Link from 'next/link'
 import { Skeleton } from '@/src/ui/skeleton'
 

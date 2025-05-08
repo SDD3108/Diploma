@@ -5,8 +5,10 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 // import EventsPage from "@/app/pages/EventsPage/page"
 import EventsPage from '@/app/(pages)/EventsPage/page';
+import EventsPageBuilder from "@/src/pageBuilders/EventsPageBuilder/EventsCompanent";
 import { Accordion,AccordionContent,AccordionItem,AccordionTrigger,} from "@/src/ui/accordion"
 import { Card, CardContent } from "@/src/ui/card"
+import SearchPage from '@/app/(pages)/SearchPage/page'
 
 export default function Home() {
   const router = useRouter()
@@ -70,6 +72,9 @@ export default function Home() {
           </div>
         </div>
       </section>
+      <section className="">
+        <SearchPage/>
+      </section>
       <section className="px-5 ">
         <Card className="w-full h-[24rem] rounded-xl relative z-0"> 
           <CardContent className="w-full h-full flex flex-col gap-5 bg-cover bg-center bg-no-repeat">
@@ -87,8 +92,9 @@ export default function Home() {
           </CardContent>
         </Card>
       </section>
+      
       <section className="">
-        <EventsPage/>
+        <EventsPageBuilder/>
       </section>
       <section className="px-5">
         <div className="w-full flex gap-20 lg:gap-20 md:gap-15 sm:gap-10 max-sm:gap-">

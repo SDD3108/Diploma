@@ -1,13 +1,14 @@
 "use client"
 import React, { useEffect, useState, useMemo  } from 'react'
 import { useRouter } from "next/navigation";
-import EventCompanent from '../EventItemPageBuilder/Event';
+import EventItemPage from '@/app/(pages)/EventItemPage/page';
 import axios from 'axios';
 import { Card, CardContent } from "@/src/ui/card"
 import { Carousel,CarouselContent,CarouselItem,CarouselNext,CarouselPrevious, } from "@/src/ui/carousel"
 import ErrorCompanent from "@/src/components/error/ErrorCompanent"
 import NotFoundCompanent from "@/src/components/not found/NotFoundCompanent"
 // import NavToEvent from "@/src/fea`ture/Navigations/navToEvent/NavToEvent"
+import { getData } from '@/src/utils/DataTransfer/DataTransfer';
 
 const EventsPageBuilder = () => {
     const [events, setEvents] = useState([])
@@ -138,12 +139,12 @@ const EventsPageBuilder = () => {
         {eventsTypes.slice(0,3).map((type,index)=>{
             const list = eventsByType[type.engType] || []
             return(
-            <section className='px-5' key={index}>
-            <div className='w-full flex flex-col'>
-                <div>
+                <section className='px-5' key={index}>
+                    <div className='w-full flex flex-col'>
+                        <div>
                     <h2 className='text-3xl font-bold text-[#151515]'>{type.ruType}</h2>
-                </div>
-                <Carousel className="w-full mt-4">
+                        </div>
+                        <Carousel className="w-full mt-4">
                     <CarouselContent className='w-full px-[1rem] gap-4'>
                         {loading ?
                             loadingEmptyArray.map((emptyEvent, index2)=>(
@@ -151,7 +152,7 @@ const EventsPageBuilder = () => {
                                     <div className="p-0">
                                         <Card className="p-0 relative">
                                             <CardContent className="flex aspect-square items-center justify-normal p-0">
-                                                <EventCompanent object={emptyEvent} loading={true} error={false}/>
+                                                <EventItemPage object={emptyEvent} loading={true} error={false}/>
                                             </CardContent>
                                         </Card>
                                     </div>
@@ -164,7 +165,7 @@ const EventsPageBuilder = () => {
                                         <div className="p-0">
                                             <Card className="p-0 relative">
                                                 <CardContent className="flex aspect-square items-center justify-normal p-0">
-                                                    <EventCompanent object={emptyEvent} loading={false} error={true}/>
+                                                    <EventItemPage object={emptyEvent} loading={false} error={true}/>
                                                 </CardContent>
                                             </Card>
                                         </div>
@@ -176,7 +177,7 @@ const EventsPageBuilder = () => {
                                         <div className="p-0">
                                             <Card className="p-0 relative">
                                                 <CardContent className="flex aspect-square items-center justify-normal p-0">
-                                                    <EventCompanent object={event} loading={false} error={false}/>
+                                                    <EventItemPage object={event} loading={false} error={false}/>
                                                 </CardContent>
                                             </Card>
                                         </div>
@@ -187,15 +188,12 @@ const EventsPageBuilder = () => {
                     </CarouselContent>
                     <CarouselPrevious className='w-[3rem] h-[3rem] disabled:hidden opacity-50 left-[3rem] '/>
                     <CarouselNext className='w-[3rem] h-[3rem] disabled:hidden opacity-50 right-[3rem]'/>
-                </Carousel>    
-            </div>        
-            </section>
+                        </Carousel>    
+                    </div>        
+                </section>
         )})}
     </div>
   )
 }
 
 export default EventsPageBuilder
-
-// 1.сделать событие как переиспользуемый компанент и просто тут использовать с header & footer
-// и в основной странице так же делать

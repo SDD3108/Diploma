@@ -1,9 +1,11 @@
 import React from 'react'
 import EventsPageBuilder from '../../../src/pageBuilders/EventsPageBuilder/EventsCompanent'
+import SearchPage from '../SearchPage/page'
 
 const EventsPage = () => {
   return (
-    <div>
+    <div className=''>
+      <SearchPage/>
       <EventsPageBuilder/>
     </div>
   )
