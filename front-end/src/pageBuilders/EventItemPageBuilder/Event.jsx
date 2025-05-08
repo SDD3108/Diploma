@@ -4,7 +4,7 @@ import { Skeleton } from "@/src/ui/skeleton"
 import { Button } from '@/src/ui/button'
 const EventItemPageBuilder = ({object,loading,error}) => {
   const [imageError, setImageError] = useState(false)
-  console.log('object',object);
+  // console.log('object',object);
   
   return (
     <div className='w-full h-[20rem] rounded-xl cursor-pointer group '>

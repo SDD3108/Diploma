@@ -24,15 +24,15 @@ const useAuthStore = create((set) => ({
   login: async(email, password)=>{
     set({ isLoading: true, error: null })
     try{
-      console.log('store',1);
+      // console.log('store',1);
       const response = await axios.get('/api/users')
-      console.log('store',2);
+      // console.log('store',2);
       const user = response.data.find((u) => u.email == email && u.password == password)
-      console.log('store',3);
+      // console.log('store',3);
       if(!user){
-        console.log('store',3.1);
+        // console.log('store',3.1);
         set({error:'Неверные данные', isLoading:false })
-        console.log('store',3.2);
+        // console.log('store',3.2);
         return {success:false}
       }
       if(!user?.token){
@@ -53,9 +53,9 @@ const useAuthStore = create((set) => ({
       return { success: true }
     }
     catch(error){
-      console.log('store',5)
+      // console.log('store',5)
       set({error: 'ошибка сервера при авторизации', isLoading:false})
-      console.log('store',5.1)
+      // console.log('store',5.1)
       return { success: false }
     }
   },
@@ -63,33 +63,33 @@ const useAuthStore = create((set) => ({
     set({isLoading:true, error:null})
     try{
       const getUsers = await axios.get('/api/users')
-      console.log('storeReg',1)
+      // console.log('storeReg',1)
       const sameUser = getUsers.data.some((u) => u.email == userData.email)
-      console.log('storeReg',2)
+      // console.log('storeReg',2)
       if(sameUser){
-        console.log('storeReg',2.1)
+        // console.log('storeReg',2.1)
         set({ error:'пользователь с таким email уже существует', isLoading:false})
-        console.log('storeReg',2.2)
+        // console.log('storeReg',2.2)
         return { success:false}
       }
-      console.log('storeReg',3)
+      // console.log('storeReg',3)
       const { data: newUser } = await axios.post('/api/users', userData)
-      console.log('storeReg',4);
+      // console.log('storeReg',4);
       
       if(!newUser?.token){
         set({error:'У вас отсутсвует токен',isLoading:false})
         return {success:false}
       }
-      console.log('storeReg',5);
+      // console.log('storeReg',5);
       localStorage.setItem('user-token', newUser.token)
       set({ user: newUser, isLoading: false })
       return {success:true}
     }
     catch(error){
-      console.log('storeReg',9)
+      // console.log('storeReg',9)
       const errorMessage = error.response?.data?.message || error.message || 'Ошибка регистрации'
       set({error:errorMessage,isLoading:false})
-      console.log('storeReg',10)
+      // console.log('storeReg',10)
       return {success:false}
     }
   },

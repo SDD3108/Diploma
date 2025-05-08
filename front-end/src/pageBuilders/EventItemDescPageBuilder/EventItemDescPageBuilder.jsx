@@ -9,6 +9,7 @@ import Image from 'next/image'
 import { Separator } from "@/src/ui/separator";
 import { NavigationMenu,NavigationMenuItem,NavigationMenuList } from "@/src/ui/navigation-menu"
 import { Skeleton } from "@/src/ui/skeleton"
+import Link from 'next/link';
 // что тут происходит?
 // 1. мы используем useParams чтобы получить id события из url
 // 2. используем useRouter чтобы навигировать на страницу описания события
@@ -32,6 +33,7 @@ const EventItemDescPageBuilder = () => {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [imageError, setImageError] = useState(false)
+  const [activeTab, setActiveTab] = useState('tickets')
   const restoreFocus =()=>{
     const active = document.activeElement
     if(menuRef.current && !menuRef.current.contains(active)){
@@ -43,14 +45,7 @@ const EventItemDescPageBuilder = () => {
     restoreFocus()
     window.addEventListener("click",restoreFocus)
     window.addEventListener("focusin",restoreFocus)
-    // return()=>{
-    //   window.removeEventListener("click",restoreFocus)
-    //   window.removeEventListener("focusin",restoreFocus)
-    // }
   }, [])
-  useEffect(()=>{
-    console.log(event);
-  },[event])
   useEffect(()=>{
     const getEvents = async ()=>{
       try{
@@ -156,11 +151,137 @@ const EventItemDescPageBuilder = () => {
     {},
     {},
 ]
-  const navigationToEventDescription = (id)=>{
-    router.push(`${params.id}/${id}`)
-    // console.log(`${params.id}/${id}`);
-    
-  }
+const TicketsContent = ()=>(
+  <div>
+    <div>
+                <div className='flex justify-between items-center px-2 md:px-2 sm:px-4 max-sm:px-2'>
+                  <div>
+                    <h2 className='font-medium text-black/60'>Время</h2>
+                  </div>
+                  <div className='flex gap-2 lg:gap-2 sm:gap-9 max-sm:gap-9 font-medium text-black/60 text-base lg:text-base md:text-xs sm:text-base max-sm:text-sm'>
+                    <div className='w-[5.5rem] lg:w-[5.5rem] md:w-[3.5rem] sm:w-[3rem] max-sm:w-[2.6rem]'>
+                      <h2>Язык</h2>
+                    </div>
+                    <div className='w-[5.5rem] lg:w-[5.5rem] md:w-[3.5rem] sm:w-[3rem] max-sm:w-[2.6rem]'>
+                      <h2>Взрослый</h2>
+                    </div>
+                    <div className='w-[5.5rem] lg:w-[5.5rem] md:w-[3.5rem] sm:w-[3rem] max-sm:w-[2.6rem]'>
+                      <h2>Детский</h2>
+                    </div>
+                    <div className='w-[5.5rem] lg:w-[5.5rem] md:w-[3.5rem] sm:w-[3rem] max-sm:w-[2.6rem]'>
+                      <h2>VIP</h2>
+                    </div>
+                  </div>
+                </div>
+                <Separator className='mt-3 bg-[#3D3D3D]'/>
+    </div>
+    <div className='h-[48rem] flex flex-col gap-2'>
+                {event?.sessions?.length == 0 ? (
+                  <>
+                    <Skeleton className='h-[4rem]'/>
+                    <Skeleton className='h-[4rem]'/>
+                    <Skeleton className='h-[4rem]'/>
+                    <Skeleton className='h-[4rem]'/>
+                    <Skeleton className='h-[4rem]'/>
+                    <Skeleton className='h-[4rem]'/>
+                    <Skeleton className='h-[4rem]'/>
+                  </>
+                ) : (
+                  event?.sessions?.map((session, index) => (
+                    <div key={index}>
+                      <Link href={`/events/${params.id}/${session._id}`} className='w-full'>
+                      <div className='h-[4rem] md:h-[4rem] sm:h-[6rem] max-sm:h-[6rem] flex justify-between md:flex-row sm:flex-col max-sm:flex-col p-2 cursor-pointer'>
+                        <div className='flex gap-3 w-1/3 lg:w-1/3 md:w-1/2 sm:w-1/2 max-sm:w-full'>
+                          <div className='w-1/4 rounded-md border border-[#00F000] bg-[#00F000]/3 flex justify-center items-center'>
+                            <h3 className='font-bold text-lg text-[#00F000]'>{session.time}</h3>
+                          </div>
+                          <div className='flex flex-col'>
+                            <h2 className='sm:text-base max-sm:text-xs'> {session.sessionLocation} </h2>
+                            <h3 className='sm:text-base max-sm:text-xs'> {session.hall} </h3>
+                          </div>
+                        </div>
+                        <div className='flex items-center md:justify-normal sm:justify-end max-sm:justify-end gap-2 md:gap-2 sm:gap-9 max-sm:gap-9 text-base lg:text-base md:text-sm sm:text-base max-sm:text-sm '>
+                          <div className='w-[5.5rem] lg:w-[5.5rem] md:w-[3.5rem] sm:w-[3rem] max-sm:w-[2.6rem] flex items-center'>
+                            {session.isLanguage ? (
+                              <div className=''>
+                                <h3 className='font-medium text-black/60'>{session.sessionLaunguage}</h3>
+                              </div>
+                            ) : (
+                              <div>
+                                <h2 className='font-medium text-black/60'>–</h2>
+                              </div>
+                            )}
+                          </div>
+                          <div className='w-[5.5rem] lg:w-[5.5rem] md:w-[3.5rem] sm:w-[3rem] max-sm:w-[2.6rem] flex items-center'>
+                            {session.isAdultPrice ? (
+                              <div>
+                                <h2 className='font-medium text-black/60'>{session.adultPrice} ₸</h2>
+                              </div>
+                            ) : (
+                              <div>
+                                <h2 className='font-medium text-black/60'>–</h2>
+                              </div>
+                            )}
+                          </div>
+                          <div className='w-[5.5rem] lg:w-[5.5rem] md:w-[3.5rem] sm:w-[3rem] max-sm:w-[2.6rem] flex items-center'>
+                            {session.isChildPrice ? (
+                              <div>
+                                <h2 className='font-medium text-black/60'>{session.childPrice} ₸</h2>
+                              </div>
+                            ) : (
+                              <div>
+                                <h2 className='font-medium text-black/60'>–</h2>
+                              </div>
+                            )}
+                          </div>
+                          <div className='w-[5.5rem] lg:w-[5.5rem] md:w-[3.5rem] sm:w-[3rem] max-sm:w-[2.6rem] flex items-center'>
+                            {session.isVIPPrice ? (
+                              <div>
+                                <h2 className='font-medium text-black/60'>{session.vipPrice} ₸</h2>
+                              </div>
+                            ) : (
+                              <div>
+                                <h2 className='font-medium text-black/60'>–</h2>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                      </Link>
+                      {index !== event?.sessions?.length - 1 && (
+                        <Separator className='my-3 bg-[#3D3D3D]'/>
+                      )}
+                    </div>
+                  ))
+                )}
+    </div>
+  </div>
+)
+const AboutContent = ()=>(
+  <div className='p-4'>
+    <h2 className='text-xl font-semibold mb-4'>{event?.type == 'movie' ? 'О фильме' : 'О событии'}</h2>
+    <p className='text-gray-600'>{event.description}</p>
+  </div>
+)
+const ReviewsContent =()=>(
+  <div className='p-4'>
+    <h2 className='text-xl font-semibold mb-4'>Отзывы</h2>
+    <div className='space-y-4'>
+      {event.reviews?.length > 0 ? (
+        event.reviews.map((review,index)=>(
+          <div key={index} className='border p-3 rounded-lg'>
+            <p className='font-medium'>{review.author}</p>
+            <p className='text-gray-600'>{review.text}</p>
+          </div>
+        ))
+      ) : (
+        <p>Пока нет отзывов</p>
+      )}
+    </div>
+  </div>
+)
+
+  
   if(error){
     return (
       <ErrorCompanent error={error}/>
@@ -181,7 +302,6 @@ const EventItemDescPageBuilder = () => {
             ) : (
               <img src={event?.image} alt={event?.title} onError={()=> setImageError(true)} className='w-full h-auto md:h-auto sm:h-[24rem] max-sm:h-[24rem] object-cover rounded-xl md:rounded-xl sm:rounded-none max-sm:rounded-none'/>
             )}
-            {/* <Image src={event?.image} alt={event?.title} width={224} height={224} className='w-full h-auto md:h-auto sm:h-[24rem] object-cover rounded-xl md:rounded-xl sm:rounded-none'/> */}
             <div className='absolute top-4 right-4 bg-[#00F000] rounded-md w-1/5 md:w-1/5 sm:w-1/8 max-sm:w-1/8 flex justify-center items-center px-3 py-1'>
               <p className='text-white md:font-normal sm:font-bold max-sm:font-bold'>{event.age}+</p>
             </div>
@@ -201,128 +321,32 @@ const EventItemDescPageBuilder = () => {
               <NavigationMenu ref={menuRef}>
                 <NavigationMenuList>
                   <NavigationMenuItem>
-                    <Button ref={firstButtonRef} className='bg-white hover:bg-black/5 text-black/5 focus:text-black focus-visible:text-black'>
-                    {event?.type == 'movie' && (
+                    <Button ref={firstButtonRef} className={`bg-white hover:bg-black/5 ${activeTab == 'tickets' ? 'text-black font-semibold' : 'text-black/50'}`} onClick={() => setActiveTab('tickets')}>
                       <span>Билеты</span>
-                    )}
                     </Button>
                   </NavigationMenuItem>
                   <NavigationMenuItem>
-                    <Button className='bg-white hover:bg-black/5 text-black/5 focus:text-black focus-visible:text-black'>
-                    {event?.type == 'movie' && (
-                      <span>О Фильме</span>
-                    )}
+                    <Button className={`bg-white hover:bg-black/5 ${activeTab == 'about' ? 'text-black font-semibold' : 'text-black/50'}`} onClick={() => setActiveTab('about')}>
+                      {event?.type == 'movie' ? 'О Фильме' : 'О Событии'}
                     </Button>
                   </NavigationMenuItem>
-                  <NavigationMenuItem>
-                    <Button className='bg-white hover:bg-black/5 text-black/5 focus:text-black focus-visible:text-black'>
-                      Отзывы
-                    </Button>
-                  </NavigationMenuItem>
+                  {/* {event?.reviews?.length > 1 && ( */}
+                    <NavigationMenuItem>
+                      <Button className={`bg-white hover:bg-black/5 ${activeTab == 'reviews' ? 'text-black font-semibold' : 'text-black/50'}`} onClick={() => setActiveTab('reviews')}>
+                        Отзывы
+                      </Button>
+                    </NavigationMenuItem>
+                  {/* )} */}
+                  
                 </NavigationMenuList>
               </NavigationMenu> 
               <Separator className='mt-3 bg-[#3D3D3D]'/>
             </div>
             <div>
-              <div className='flex justify-between items-center px-2 md:px-2 sm:px-4 max-sm:px-2'>
-                <div>
-                  <h2 className='font-medium text-black/60'>Время</h2>
-                </div>
-                <div className='flex gap-2 lg:gap-2 sm:gap-9 max-sm:gap-9 font-medium text-black/60 text-base lg:text-base md:text-xs sm:text-base max-sm:text-sm'>
-                  <div className='w-[5.5rem] lg:w-[5.5rem] md:w-[3.5rem] sm:w-[3rem] max-sm:w-[2.6rem]'>
-                    <h2>Язык</h2>
-                  </div>
-                  <div className='w-[5.5rem] lg:w-[5.5rem] md:w-[3.5rem] sm:w-[3rem] max-sm:w-[2.6rem]'>
-                    <h2>Взрослый</h2>
-                  </div>
-                  <div className='w-[5.5rem] lg:w-[5.5rem] md:w-[3.5rem] sm:w-[3rem] max-sm:w-[2.6rem]'>
-                    <h2>Детский</h2>
-                  </div>
-                  <div className='w-[5.5rem] lg:w-[5.5rem] md:w-[3.5rem] sm:w-[3rem] max-sm:w-[2.6rem]'>
-                    <h2>VIP</h2>
-                  </div>
-                </div>
-              </div>
-              <Separator className='mt-3 bg-[#3D3D3D]'/>
-            </div>
-            <div className='h-[48rem] flex flex-col gap-2'>
-            {event?.sessions?.length == 0 ? (
-              <>
-                <Skeleton className='h-[4rem]'/>
-                <Skeleton className='h-[4rem]'/>
-                <Skeleton className='h-[4rem]'/>
-                <Skeleton className='h-[4rem]'/>
-                <Skeleton className='h-[4rem]'/>
-                <Skeleton className='h-[4rem]'/>
-                <Skeleton className='h-[4rem]'/>
-              </>
-            ) : (
-              event?.sessions?.map((session, index) => (
-                <div key={index}>
-                  <div className='h-[4rem] md:h-[4rem] sm:h-[6rem] max-sm:h-[6rem] flex justify-between md:flex-row sm:flex-col max-sm:flex-col p-2 cursor-pointer' onClick={()=>navigationToEventDescription(session._id)}>
-                    <div className='flex gap-3 w-1/3 lg:w-1/3 md:w-1/2 sm:w-1/2 max-sm:w-full'>
-                      <div className='w-1/4 rounded-md border border-[#00F000] bg-[#00F000]/3 flex justify-center items-center'>
-                        <h3 className='font-bold text-lg text-[#00F000]'>{session.time}</h3>
-                      </div>
-                      <div className='flex flex-col'>
-                        <h2 className='sm:text-base max-sm:text-xs'> {session.sessionLocation} </h2>
-                        <h3 className='sm:text-base max-sm:text-xs'> {session.hall} </h3>
-                      </div>
-                    </div>
-                    <div className='flex items-center md:justify-normal sm:justify-end max-sm:justify-end gap-2 md:gap-2 sm:gap-9 max-sm:gap-9 text-base lg:text-base md:text-sm sm:text-base max-sm:text-sm '>
-                      <div className='w-[5.5rem] lg:w-[5.5rem] md:w-[3.5rem] sm:w-[3rem] max-sm:w-[2.6rem] flex items-center'>
-                        {session.isLanguage ? (
-                          <div className=''>
-                            <h3 className='font-medium text-black/60'>{session.sessionLaunguage}</h3>
-                          </div>
-                        ) : (
-                          <div>
-                            <h2 className='font-medium text-black/60'>–</h2>
-                          </div>
-                        )}
-                      </div>
-                      <div className='w-[5.5rem] lg:w-[5.5rem] md:w-[3.5rem] sm:w-[3rem] max-sm:w-[2.6rem] flex items-center'>
-                        {session.isAdultPrice ? (
-                          <div>
-                            <h2 className='font-medium text-black/60'>{session.adultPrice} ₸</h2>
-                          </div>
-                        ) : (
-                          <div>
-                            <h2 className='font-medium text-black/60'>–</h2>
-                          </div>
-                        )}
-                      </div>
-                      <div className='w-[5.5rem] lg:w-[5.5rem] md:w-[3.5rem] sm:w-[3rem] max-sm:w-[2.6rem] flex items-center'>
-                        {session.isChildPrice ? (
-                          <div>
-                            <h2 className='font-medium text-black/60'>{session.childPrice} ₸</h2>
-                          </div>
-                        ) : (
-                          <div>
-                            <h2 className='font-medium text-black/60'>–</h2>
-                          </div>
-                        )}
-                      </div>
-                      <div className='w-[5.5rem] lg:w-[5.5rem] md:w-[3.5rem] sm:w-[3rem] max-sm:w-[2.6rem] flex items-center'>
-                        {session.isVIPPrice ? (
-                          <div>
-                            <h2 className='font-medium text-black/60'>{session.vipPrice} ₸</h2>
-                          </div>
-                        ) : (
-                          <div>
-                            <h2 className='font-medium text-black/60'>–</h2>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                  {index !== event?.sessions?.length - 1 && (
-                    <Separator className='my-3 bg-[#3D3D3D]'/>
-                  )}
-                </div>
-              ))
-            )}
-            
+              {activeTab == 'tickets' && <TicketsContent />}
+              {activeTab == 'about' && <AboutContent />}
+              {activeTab == 'reviews' && <ReviewsContent />}
+              {/* тут */}
             </div>
           </div>
         </div>

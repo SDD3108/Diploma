@@ -28,7 +28,7 @@ const SearchPageBuilder = () => {
     useEffect(() => {
         const getRequest = async () => {
            const data = await GetEvents()
-           console.log(data);
+        //    console.log(data);
            
            setEvents(data)
         }

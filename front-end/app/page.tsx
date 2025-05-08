@@ -8,6 +8,8 @@ import EventsPage from '@/app/(pages)/EventsPage/page';
 import EventsPageBuilder from "@/src/pageBuilders/EventsPageBuilder/EventsCompanent";
 import { Accordion,AccordionContent,AccordionItem,AccordionTrigger,} from "@/src/ui/accordion"
 import { Card, CardContent } from "@/src/ui/card"
+import MainImage from '@/images/mainPage/main.png'
+
 import SearchPage from '@/app/(pages)/SearchPage/page'
 
 export default function Home() {
@@ -40,6 +42,7 @@ export default function Home() {
   ])
   // cot testUrl = 'https://static.wikia.nocookie.net/netflix/images/5/54/Netflix_logo.png/revision/latest?cb=20190623201834&path-prefix=ru'
   return (
+    
     <div className="flex flex-col gap-20 my-20">
       <section className="px-5">
         <div className="w-full flex flex-col gap-[1.5rem]">
@@ -84,11 +87,12 @@ export default function Home() {
                 <p className="text-white text-lg">Быстрое и удобное бронирование мест на мероприятиях с мгновенным подтверждением.</p>
               </div>
               <div className="flex gap-5 mt-5 w-1/4 mt-5">
-                <MyButton onClick={()=>router.push('/events')} className="bg-[#E50914] w-full text-white hover:bg-[#E50914]">Купить билет</MyButton>
-                <MyButton onClick={()=>router.push('/events')} className="bg-[#E50914] w-full text-white hover:bg-[#E50914]">Посмотреть события</MyButton>
+                <MyButton onClick={()=>router.push('/events')} className="bg-[#E50914] w-full text-white hover:bg-[#E50914] cursor-pointer">Купить билет</MyButton>
+                <MyButton onClick={()=>router.push('/events')} className="bg-[#E50914] w-full text-white hover:bg-[#E50914] cursor-pointer">Посмотреть события</MyButton>
               </div>
             </div>
-            <Image className="rounded-xl w-full z-1 h-full absolute top-0 left-0" src='https://static.wikia.nocookie.net/netflix/images/5/54/Netflix_logo.png/revision/latest?cb=20190623201834&path-prefix=ru' alt="not found" width={100} height={100}/>
+            <Image className="rounded-xl w-full z-1 h-full absolute top-0 left-0" src={MainImage} alt="not found" width={100} height={100}/>
+
           </CardContent>
         </Card>
       </section>

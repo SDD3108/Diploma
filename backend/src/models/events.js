@@ -32,6 +32,7 @@ const eventSchema = new Schema({
     },
     isRoles: { type: Boolean, default: false },
     roles: [String],
+    isReviews: { type: Boolean, default: false,required: true },
     reviews: { type: [Object], default: [] },
     isLocation: { type: Boolean, default: false },
     location: String,

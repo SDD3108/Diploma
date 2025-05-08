@@ -54,20 +54,20 @@ const EventsPageBuilder = () => {
             try{
                 const resp = await axios.get('/api/events')
                 setEvents(resp.data)
-                setTimeout(() => {
-                    console.log('main',resp.data);
-                    console.log('1',resp.data.filter((event) => event.type == 'movie'));
-                    console.log('2',resp.data.filter((event) => event.type == 'theater'));
+                // setTimeout(() => {
+                //     console.log('main',resp.data);
+                //     console.log('1',resp.data.filter((event) => event.type == 'movie'));
+                //     console.log('2',resp.data.filter((event) => event.type == 'theater'));
 
-                    console.log('3',resp.data.filter((event) => event.type == 'concert'));
-                    console.log('4',resp.data.filter((event) => event.type == 'sport'));
+                //     console.log('3',resp.data.filter((event) => event.type == 'concert'));
+                //     console.log('4',resp.data.filter((event) => event.type == 'sport'));
                     
-                    console.log('5',resp.data.filter((event) => event.type == 'vacation'));
-                    console.log('6',resp.data.filter((event) => event.type == 'festival'));
+                //     console.log('5',resp.data.filter((event) => event.type == 'vacation'));
+                //     console.log('6',resp.data.filter((event) => event.type == 'festival'));
                         
-                    console.log('7',resp.data.filter((event) => event.type == 'exhibition'));
-                    console.log('8',resp.data.filter((event) => event.type == 'workshop'));
-                }, 2000);
+                //     console.log('7',resp.data.filter((event) => event.type == 'exhibition'));
+                //     console.log('8',resp.data.filter((event) => event.type == 'workshop'));
+                // }, 2000);
             }
             catch(err){
                 setError(err.resp?.data?.message || err.message || 'Unknown error')
