@@ -33,7 +33,11 @@ const eventSchema = new Schema({
     isRoles: { type: Boolean, default: false },
     roles: [String],
     isReviews: { type: Boolean, default: false,required: true },
-    reviews: { type: [Object], default: [] },
+    reviews: [{
+        userId: { type: String, required: true },
+        text: { type: String, required: true },
+        grade: { type: Number, min: 0, max: 5, required: true },
+    }],
     isLocation: { type: Boolean, default: false },
     location: String,
     sessions: [{
@@ -43,7 +47,7 @@ const eventSchema = new Schema({
         isLanguage: { type: Boolean, default: false },
         sessionLaunguage: { type: String,enum: ['Русс','Кзх','Англ'],default: 'Русс' },
         isSubtitles: { type: Boolean, default: false },
-        sessionSubtitles: { type: String },
+        sessionSubtitles: { type: String, enum: ['Русс','Кзх','Англ'], default: 'Кзх' },
         isAdultPrice: { type: Boolean, default: false },
         adultPrice: { type: Number },
         isChildPrice: { type: Boolean, default: false },

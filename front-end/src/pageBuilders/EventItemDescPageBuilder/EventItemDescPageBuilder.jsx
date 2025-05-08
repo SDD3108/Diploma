@@ -10,6 +10,9 @@ import { Separator } from "@/src/ui/separator";
 import { NavigationMenu,NavigationMenuItem,NavigationMenuList } from "@/src/ui/navigation-menu"
 import { Skeleton } from "@/src/ui/skeleton"
 import Link from 'next/link';
+import {GetToken} from '@/src/utils/GetToken/GetToken'
+import { Textarea } from "@/src/ui/textarea"
+import { Avatar,AvatarFallback, AvatarImage } from '@/src/ui/avatar';
 // что тут происходит?
 // 1. мы используем useParams чтобы получить id события из url
 // 2. используем useRouter чтобы навигировать на страницу описания события
@@ -25,6 +28,7 @@ import Link from 'next/link';
 // // 6. можно использовать useRef для получения ссылки на элемент
 
 const EventItemDescPageBuilder = () => {
+  const { tokenUser } = GetToken()
   const params = useParams()
   const router = useRouter()
   const firstButtonRef = useRef(null)
@@ -34,6 +38,9 @@ const EventItemDescPageBuilder = () => {
   const [error, setError] = useState(null)
   const [imageError, setImageError] = useState(false)
   const [activeTab, setActiveTab] = useState('tickets')
+  const [reviewText, setReviewText] = useState('')
+  const [rating, setRating] = useState(0)
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const restoreFocus =()=>{
     const active = document.activeElement
     if(menuRef.current && !menuRef.current.contains(active)){
@@ -151,6 +158,51 @@ const EventItemDescPageBuilder = () => {
     {},
     {},
 ]
+const aboutLogicArray = [
+  {
+    title:'Описание',
+    key: 'description',
+    condition: true,
+    render: (value) => <h3 className='text-gray-500'>{value}</h3>,
+  },
+  {
+    title:'В ролях',
+    key:'roles',
+    condition:event.isRoles,
+    render: (value) => Array.isArray(value) ? value.join(', ') : value
+  },
+  {
+    title:'Детали',
+    key:'details',
+    condition:event.isDetails,
+    render: (value) => {
+      const labelMap = {
+        engTitle:'Фильм',
+        duration:'Продолжительность',
+        releaseDate:'Премьера в РК',
+        production:'Производство',
+        director:'Режиссер',
+      }
+      return (
+        <ul className='flex flex-col gap-1'>
+          {Object.entries(value).filter(([key]) => labelMap[key]).map(([key, val]) => (
+            <li key={key} className='flex'>
+              {console.log(labelMap[key])}
+              <span className='text-[#151515] font-medium text-nowrap'>{labelMap[key]}</span>
+              <div className='w-full border-b-[1px] mx-1.5 mb-1.5'></div>
+              <span className='font-medium text-nowrap'>{key == 'duration' && typeof val == 'number' ? ` ${val} минут` : ` ${val || 'Не указано'}`}</span>
+            </li>
+          ))}
+        </ul>
+      )
+    }
+  },
+  {
+    title:'',
+    key:'',
+    condition:false
+  },
+]
 const TicketsContent = ()=>(
   <div>
     <div>
@@ -177,7 +229,7 @@ const TicketsContent = ()=>(
     </div>
     <div className='h-[48rem] flex flex-col gap-2'>
                 {event?.sessions?.length == 0 ? (
-                  <>
+                  <div className='mt-3 flex flex-col gap-2'>
                     <Skeleton className='h-[4rem]'/>
                     <Skeleton className='h-[4rem]'/>
                     <Skeleton className='h-[4rem]'/>
@@ -185,7 +237,7 @@ const TicketsContent = ()=>(
                     <Skeleton className='h-[4rem]'/>
                     <Skeleton className='h-[4rem]'/>
                     <Skeleton className='h-[4rem]'/>
-                  </>
+                  </div>
                 ) : (
                   event?.sessions?.map((session, index) => (
                     <div key={index}>
@@ -258,28 +310,129 @@ const TicketsContent = ()=>(
   </div>
 )
 const AboutContent = ()=>(
-  <div className='p-4'>
-    <h2 className='text-xl font-semibold mb-4'>{event?.type == 'movie' ? 'О фильме' : 'О событии'}</h2>
-    <p className='text-gray-600'>{event.description}</p>
-  </div>
-)
-const ReviewsContent =()=>(
-  <div className='p-4'>
-    <h2 className='text-xl font-semibold mb-4'>Отзывы</h2>
-    <div className='space-y-4'>
-      {event.reviews?.length > 0 ? (
-        event.reviews.map((review,index)=>(
-          <div key={index} className='border p-3 rounded-lg'>
-            <p className='font-medium'>{review.author}</p>
-            <p className='text-gray-600'>{review.text}</p>
+  <div className='w-full'>
+    <div className='grid grid-cols-2 grid-rows-2 gap-x-8 gap-y-4'>
+      {aboutLogicArray.map(({title,key,condition,render},index)=>(
+        <div key={index} className={`w-full min-h-[9rem] flex flex-col ${!condition && 'hidden'}`}>
+          {title && (
+            <div>
+              <h2 className='font-bold mb-2'>{title}</h2>
+            </div>
+          )}
+          <div className='text-gray-500'>
+            {event[key] && event[key] && render(event[key])}
           </div>
-        ))
-      ) : (
-        <p>Пока нет отзывов</p>
-      )}
+        </div>
+      ))}
     </div>
   </div>
 )
+const ReviewsContent =()=>{
+  const handleSubmitReview = async () => {
+    if (!rating) {
+      toast.error('Пожалуйста, поставьте оценку')
+      return
+    }
+    if (!reviewText.trim()) {
+      toast.error('Пожалуйста, напишите отзыв')
+      return
+    }
+
+    setIsSubmitting(true)
+    try {
+      const newReview = {
+        userId: tokenUser._id,
+        text: reviewText,
+        grade: rating,
+        author: tokenUser.name,
+        createdAt: new Date().toISOString()
+      }
+      const response = await axios.post(`/api/events/${params.id}`,{
+        reviews: newReview
+      })
+      setEvent(prev => ({
+        ...prev,
+        reviews: [...(prev.reviews || []), newReview]
+      }))
+
+      toast.success('Отзыв успешно добавлен!')
+      setReviewText('')
+      setRating(0)
+    } catch (error) {
+      toast.error('Ошибка при отправке отзыва')
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+  const renderStars = (currentRating, isInteractive = true) => {
+    return (
+      <div className="flex gap-1">
+        {[1, 2, 3, 4, 5].map((star) => (
+          <button
+            key={star}
+            type="button"
+            disabled={!isInteractive}
+            onClick={() => isInteractive && setRating(star)}
+            className={`text-2xl ${star <= currentRating ? 'text-yellow-400' : 'text-gray-300'}`}
+          >
+            ★
+          </button>
+        ))}
+      </div>
+    )
+  }
+  if(!event.isReviews) {
+    return (
+      <div className="text-gray-500">
+        Отзывы отключены для этого события
+      </div>
+    )
+  }
+  return (
+    <div className="space-y-8">
+      {/* Форма для добавления отзыва */}
+      {tokenUser && (
+        <div className="border p-6 rounded-lg space-y-4">
+          <h3 className="text-xl font-semibold">Оставить отзыв</h3>
+          
+          <div className="space-y-2">
+            <label className="block text-sm font-medium">Оценка</label>
+            {renderStars(rating)}
+          </div>
+
+          <Textarea value={reviewText} onChange={(e) => setReviewText(e.target.value)} placeholder="Напишите ваш отзыв..." className="min-h-[120px]"/>
+
+          <Button onClick={handleSubmitReview} disabled={isSubmitting}>
+            {isSubmitting ? 'Отправка...' : 'Отправить отзыв'}
+          </Button>
+        </div>
+      )}
+
+      {/* Список отзывов */}
+      <div className="space-y-4">
+        {event.reviews?.length > 0 ? (
+          event.reviews.map((review,index)=>(
+            <div key={index} className="border p-4 rounded-lg">
+              <div className="flex justify-between items-start mb-2">
+                <div className='flex gap-2 items-center'>
+                  <Avatar>
+                    <AvatarImage />
+                    <AvatarFallback>SD</AvatarFallback>
+                  </Avatar>
+                  <p className=" font-medium">{review.author || 'Аноним'}</p>
+                </div>
+                {renderStars(review.grade, false)}
+              </div>
+              <p className="text-gray-600">{review.text}</p>
+            </div>
+          ))
+        ) : (
+          <p className="text-gray-500">Пока нет отзывов</p>
+        )}
+      </div>
+    </div>
+  )
+}
 
   
   if(error){
@@ -330,14 +483,11 @@ const ReviewsContent =()=>(
                       {event?.type == 'movie' ? 'О Фильме' : 'О Событии'}
                     </Button>
                   </NavigationMenuItem>
-                  {/* {event?.reviews?.length > 1 && ( */}
-                    <NavigationMenuItem>
-                      <Button className={`bg-white hover:bg-black/5 ${activeTab == 'reviews' ? 'text-black font-semibold' : 'text-black/50'}`} onClick={() => setActiveTab('reviews')}>
-                        Отзывы
-                      </Button>
-                    </NavigationMenuItem>
-                  {/* )} */}
-                  
+                  <NavigationMenuItem>
+                    <Button className={`bg-white hover:bg-black/5 ${activeTab == 'reviews' ? 'text-black font-semibold' : 'text-black/50'}`} onClick={() => setActiveTab('reviews')}>
+                      Отзывы
+                    </Button>
+                  </NavigationMenuItem>
                 </NavigationMenuList>
               </NavigationMenu> 
               <Separator className='mt-3 bg-[#3D3D3D]'/>

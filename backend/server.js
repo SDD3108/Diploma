@@ -60,7 +60,50 @@ app.listen(PORT, () => {
 //   headers: {
 //     'Content-Type': 'application/json',
 //   },
-//   body: JSON.stringify({})
+//   body: JSON.stringify({
+//    заполни правдаподобными данными
+//     type: 'movie',
+//     rating: 4.5,
+//     isRating: true,
+//     age: 18,
+//     genre: 'action',
+//     image: 'https://example.com/image.jpg',
+//     title: 'Example Movie',
+//     description: 'This is an example movie description.',
+//     isDetails: true,
+//     details: {
+//       engTitle: 'Example Movie',
+//       duration: 120,
+//       releaseDate: '2023-01-01',
+//       production: 'Example Production',
+//       director: 'John Doe'
+//     },
+//     isRoles: true,
+//     roles: ['Actor 1', 'Actor 2'],
+//     isReviews: true,
+//     reviews: [{
+//       userId: '12345',
+//       text: 'Great movie!',
+//       grade: 5
+//     }],
+//     isLocation: true,
+//     location: 'Example Location',
+//     sessions: [{
+//       time: '12:00',
+//       sessionLocation: 'Chaplin MEGA Silk Way',
+//       hall: 'Зал 1',
+//       isLanguage: true,
+//       sessionLaunguage: 'Русс',
+//       isSubtitles: true,
+//       sessionSubtitles: 'Кзх',
+//       isAdultPrice: true,
+//       adultPrice: 1000,
+//       isChildPrice: true,
+//       childPrice: 500,
+//       isVIPPrice: true,
+//       vipPrice: 1500
+//     }]
+//   })
 // })
 // .then(response => response.json())
 // .then(data => console.log(data));

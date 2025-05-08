@@ -88,7 +88,7 @@ const TicketInfoPageBuilder = () => {
                             ) : (
                                 <Skeleton className='w-[10rem] h-5 rounded-lg'/>
                             )}
-                            <Link href={`/events/${event._id}`}><Button variant='link' className='px-0 cursor-pointer justify-normal has-[>svg]:px-0'>О фильме<ArrowRight /></Button></Link>
+                            <Link href={`/events/${event?._id}`}><Button variant='link' className='px-0 cursor-pointer justify-normal has-[>svg]:px-0'>О фильме<ArrowRight /></Button></Link>
                         </div>
                         <div className='flex flex-col'>
                             <span className='text-sm font-medium text-[#475467]'>Дата и время</span>
