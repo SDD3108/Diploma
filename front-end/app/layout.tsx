@@ -1,9 +1,14 @@
+import React from 'react'
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import HeaderCompanent from "@/src/common/header/HeaderCompanent";
 import FooterCompanent from "@/src/common/footer/FooterCompanent";
 import { ThemeProvider } from "@/src/utils/ThemeProvider/ThemeProvider"
+import { Toaster } from "@/src/ui/sonner"
+// import '../i18n'
+// import { useTranslation } from 'react-i18next';
+
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,7 +35,8 @@ export default function RootLayout({
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
           <HeaderCompanent/>
-          {children}
+            {children}
+            <Toaster/>
           <FooterCompanent/>
         </ThemeProvider>
       </body>

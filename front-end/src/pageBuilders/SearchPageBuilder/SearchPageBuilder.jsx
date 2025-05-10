@@ -9,8 +9,12 @@ import { Slider } from "@/src/ui/slider"
 import { Star } from 'lucide-react'
 import { Carousel,CarouselContent,CarouselItem,CarouselNext,CarouselPrevious, } from "@/src/ui/carousel"
 import EventItemPage from '@/app/(pages)/EventItemPage/page';
+import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 
 const SearchPageBuilder = () => {
+
+    const router = useRouter()
     const [events, setEvents] = useState([])
     const {
       filteredEvents,
@@ -44,10 +48,10 @@ const SearchPageBuilder = () => {
   return (
     <div className='w-full flex flex-col gap-5 px-5'>
         <div className="flex flex-col gap-1">
-            <h1 className="text-[#151515] text-3xl font-bold">Поиск событий</h1>
-            <p className="text-[#151515] text-lg">Удобный поиск мероприятий по дате, времени и типу.</p>
+          <h1 className="text-[#151515] text-3xl font-bold">Поиск событий</h1>
+          <p className="text-[#151515] text-lg">Удобный поиск мероприятий по дате, времени и типу.</p>
         </div>
-        <div className="container space-y-6">
+        <div className="space-y-6">
         <Card>
         <CardHeader>
           <CardTitle>Filters</CardTitle>
@@ -94,7 +98,7 @@ const SearchPageBuilder = () => {
         <Carousel className="w-full mt-4">
             <CarouselContent className='w-full px-[1rem] gap-4'>
                 {filteredEvents.map((event,index) => ( 
-                    <CarouselItem key={index} onClick={()=>{}} className="basis-[calc(100%/7)] xl:basis-[calc(100%/7)] lg:basis-[calc(100%/5)] md:basis-[calc(100%/4)] sm:basis-[calc(100%/3)] max-sm:basis-[calc(100%/1.5)] p-0 py-2">
+                    <CarouselItem key={index} onClick={()=> router.push(`/events/${event._id}`)} className="basis-[calc(100%/7)] xl:basis-[calc(100%/7)] lg:basis-[calc(100%/5)] md:basis-[calc(100%/4)] sm:basis-[calc(100%/3)] max-sm:basis-[calc(100%/1.5)] p-0 py-2">
                         <div className="p-0">
                             <Card className="p-0 relative">
                                 <CardContent className="flex aspect-square items-center justify-normal p-0">

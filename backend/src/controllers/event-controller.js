@@ -23,7 +23,27 @@ const createEvent = async (req,res)=>{
 
     res.status(201).json(newEvent)
 }
+const createReview = async (req,res)=>{
+    console.log(req.body)
+    const { userId, text, grade } = req.body
+    const eventId = req.params.id
 
+    const event = await TicketFlow.findById(eventId)
+    if(!event){
+        return res.status(404).json({ message: 'Событие не найдено' })
+    }
+
+    const newReview = {
+        userId,
+        text,
+        grade,
+    }
+
+    event.reviews.push(newReview)
+    await event.save()
+
+    res.status(201).json(newReview)
+}
 const updateEvent = async (req,res)=>{
     const updates = req.body
     if(updates.rating !== undefined){
@@ -54,4 +74,4 @@ const deleteEvent = async (req,res)=>{
     res.status(200).json({ message: 'Событие удалено' })
 }
 
-module.exports = {getAllEvents,getEventById,createEvent,updateEvent,deleteEvent,}
+module.exports = {getAllEvents,getEventById,createEvent,createReview,updateEvent,deleteEvent,}

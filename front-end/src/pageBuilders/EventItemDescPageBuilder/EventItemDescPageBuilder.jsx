@@ -13,6 +13,8 @@ import Link from 'next/link';
 import {GetToken} from '@/src/utils/GetToken/GetToken'
 import { Textarea } from "@/src/ui/textarea"
 import { Avatar,AvatarFallback, AvatarImage } from '@/src/ui/avatar';
+import { toast } from "sonner"
+import { GetInitials } from '@/src/utils/GetInitials/GetInitials'
 // что тут происходит?
 // 1. мы используем useParams чтобы получить id события из url
 // 2. используем useRouter чтобы навигировать на страницу описания события
@@ -28,136 +30,49 @@ import { Avatar,AvatarFallback, AvatarImage } from '@/src/ui/avatar';
 // // 6. можно использовать useRef для получения ссылки на элемент
 
 const EventItemDescPageBuilder = () => {
-  const { tokenUser } = GetToken()
+  const { tokenUser,loading } = GetToken()
   const params = useParams()
   const router = useRouter()
   const firstButtonRef = useRef(null)
   const menuRef = useRef(null)
   const [event,setEvent] = useState({})
-  const [loading, setLoading] = useState(true)
+  const [loadingg, setLoadingg] = useState(true)
   const [error, setError] = useState(null)
   const [imageError, setImageError] = useState(false)
   const [activeTab, setActiveTab] = useState('tickets')
   const [reviewText, setReviewText] = useState('')
   const [rating, setRating] = useState(0)
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const restoreFocus =()=>{
-    const active = document.activeElement
-    if(menuRef.current && !menuRef.current.contains(active)){
-      firstButtonRef.current?.focus()
-    }
-  }
-  useEffect(()=>{
-    firstButtonRef.current.focus()
-    restoreFocus()
-    window.addEventListener("click",restoreFocus)
-    window.addEventListener("focusin",restoreFocus)
-  }, [])
+  const [users, setUsers] = useState([])
   useEffect(()=>{
     const getEvents = async ()=>{
       try{
         const resp = await axios.get('/api/events')
-        setEvent(resp.data.find((event) => event._id == params.id))
+        const data = resp.data.find((event) => event._id == params.id)
+        setEvent(data)
       }
       catch(err){
         setError(err.resp?.data?.message || err.message || 'Unknown error')
       }
       finally{
-        setLoading(false)
+        setLoadingg(false)
+      }
+    }
+    const getUsers = async ()=>{
+      try{
+        const resp = await axios.get('/api/users')
+        setUsers(resp.data)
+      }
+      catch(err){
+        setError(err.resp?.data?.message || err.message || 'Unknown error')
+      }
+      finally{
+        setLoadingg(false)
       }
     }
     getEvents()
+    getUsers()
   },[])
-  const sessions = [
-    {
-      id:1,
-      type:'movie',
-      rating:'9.1',
-      isRating:true,
-      age:16,
-      genre:'action',
-      image:'',
-      title:'Фнаф 2',
-      description:'На этот раз вселенная «Патруля» оказывается в области Абай',
-      isDetails:true,
-      details:{
-      engTitle:'Fnaf 2',
-      duration:'110',
-      releaseDate:'31.08.2007',
-      production:'Казахстан',
-      director:'режиссер',
-      },
-      isRoles:true,
-      roles:[
-      'Рамазан Амантай',
-      'Жақсылық Айтқұрман',
-      'Жасұлан Айтенов',
-      'Шарифбек Закиров',
-      'Әльмахан Шахмардан',
-      'Бақытгүл Серікбаева',
-      ],
-      reviews:[],
-      isLocation:true,
-      location:'Бар "skvôt."',
-      sessions:[
-        {
-          id:Date.now(),
-          key:'',
-          time:'12:00',
-          sessionLocation:'Кинотеатр "Арман"',
-          hall:'Зал 2',
-          isLanguage:true,
-          sessionLaunguage:'Русский',
-          isSubtitles:true,
-          sessionSubtitles:'Казахский',
-          isAdultPrice:true,
-          adultPrice:5000,
-          isChildPrice:true,
-          childPrice:3000,
-          isVIPPrice:true,
-          vipPrice:10000,
-        },
-        {
-          id:Date.now(),
-          time:'12:10',
-          sessionLocation:'Chaplin MEGA Silk Way',
-          hall:'Зал 1',
-          isLanguage:true,
-          sessionLaunguage:'Кзх',
-          isSubtitles:true,
-          sessionSubtitles:'Рус',
-          isAdultPrice:true,
-          adultPrice:2200,
-          isChildPrice:false,
-          childPrice:null,
-          isVIPPrice:true,
-          vipPrice:5000,
-        },
-        {
-          id:Date.now(),
-          time:'12:15',
-          sessionLocation:'Chaplin MEGA Silk Way',
-          hall:'Зал 3',
-          isLanguage:true,
-          sessionLaunguage:'Кзх',
-          isSubtitles:true,
-          sessionSubtitles:'Рус',
-          isAdultPrice:true,
-          adultPrice:2200,
-          isChildPrice:true,
-          childPrice:1800,
-          isVIPPrice:true,
-          vipPrice:null,
-        },
-        {},
-        {},
-        {},
-        {},
-      ],
-    },
-    {},
-    {},
-]
 const aboutLogicArray = [
   {
     title:'Описание',
@@ -203,6 +118,7 @@ const aboutLogicArray = [
     condition:false
   },
 ]
+const ratingArray = [1,2,3,4,5]
 const TicketsContent = ()=>(
   <div>
     <div>
@@ -329,59 +245,59 @@ const AboutContent = ()=>(
 )
 const ReviewsContent =()=>{
   const handleSubmitReview = async () => {
-    if (!rating) {
-      toast.error('Пожалуйста, поставьте оценку')
+    if(!rating || !reviewText.trim()){
+      toast('сначала заполните все обязательные поля')
       return
     }
-    if (!reviewText.trim()) {
-      toast.error('Пожалуйста, напишите отзыв')
+    else if(!rating){
+      toast('пожалуйста,поставьте оценку')
       return
     }
-
+    else if(!reviewText.trim()){
+      toast('пожалуйста,напишите отзыв')
+      return
+    }
     setIsSubmitting(true)
-    try {
-      const newReview = {
-        userId: tokenUser._id,
+    try{
+      const newEventReview = {
+        userId: tokenUser?._id,
         text: reviewText,
         grade: rating,
-        author: tokenUser.name,
-        createdAt: new Date().toISOString()
       }
-      const response = await axios.post(`/api/events/${params.id}`,{
-        reviews: newReview
-      })
-      setEvent(prev => ({
-        ...prev,
-        reviews: [...(prev.reviews || []), newReview]
-      }))
+      const newUserReview = {
+        eventId: params.id,
+        text: reviewText,
+        grade: rating,
+      }
+      const resp = await axios.post(`/api/events/${params.id}/reviews`,newEventReview)
+      const userResp = await axios.post(`/api/users/${tokenUser?._id}/reviews`,newUserReview)
+      setEvent(prev => ({...prev,reviews: [...(prev.reviews || []), newEventReview]}))
 
-      toast.success('Отзыв успешно добавлен!')
+      toast('Отзыв успешно добавлен!')
       setReviewText('')
       setRating(0)
-    } catch (error) {
-      toast.error('Ошибка при отправке отзыва')
-    } finally {
+    }
+    catch(error){
+      toast('ошибка при отправке отзыва')
+      console.log(error);
+      
+    }
+    finally{
       setIsSubmitting(false)
     }
   }
-  const renderStars = (currentRating, isInteractive = true) => {
+  const renderStars =(currentRating,isInteractive = true)=>{
     return (
       <div className="flex gap-1">
-        {[1, 2, 3, 4, 5].map((star) => (
-          <button
-            key={star}
-            type="button"
-            disabled={!isInteractive}
-            onClick={() => isInteractive && setRating(star)}
-            className={`text-2xl ${star <= currentRating ? 'text-yellow-400' : 'text-gray-300'}`}
-          >
+        {ratingArray.map((star)=>(
+          <button key={star} type="button" disabled={!isInteractive} onClick={() => isInteractive && setRating(star)} className={`text-2xl ${star <= currentRating ? 'text-yellow-400' : 'text-gray-300'}`}>
             ★
           </button>
         ))}
       </div>
     )
-  }
-  if(!event.isReviews) {
+  }  
+  if(!event.isReviews){
     return (
       <div className="text-gray-500">
         Отзывы отключены для этого события
@@ -390,7 +306,6 @@ const ReviewsContent =()=>{
   }
   return (
     <div className="space-y-8">
-      {/* Форма для добавления отзыва */}
       {tokenUser && (
         <div className="border p-6 rounded-lg space-y-4">
           <h3 className="text-xl font-semibold">Оставить отзыв</h3>
@@ -407,25 +322,27 @@ const ReviewsContent =()=>{
           </Button>
         </div>
       )}
-
-      {/* Список отзывов */}
       <div className="space-y-4">
         {event.reviews?.length > 0 ? (
-          event.reviews.map((review,index)=>(
-            <div key={index} className="border p-4 rounded-lg">
-              <div className="flex justify-between items-start mb-2">
-                <div className='flex gap-2 items-center'>
-                  <Avatar>
-                    <AvatarImage />
-                    <AvatarFallback>SD</AvatarFallback>
-                  </Avatar>
-                  <p className=" font-medium">{review.author || 'Аноним'}</p>
+          event.reviews.map((review,index)=>{
+            const user = users.find(u => u._id == review.userId)
+            return (
+              <div key={index} className="border p-4 rounded-lg">
+                <div className="flex justify-between items-start mb-2">
+                  <div className='flex gap-2 items-center'>
+                    <Avatar>
+                      <AvatarImage src={user?.avatar} />
+                      <AvatarFallback>{GetInitials(user?.name)}</AvatarFallback>
+                    </Avatar>
+                    <p className=" font-medium">{user?.name || 'Аноним'}</p> 
+                  </div>
+                  {renderStars(review.grade,false)}
                 </div>
-                {renderStars(review.grade, false)}
-              </div>
-              <p className="text-gray-600">{review.text}</p>
+                <p className="text-gray-600">{review.text}</p>
             </div>
-          ))
+            )
+            
+          })
         ) : (
           <p className="text-gray-500">Пока нет отзывов</p>
         )}
