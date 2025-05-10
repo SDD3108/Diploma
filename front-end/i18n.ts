@@ -25,24 +25,45 @@
 
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
-import LanguageDetector from 'i18next-browser-languagedetector';
 import HttpBackend from 'i18next-http-backend';
-
-console.log('Current language:', i18n.language)
-
+import LanguageDetector from 'i18next-browser-languagedetector';
+// console.log('Current language:', i18n.language)
+// C:\Users\User\Desktop\STEP\Deplome\front-end\i18n.ts
+// C:\Users\User\Desktop\STEP\Deplome\front-end\locales\kz\common.json
+// C:\Users\User\Desktop\STEP\Deplome\front-end\locales\ru\common.json
+// C:\Users\User\Desktop\STEP\Deplome\front-end\locales\eng\common.json
+// C:\Users\User\Desktop\STEP\Deplome\front-end\src\pageBuilders\ProfileBuilders\ProfilePageBuilder\ProfilePageBuilder.jsx
+// if (typeof window !== 'undefined') {
+//   i18n
+//   .use(HttpBackend) // Загружает переводы с сервера или локальных файлов
+//   .use(LanguageDetector) // Определяет язык пользователя
+//   .use(initReactI18next) // Интеграция с React
+//   .init({
+//     fallbackLng: 'eng', // Язык по умолчанию
+//     debug: true, // Включить логирование в консоли
+//     interpolation: {
+//       escapeValue: false, // React уже экранирует значения
+//     },
+//     backend: {
+//       loadPath: '/locales/{{lng}}/{{ns}}.json', // Путь к файлам переводов
+//     },
+//   });
+// }
+// import test from './locales'
 i18n
   .use(HttpBackend) // Загружает переводы с сервера или локальных файлов
   .use(LanguageDetector) // Определяет язык пользователя
   .use(initReactI18next) // Интеграция с React
   .init({
-    fallbackLng: 'ru', // Язык по умолчанию
-    debug: true, // Включить логирование в консоли
-    interpolation: {
-      escapeValue: false, // React уже экранирует значения
-    },
+    supportedLngs: ['ru', 'kz', 'en'],
+    fallbackLng: 'ru',
+    lng: 'ru',
+    ns: ['common'],
+    defaultNS: 'common',
+    debug: true,
     backend: {
-      loadPath: '/locales/{{lng}}/{{ns}}.json', // Путь к файлам переводов
+      loadPath: '/locales/{{lng}}/{{ns}}.json',
     },
-  });
+})
 
-export default i18n;
+export default i18n

@@ -6,6 +6,7 @@ import HeaderCompanent from "@/src/common/header/HeaderCompanent";
 import FooterCompanent from "@/src/common/footer/FooterCompanent";
 import { ThemeProvider } from "@/src/utils/ThemeProvider/ThemeProvider"
 import { Toaster } from "@/src/ui/sonner"
+// import '@/i18n'
 // import '../i18n'
 // import { useTranslation } from 'react-i18next';
 

@@ -4,20 +4,36 @@ import { Button } from '@/src/ui/button'
 import { Card,CardContent,CardHeader,CardTitle} from "@/src/ui/card"
 import { RadioGroup, RadioGroupItem } from "@/src/ui/radio-group"
 import { Label } from "@/src/ui/label"
+import '@/i18n'
+import { useTranslation } from 'react-i18next'
 const LanguagesPageBuilder = () => {
+  const { t,i18n } = useTranslation('common')
   const [selectedLanguage, setSelectedLanguage] = useState('ru')
   const languages = [
     { value: 'en', label: 'English' },
     { value: 'kz', label: 'Қазақ' },
     { value: 'ru', label: 'Русский' },
   ]
+  const changeLanguage = (lng) => {
+    if(i18n.changeLanguage){
+      i18n.changeLanguage(lng).then(() => {
+        setSelectedLanguage(lng)
+      })
+    }
+    else{
+      console.error('changeLanguage is not a function on i18n:',i18n)
+    }
+  }
   return (
     <Card className="w-full max-w-2xl">
       <CardHeader>
-        <CardTitle className="text-xl">Выбор языка</CardTitle>
+        <CardTitle className="text-xl">{t("description")}</CardTitle>
       </CardHeader>
       <CardContent>
-        <RadioGroup value={selectedLanguage} onValueChange={setSelectedLanguage} className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <RadioGroup value={selectedLanguage} onValueChange={(lng)=>{
+          setSelectedLanguage(lng)
+          i18n.changeLanguage(lng)
+        }} className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {languages.map((lang)=>(
             <div key={lang.value}>
               <RadioGroupItem value={lang.value} id={lang.value} className="peer sr-only"/>
@@ -28,17 +44,12 @@ const LanguagesPageBuilder = () => {
           ))}
         </RadioGroup>
         <div className="mt-6 flex justify-end">
-          <Button onClick={() => console.log('Selected language:',selectedLanguage)} className="px-6 cursor-pointer">
-            Сохранить изменения
+          <Button onClick={() => changeLanguage(selectedLanguage)} className="px-6 cursor-pointer">
+            {t("button_save")}
           </Button>
         </div>
       </CardContent>
     </Card>
-    // <div className='shadow-lg rounded-lg w-full px-4 py-6 flex gap-[1rem]'>
-    //   <div>English</div>
-    //   <div>Қазақ</div>
-    //   <div>Русский</div>
-    // </div>
   )
 }
 
