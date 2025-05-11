@@ -20,7 +20,7 @@ const cinemasSchema = new Schema({
     cinemaRate: { type: Number,required: true,default:5,min: 0,max: 5 }, 
     reviewsCount: { type: Number,default: 0 },
     reviews: [{
-        user: { type: [Object],required: true },
+        userId: { type: [Object],required: true },
         text: { type: String,required: true },
         grade: { type: Number,required: true,min: 0,max: 5 },
     }],
@@ -30,9 +30,22 @@ const cinemasSchema = new Schema({
         rows: { type: Number,required: true },
         seatsPerRow: { type: Number,required: true },
         reservedSeats:[{
-            row:{type:Number,default:1},
-            seat:{type:Number,default:1},
-        }]
+            row: Number,
+            seat: Number,
+            reservedAt: { type: Date, default: Date.now },
+            userId: { type: Schema.Types.ObjectId, ref: 'users' }
+        }],
+        boughtSeats:[{
+            row: Number,
+            seat: Number,
+            purchasedAt: { type: Date, default: Date.now },
+            userId: { type: Schema.Types.ObjectId, ref: 'users' }
+        }],
+        isVipSeats: { type: Boolean,default: false },
+        VIPSeats:[{
+            row:{type:Number,default:5},
+            seat:{type:Number,default:5},
+        }],
     }]
 },{timestamps: true})
 

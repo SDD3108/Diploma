@@ -2,8 +2,8 @@
 import React, { useEffect, useRef, useState,useCallback } from 'react'
 import { useParams, useRouter } from "next/navigation"
 import axios from 'axios'
-import ErrorCompanent from "../../../src/components/error/ErrorCompanent"
-import NotFoundCompanent from "../../../src/components/not found/NotFoundCompanent"
+import ErrorCompanent from "../../../../src/components/error/ErrorCompanent"
+import NotFoundCompanent from "../../../../src/components/not found/NotFoundCompanent"
 import { Skeleton } from "@/src/ui/skeleton"
 import Image from 'next/image'
 import { Button } from '@/src/ui/button'
@@ -11,6 +11,10 @@ import { X } from 'lucide-react';
 import { Dialog,DialogContent,DialogHeader,DialogTitle,DialogFooter,DialogClose } from "@/src/ui/dialog"
 import { Label } from "@/src/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/src/ui/radio-group"
+import { GetCinemaByName } from '@/src/utils/GetCinemas/GetCinemas'
+import { io } from 'socket.io-client'
+import { GetToken } from '@/src/utils/GetToken/GetToken'
+import { toast } from 'sonner'
 
 const cinemas = [
   {
@@ -69,7 +73,11 @@ const cinemas = [
 // 5. synchronize
 
 
-const EventItemDescSession = () => {
+const EventItemDescSessionPage = () => {
+  // const { cinema } = GetCinemaByName()
+  const { tokenUser } = GetToken() // Типо юзера получаем
+  const [socket, setSocket] = useState(null)
+  const reservationTimeoutRef = useRef(new Map())
   const params = useParams()
   const router = useRouter()
   const canvasRef = useRef(null)
@@ -81,11 +89,37 @@ const EventItemDescSession = () => {
   const [selectedSeats, setSelectedSeats] = useState([])
   const [seatsConfig, setSeatsConfig] = useState({})
   const [imageError, setImageError] = useState(false)
-  const [tempSeat, setTempSeat] = useState(null)
+  const [tempSeat, setTempSeat] = useState({})
   const [ticketType, setTicketType] = useState('adult')
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [fixedDay,setFixedDay] = useState('')
   const [fixedMounth,setFixedMounth] = useState('')
+  const [isTempSeatVip, setIsTempSeatVip] = useState(false)
+  useEffect(() => {
+    console.log('Connecting to socket...');
+    const newSocket = io(process.env.NEXT_PUBLIC_SOCKET_URL);
+    
+    newSocket.on('connect', () => {
+        console.log('Socket connected!');
+    });
+    
+    newSocket.on('connect_error', (err) => {
+        console.error('Socket connection error:', err);
+    });
+
+    setSocket(newSocket);
+    
+    return () => {
+        console.log('Disconnecting socket...');
+        newSocket.disconnect();
+    };
+}, []);
+  useEffect(() => {
+    const newSocket = io(process.env.NEXT_PUBLIC_SOCKET_URL)
+    setSocket(newSocket)
+
+    return () => newSocket.disconnect()
+  }, [])
   const dateNow = new Date()
   const year = dateNow.getFullYear()
   useEffect(()=>{
@@ -98,15 +132,13 @@ const EventItemDescSession = () => {
     currentDate()
   },[])
   const getNormalDate = `${fixedDay}.${fixedMounth}.${year}`
-  console.log(getNormalDate);
-  
-  
-
   const GAP = 5
   const COLORS = {
     free: '#cccccc',
+    bought: '#e30a13',
     reserved: '#5F5D5D',
     selected: '#00ff00',
+    vip: '#FFD700'
   }
 
 useEffect(() => {
@@ -141,10 +173,11 @@ useEffect(() => {
   }
   fetchSession()
 },[params.nestedId,params.nestedId])
+console.log(ticketType);
 
-const drawSeats = useCallback(() => {
+const drawSeats = useCallback(()=>{
   const canvas = canvasRef.current
-  if (!canvas || !cinema || !session){
+  if(!canvas || !cinema || !session){
     return
   }
 
@@ -172,11 +205,26 @@ const drawSeats = useCallback(() => {
   for(let row = 1; row <= rows; row++){
     for(let seat = 1; seat <= seatsPerRow; seat++){
       const isReserved = currentHall.reservedSeats.some((s) => s.row == row && s.seat == seat)
+      const isBought = currentHall.boughtSeats.some((s) => s.row == row && s.seat == seat)
+      const isVip = currentHall.isVipSeats && currentHall.VIPSeats.some((vip) => vip.row == row && vip.seat == seat)
       const isSelected = selectedSeats.some((s) => s.row == row && s.seat == seat)
+      let seatColor = COLORS.free
       const x = GAP + (seat - 1) * (seatWidth + GAP)
       const y = GAP + (row - 1) * (seatHeight + GAP)
-
-      ctx.fillStyle = isReserved ? COLORS.reserved : isSelected ? COLORS.selected : COLORS.free
+      if(isReserved){
+        seatColor = COLORS.reserved
+      }
+      else if(isBought){
+        seatColor = COLORS.bought
+      }
+      else if(isSelected){
+        seatColor = COLORS.selected
+      }
+      else if (isVip) {
+        seatColor = COLORS.vip
+      }
+      // ctx.fillStyle = isReserved ? COLORS.reserved : isSelected ? COLORS.selected : seatColor
+      ctx.fillStyle = seatColor
       ctx.fillRect(x, y, seatWidth, seatHeight)
       // ctx.fillRect(x, y, SEAT_SIZE, SEAT_SIZE)
     }
@@ -185,8 +233,26 @@ const drawSeats = useCallback(() => {
 useEffect(() => {
   drawSeats()
 },[drawSeats])
+useEffect(() => {
+  if(!socket || !cinema){
+    return 
+  }
 
-const handleCanvasClick = (e) => {
+  const handleSeatUpdate = (updatedCinema) => {
+    setCinema(updatedCinema)
+    drawSeats()
+  }
+
+  socket.on('seatReserved', handleSeatUpdate)
+  socket.on('seatPurchased', handleSeatUpdate)
+
+  return () => {
+    socket.off('seatReserved', handleSeatUpdate)
+    socket.off('seatPurchased', handleSeatUpdate)
+  }
+}, [socket, cinema, drawSeats])
+
+const handleCanvasClick = (e)=>{
   // console.log(e);
   
   if(!session || !cinema){
@@ -212,37 +278,127 @@ const handleCanvasClick = (e) => {
     return
   }
   const currentHall = cinema.halls.find((hall) => hall.name == session.hall)
-  const isReserved = currentHall.reservedSeats.some((seats) => seats.row == clickedRow && seats.seat == clickedSeat)
-  if(!isReserved){
-    setTempSeat({row: clickedRow,seat: clickedSeat })
-    setIsDialogOpen(true)
-  }
+  const isSelected = selectedSeats.some((seat) => seat.row == clickedRow && seat.seat == clickedSeat)
+  const isReserved = currentHall.reservedSeats.some((s) => s.row == clickedRow && s.seat == clickedSeat)
+  const isBought = currentHall.boughtSeats.some((s) => s.row == clickedRow && s.seat == clickedSeat)
+  const isVip = currentHall?.VIPSeats.some((vip) => vip.row == clickedRow && vip.seat == clickedSeat)
+  socket.emit('checkSeat',
+    {
+      cinemaId: cinema._id,
+      hall: session.hall,
+      row: clickedRow,
+      seat: clickedSeat
+    },
+    (response)=>{
+      if (response.available) {
+        setTempSeat({ row: clickedRow, seat: clickedSeat })
+        setIsTempSeatVip(isVip)
+        setIsDialogOpen(true)
+      }
+      else{
+        toast('Место уже занято!')
+      }
+    })
+  // if(!isReserved && !isBought && !isSelected){
+  //   setTempSeat({row: clickedRow,seat: clickedSeat })
+  //   setIsTempSeatVip(isVip)
+  //   setIsDialogOpen(true)
+  // }
 }
 
-const addTicket = () => {
-  setSelectedSeats(prev => [...prev,{...tempSeat,ticketType,price: ticketType == 'adult' ? session.adultPrice : session.childPrice}])
+const addTicket = ()=>{
+  const isAlreadySelected = selectedSeats.some(s => 
+    s.row == tempSeat.row && s.seat === tempSeat.seat
+  )
+  if(!isAlreadySelected){
+    // setSelectedSeats((prev) => [
+    //   ...prev,
+    //   {
+    //     ...tempSeat,
+    //     ticketType,
+    //     price: ticketType == 'vip' ? session.vipPrice : ticketType == 'adult' ? session.adultPrice : session.childPrice,
+    //   }
+    // ])
+    const newSeat = {
+      ...tempSeat,
+      ticketType,
+      price: ticketType === 'vip' ? session.vipPrice : ticketType === 'adult' ? session.adultPrice : session.childPrice,
+    }
+    setSelectedSeats((prev) => [...prev,newSeat])
+    socket.emit('reserveSeat', {
+      cinemaId: cinema._id,
+      hall: session.hall,
+      seat: tempSeat,
+      userId: tokenUser?._id,
+      sessionId: params.nestedId
+    })
+    const timer = setTimeout(async() => {
+      setSelectedSeats(async(prev) => {
+        prev.filter(s => !(s.row === tempSeat.row && s.seat === tempSeat.seat))
+        await axios.post('/api/cinemas/cancelReservation', {
+          cinemaId: cinema._id,
+          hall: session.hall,
+          seats: [tempSeat]
+        })
+    }, 900000) // 15 minutes
+    reservationTimeoutRef.current.set(`${tempSeat.row}-${tempSeat.seat}`, timer)
+    })
+  }
   setIsDialogOpen(false)
   setTicketType('adult')
+  setIsTempSeatVip(false)
 }
+const removeTicket = ()=>{
+  setIsDialogOpen(false)
+  setTicketType('adult')
+  setIsTempSeatVip(false)
+}
+const handlePayment = async () => {
+  try {
+    // Сохраняем выбранные места в localStorage
+    const reservationData = {
+      eventId: params.id,
+      sessionId: params.nestedId,
+      seats: selectedSeats,
+      totalPrice,
+      cinemaId: cinema._id,
+      hall: session.hall
+    }
+    
+    localStorage.setItem('currentReservation', JSON.stringify(reservationData))
 
+    // Резервируем места через API
+    await axios.post('/api/cinemas/reserve', {
+      cinemaId: cinema._id,
+      hall: session.hall,
+      seats: selectedSeats.map(s => ({ row: s.row, seat: s.seat })),
+      userId: tokenUser?._id
+    })
+
+    router.push(`/events/${params.id}/${params.nestedId}/buy`)
+  } catch (error) {
+    console.error('Ошибка при бронировании:', error)
+    alert('Не удалось забронировать места')
+  }
+}
 const totalPrice = selectedSeats.reduce((acc, seat) => acc + seat.price, 0)
 
 if(!session || !cinema){
   return (
     <>  
-      <div>Загрузка...</div>
+      <div className='h-[26rem] flex justify-center items-center'>
+        <Label className='text-4xl'>Загрузка...</Label>
+      </div>
     </>
     
   )
 }
-
-
   return (
     <div className='flex flex-col gap-20 my-20'>
       <section  className='w-full px-5 flex flex-col gap-4'>
       <div className='flex gap-4 sm:flex-row max-sm:flex-col'>
         <div>
-          {imageError ? (
+          { imageError ? (
             <Skeleton className='w-[10rem] sm:w-[10rem] max-sm:w-full h-[10rem] rounded-xl'/>
             ) : (
             <Image src={event?.image} alt='not found' onError={() => setImageError(true)} width={112} height={112} className='w-[10rem] sm:w-[10rem] max-sm:w-[5rem] h-auto rounded-xl'/>
@@ -264,7 +420,7 @@ if(!session || !cinema){
       </div>
       <div className='w-full'>
         <div className='w-full border border-gray-300 rounded-lg flex justify-center items-center py-12'>
-          <canvas ref={canvasRef} onClick={handleCanvasClick} className=" cursor-pointer rounded-lg"style={{minWidth: '255px',minHeight: '255px',maxWidth:'455px',maxHeight:'455px',}}/>
+          <canvas ref={canvasRef} onClick={handleCanvasClick} className=" cursor-pointer rounded-lg" style={{minWidth: '255px',minHeight: '255px',maxWidth:'455px',maxHeight:'455px',}}/>
         </div>
         <div>
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
@@ -273,23 +429,34 @@ if(!session || !cinema){
               <DialogTitle>Выберите тип билета</DialogTitle>
             </DialogHeader>
             <RadioGroup value={ticketType} onValueChange={setTicketType} className="flex flex-col gap-4">
+            {isTempSeatVip  ? (
               <div className="flex items-center space-x-2">
-                <RadioGroupItem value="adult" id="adult" className='cursor-pointer' />
-                <Label htmlFor="adult" className='cursor-pointer'>
-                  Взрослый - {session?.adultPrice} ₸
+                <RadioGroupItem value="vip" id="vip" className="cursor-pointer" />
+                <Label htmlFor="vip" className="cursor-pointer">
+                  VIP - {session?.vipPrice || 'Цена не указана'} ₸
                 </Label>
               </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="child" id="child" className='cursor-pointer'/>
-                <Label htmlFor="child" className='cursor-pointer'>
-                  Детский - {session?.childPrice} ₸
-                </Label>
-              </div>
+            ) : (
+              <>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="adult" id="adult" className="cursor-pointer" />
+                  <Label htmlFor="adult" className="cursor-pointer">
+                    Взрослый - {session?.adultPrice} ₸
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="child" id="child" className="cursor-pointer" />
+                  <Label htmlFor="child" className="cursor-pointer">
+                    Детский - {session?.childPrice} ₸
+                  </Label>
+                </div>
+              </>
+            )}
             </RadioGroup>
 
             <DialogFooter>
               <DialogClose asChild>
-                <Button variant="outline">Отмена</Button>
+                <Button variant="outline" onClick={removeTicket}>Отмена</Button>
               </DialogClose>
               <Button onClick={addTicket}>Подтвердить</Button>
             </DialogFooter>
@@ -317,7 +484,7 @@ if(!session || !cinema){
                 <div key={index} className="bg-white rounded-lg shadow px-4 py-6 lg:px-4 lg:py-6 sm:px-3 sm:py-4 max-sm:px-3 max-sm:py-4 flex justify-between">
                   <div>
                     <h2>{seat.row} Ряд, {seat.seat} Место</h2>
-                    <p>{seat.ticketType == 'adult' ? 'Взрослый' : 'Детский'} • {seat.price} ₸</p>
+                    <p>{seat.ticketType == 'vip' || seat.ticketType == 'VIP' ? 'VIP' : seat.ticketType == 'adult' ? 'Взрослый' : 'Детский'} • {seat.price} ₸</p>
                   </div>
                   <div>
                     <X className='cursor-pointer w-[1.5rem] h-auto' onClick={() => setSelectedSeats((prev) => prev.filter((s) => !(s.row == seat.row && s.seat == seat.seat)))} />
@@ -326,7 +493,7 @@ if(!session || !cinema){
               ))}
             </div>
             <div className='flex justify-end'>
-              <Button className='w-1/6 lg:w-1/6 md:w-1/4 sm:w-full max-sm:w-full h-[3rem] bg-[#00F000] font-semibold text-lg text-white cursor-pointer rounded-lg hover:bg-[#00C000]' onClick={() => console.log('Переход к оплате', selectedSeats)}>
+              <Button className='w-1/6 lg:w-1/6 md:w-1/4 sm:w-full max-sm:w-full h-[3rem] bg-[#00F000] font-semibold text-lg text-white cursor-pointer rounded-lg hover:bg-[#00C000]' onClick={() => handlePayment}>
                 Перейти к оплате
               </Button>
             </div>
@@ -339,4 +506,4 @@ if(!session || !cinema){
   )
 }
 
-export default EventItemDescSession
+export default EventItemDescSessionPage

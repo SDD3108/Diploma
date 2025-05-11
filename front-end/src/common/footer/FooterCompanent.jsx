@@ -5,6 +5,7 @@ import { Input } from "@/src/ui/input"
 import { Facebook,Instagram,Twitter,Mail,Phone,MapPin } from 'lucide-react'
 import { useRouter } from "next/navigation";
 import {HoverCard,HoverCardContent,HoverCardTrigger,} from "@/src/ui/hover-card"
+import { Separator } from '@/src/ui/separator'
 
 const FooterCompanent = () => {
   const router = useRouter()
@@ -22,7 +23,8 @@ const FooterCompanent = () => {
   }
   return (
     <footer className='bg-[#141414] h-[24rem] px-5 py-10 text-[#FFFFFF] sm:h-[52rem] md:h-[24rem] max-sm:h-[52rem]'>
-      <div className="container grid grid-cols-1 md:grid-cols-4 gap-8 border-b border-[#3D3D3D] pb-8">
+      <div>
+        <div className="container grid grid-cols-1 md:grid-cols-4 gap-8 pb-8">
         <div className="space-y-4">
           <h2 className="text-2xl font-bold text-[#00F000]">TicketFlow</h2>
           <p className="text-[#F5F5F5]">
@@ -109,7 +111,10 @@ const FooterCompanent = () => {
             </Button>
           </form>
         </div>
+        </div>
+        <Separator className="bg-[#3D3D3D] data-[orientation=horizontal]:h-[2px]" />
       </div>
+      
       <div className="pt-6 mt-8 text-center text-[#F5F5F5]">
         <p>© 2024 TicketFlow. Все права защищены</p>
       </div>

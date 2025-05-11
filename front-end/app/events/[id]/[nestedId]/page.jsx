@@ -1,5 +1,5 @@
 import React from 'react'
-import EventItemDescSession from '../../../../src/pageBuilders/EventItemDescSession/EventItemDescSession'
+import EventItemDescSessionPage from '@/src/pageBuilders/EventsPageBuilders/EventItemDescSessionPage/EventItemDescSessionPage'
 // 1. isVipSeats
 // 2. vipSeats
 // 3. reservedSeats
@@ -10,7 +10,7 @@ import EventItemDescSession from '../../../../src/pageBuilders/EventItemDescSess
 const SeatsPage = () => {
   return (
     <>
-      <EventItemDescSession/>
+      <EventItemDescSessionPage/>
     </>
   )
 }
