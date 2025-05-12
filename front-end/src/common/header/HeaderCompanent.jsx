@@ -7,39 +7,28 @@ import { Menu,X,Tickets } from 'lucide-react'
 import { useRouter } from "next/navigation";
 import { Separator } from "@/src/ui/separator";
 import Link from 'next/link'
-// как использовать link в nextjs
-
+import '@/i18n'
+import { useTranslation } from 'react-i18next'
 const HeaderCompanent = () => {
+  const { t } = useTranslation('common')
   const router = useRouter()
-  const NavigationToHome = ()=>{
-    router.push('/')
-  }
-  const NavigationToProfile = ()=>{
-    router.push('/profile')
-  }
-  const NavigationToEvents = ()=>{
-    router.push('/events')
-  }
-  const NavigationToNatisfaction = ()=>{
-    router.push('/natisfaction')
-  }
   return (
     <header className='h-[8rem] bg-[#1A1A1A] text-[#FFFFFF] shadow-md px-5 flex items-center'>
       <div className='flex flex-col items-center w-full'>
         <div className="flex justify-between w-full">
-          <div className="flex items-center gap-2 cursor-pointer">
+          <div className="flex items-center gap-2 cursor-pointer" onClick={()=>router.push('/')}>
             <Tickets className="h-8 w-8 text-[#00F000]" />
-            <span className="text-xl font-bold text-[#FFFFFF]">TicketFlow</span>
+            <span className="text-xl font-bold text-[#FFFFFF]">{t('brand.name')}</span>
           </div>
           <div className='flex gap-2'>
             <Link href="/login">
               <Button variant="outline" className="text-[#00F000] border-[#00F000] bg-[#1A1A1A] hover:bg-[#00F000]/10 hover:text-[#00F000] cursor-pointer">
-                Log In
+                {t('auth.login')}
               </Button>
             </Link>
             <Link href="/registration">
               <Button className="bg-[#00F000] hover:bg-[#00C000] text-[#ffffff] cursor-pointer">
-                Sign Up
+                {t('auth.signup')}
               </Button>
             </Link>
             
@@ -51,22 +40,22 @@ const HeaderCompanent = () => {
             <NavigationMenuList className='gap-3'>
               <NavigationMenuItem>
                 <NavigationMenuLink href="/" className="px-4 py-2 text-[#F5F5F5] hover:text-[#00F000] hover:bg-white/10 transition-colors">
-                  Home
+                  {t('nav.home')}
                 </NavigationMenuLink>
               </NavigationMenuItem>
               <NavigationMenuItem>
                 <NavigationMenuLink href="/events" className="px-4 py-2 text-[#F5F5F5] hover:text-[#00F000] hover:bg-white/10 transition-colors">
-                  Events
+                  {t('nav.events')}
                 </NavigationMenuLink>
               </NavigationMenuItem>
               <NavigationMenuItem>
                 <NavigationMenuLink href="/natisfaction" className="px-4 py-2 text-[#F5F5F5] hover:text-[#00F000] hover:bg-white/10 transition-colors">
-                  Natisfactions
+                  {t('nav.natisfactions')}
                 </NavigationMenuLink>
               </NavigationMenuItem>
               <NavigationMenuItem>
                 <NavigationMenuLink href="/profile" className="px-4 py-2 text-[#F5F5F5] hover:text-[#00F000] hover:bg-white/10 transition-colors">
-                  Profile
+                  {t('nav.profile')}
                 </NavigationMenuLink>
               </NavigationMenuItem>
             </NavigationMenuList>
@@ -80,21 +69,24 @@ const HeaderCompanent = () => {
               </SheetTrigger>
               <SheetContent side="left" className="w-[19rem] bg-[#1A1A1A] border-r-[#3D3D3D] [&>button]:hidden">
                 <SheetHeader>
-                  <SheetTitle className="text-[#FFFFFF]">Меню</SheetTitle>
+                  <SheetTitle className="text-[#FFFFFF]">{t('menu.title')}</SheetTitle>
                   <X className="absolute right-4 top-4 h-6 w-6 cursor-pointer text-[#00F000]" onClick={() => document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }))}/>
                 </SheetHeader>
                 <div className="flex flex-col gap-4 mt-8">
-                  <Button variant="ghost" className="w-full justify-start text-[#F5F5F5] hover:text-[#00F000] hover:bg-[#3D3D3D]" onClick={NavigationToHome}>
-                    Home
+                  <Button variant="ghost" className="w-full justify-start text-[#F5F5F5] hover:text-[#00F000] hover:bg-[#3D3D3D]">
+                    <Link href='/'>{t('nav.home')}</Link>
                   </Button>
-                  <Button variant="ghost" className="w-full justify-start text-[#F5F5F5] hover:text-[#00F000] hover:bg-[#3D3D3D]" onClick={NavigationToEvents}>
-                    Events
+                  <Button variant="ghost" className="w-full justify-start text-[#F5F5F5] hover:text-[#00F000] hover:bg-[#3D3D3D]">
+                    <Link href='/events'>{t('nav.events')}</Link>
+                    
                   </Button>
-                  <Button variant="ghost" className="w-full justify-start text-[#F5F5F5] hover:text-[#00F000] hover:bg-[#3D3D3D]" onClick={NavigationToNatisfaction}>
-                    Natisfactions
+                  <Button variant="ghost" className="w-full justify-start text-[#F5F5F5] hover:text-[#00F000] hover:bg-[#3D3D3D]">
+                    <Link href='/natisfaction'>{t('nav.natisfactions')}</Link>
+                    
                   </Button>
-                  <Button variant="ghost" className="w-full justify-start text-[#F5F5F5] hover:text-[#00F000] hover:bg-[#3D3D3D]" onClick={NavigationToProfile}>
-                    Profile
+                  <Button variant="ghost" className="w-full justify-start text-[#F5F5F5] hover:text-[#00F000] hover:bg-[#3D3D3D]">
+                    <Link href='/profile'>{t('nav.profile')}</Link>
+                    
                   </Button>
                 </div>
               </SheetContent>

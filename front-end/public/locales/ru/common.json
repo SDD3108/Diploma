@@ -2,5 +2,28 @@
     "description": "Выберите предпочитаемый язык",
     "welcome": "Добро пожаловать!",
     "button_save": "Сохранить изменения",
-    "other_key": "Любой другой текст"
+    "other_key": "Любой другой текст",
+
+    "brand.name": "TicketFlow",
+    "auth.login": "Войти",
+    "auth.signup": "Зарегистрироваться",
+    "nav.home": "Главная",
+    "nav.events": "События",
+    "nav.natisfactions": "Уведомления",
+    "nav.profile": "Профиль",
+    "menu.title": "Меню",
+
+    "footer.main.page": "Главная страница",
+    "footer.slogan": "Мгновенное бронирование — одним кликом",
+    "footer.nav.heading": "Навигация",
+    "footer.contacts.heading": "Контакты",
+    "footer.contacts.phone": "+7 (775) 630-64-01",
+    "footer.contacts.email": "ticketflow@gmail.com",
+    "footer.contacts.address": "Астана, ул. Сыганак, 47",
+    "footer.newsletter.heading": "Новостная рассылка",
+    "footer.newsletter.placeholder": "Ваш email",
+    "footer.newsletter.tooltip.title": "Введите свою почту",
+    "footer.newsletter.tooltip.text": "И нажмите на кнопку \"Подписаться\", чтобы подписаться на рассылку",
+    "footer.newsletter.subscribe": "Подписаться",
+    "footer.copy": "© 2024 TicketFlow. Все права защищены"
 }

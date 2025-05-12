@@ -2,5 +2,28 @@
     "description": "Сізге көмек көрсету үшін бізге хабарласыңыз",
     "welcome": "Қош келдіңіз!",
     "button_save": "Өзгерістерді сақтау",
-    "other_key": "Басқа мәтін"
+    "other_key": "Басқа мәтін",
+
+    "brand.name": "TicketFlow",
+    "auth.login": "Кіру",
+    "auth.signup": "Тіркелу",
+    "nav.home": "Басты бет",
+    "nav.events": "Іс-шаралар",
+    "nav.natisfactions": "Хабарландырулар",
+    "nav.profile": "Профиль",
+    "menu.title": "Мәзір",
+
+    "footer.main.page": "Негізгі бет",
+    "footer.slogan": "Бір ғана басу арқылы лезде брондау",
+    "footer.nav.heading": "Навигация",
+    "footer.contacts.heading": "Байланыстар",
+    "footer.contacts.phone": "+7 (775) 630-64-01",
+    "footer.contacts.email": "ticketflow@gmail.com",
+    "footer.contacts.address": "Астана, Сығанақ көшесі, 47",
+    "footer.newsletter.heading": "Жаңалықтар бюллетені",
+    "footer.newsletter.placeholder": "Сіздің электрондық поштаңыз",
+    "footer.newsletter.tooltip.title": "Электрондық поштаңызды енгізіңіз",
+    "footer.newsletter.tooltip.text": "Жазылу үшін «Жазылу» түймесін басыңыз",
+    "footer.newsletter.subscribe": "Жазылу",
+    "footer.copy": "© 2024 TicketFlow. Барлық құқықтар қорғалған"
 }

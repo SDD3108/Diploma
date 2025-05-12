@@ -2,6 +2,28 @@
     "description": "Choose your preferred language",
     "welcome": "Welcome!",
     "button_save": "Save changes",
-    "other_key": "Any other text"
+    "other_key": "Any other text",
     
+    "brand.name": "TicketFlow",
+    "auth.login": "Log In",
+    "auth.signup": "Sign Up",
+    "nav.home": "Home",
+    "nav.events": "Events",
+    "nav.natisfactions": "Notifications",
+    "nav.profile": "Profile",
+    "menu.title": "Menu",
+
+    "footer.main": "Home page",
+    "footer.slogan": "Instant booking with - a single click",
+    "footer.nav.heading": "Navigation",
+    "footer.contacts.heading": "Contacts",
+    "footer.contacts.phone": "+7 (775) 630-64-01",
+    "footer.contacts.email": "ticketflow@gmail.com",
+    "footer.contacts.address": "Astana, Sygynak St., 47",
+    "footer.newsletter.heading": "Newsletter",
+    "footer.newsletter.placeholder": "Your email",
+    "footer.newsletter.tooltip.title": "Enter your email",
+    "footer.newsletter.tooltip.text": "And click the \"Subscribe\" button to join the mailing list",
+    "footer.newsletter.subscribe": "Subscribe",
+    "footer.copy": "© 2024 TicketFlow. All rights reserved"
 }

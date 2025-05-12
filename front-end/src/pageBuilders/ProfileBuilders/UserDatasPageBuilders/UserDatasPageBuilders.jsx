@@ -21,6 +21,7 @@ const UserDatasPageBuilders = () => {
     isAvatar:false,
   })
   const [isSaving, setIsSaving] = useState(false)
+  const backendAddress = process.env.NEXT_PUBLIC_SOCKET_URL
   useEffect(() => {
     if(tokenUser){
       setFormData({
@@ -57,9 +58,6 @@ const UserDatasPageBuilders = () => {
     finally{
       setIsSaving(false)
     }
-  }
-  const test =()=>{
-    console.log('working2')
   }
   const handleFileUpload = async (e) => {
     const file = e.target.files[0]
@@ -116,7 +114,7 @@ const UserDatasPageBuilders = () => {
       console.error('Delete error:', error);
     }
   }
-  console.log(`http://localhost:3002${formData.avatar}`);
+  // console.log(`http://localhost:3002${formData.avatar}`);
   
   return (
     <div>
@@ -124,7 +122,7 @@ const UserDatasPageBuilders = () => {
         <div>
           <Avatar className='w-[5rem] h-[5rem] rounded-xl bg-gray-300'>
             {formData.isAvatar ? (
-              <AvatarImage src={`http://localhost:3002${formData?.avatar}`} alt='User avatar' />
+              <AvatarImage src={`${backendAddress}${formData?.avatar}`} alt='User avatar' />
             ) : (
               <AvatarFallback className='rounded-xl bg-gray-100'>
                 {GetInitials(tokenUser?.name)}
