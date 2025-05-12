@@ -11,9 +11,12 @@ import { Carousel,CarouselContent,CarouselItem,CarouselNext,CarouselPrevious, } 
 import EventItemPage from '@/app/(pages)/EventItemPage/page';
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import '@/i18n'
+import { useTranslation } from 'react-i18next'
+
 
 const SearchPageBuilder = () => {
-
+  const { t } = useTranslation('common')
     const router = useRouter()
     const [events, setEvents] = useState([])
     const {
@@ -48,28 +51,28 @@ const SearchPageBuilder = () => {
   return (
     <div className='w-full flex flex-col gap-5 px-5'>
         <div className="flex flex-col gap-1">
-          <h1 className="text-[#151515] text-3xl font-bold">Поиск событий</h1>
-          <p className="text-[#151515] text-lg">Удобный поиск мероприятий по дате, времени и типу.</p>
+          <h1 className="text-[#151515] text-3xl font-bold">{t('search.title')}</h1>
+          <p className="text-[#151515] text-lg">{t('search.description')}</p>
         </div>
         <div className="space-y-6">
         <Card>
         <CardHeader>
-          <CardTitle>Filters</CardTitle>
+          <CardTitle>{t('filters.heading')}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="search">Search</Label>
-              <Input id="search" placeholder="Search events..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)}/>
+              <Label htmlFor="search">{t('filters.search.label')}</Label>
+              <Input id="search" placeholder={t('filters.search.placeholder')} value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)}/>
             </div>
             <div className="space-y-2">
-            <Label>Жанр</Label>
+            <Label>{t('filters.genre.label')}</Label>
             <Select value={getDisplayedGenre()} onValueChange={handleGenreChange}>
               <SelectTrigger>
                 <SelectValue placeholder="All genres" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Все жанры</SelectItem>
+                <SelectItem value="all">{t('filters.genre.all')}</SelectItem>
                 {genres.map((genre) => (
                   <SelectItem key={genre} value={genre}>{genre}</SelectItem>
                 ))}
@@ -77,20 +80,20 @@ const SearchPageBuilder = () => {
             </Select>
             </div>
             <div className="space-y-2">
-              <Label>Сортировка по рейтингу</Label>
+              <Label>{t('filters.sort.label')}</Label>
               <Select value={sortOrder} onValueChange={setSortOrder}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select order" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="asc">По Возрастанию</SelectItem>
-                  <SelectItem value="desc">По Убыванию</SelectItem>
+                  <SelectItem value="asc">{t('filters.sort.asc')}</SelectItem>
+                  <SelectItem value="desc">{t('filters.sort.desc')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
           </div>
           <div className="space-y-2">
-            <Label>Минимальный рейтинг: {rating}</Label>
+            <Label>{t(`filters.rating.label`)} {rating}</Label>
             <Slider min={0} max={5} step={0.5} value={[rating]} onValueChange={(value) => setRating(value[0])}/>
           </div>
         </CardContent>
@@ -114,7 +117,7 @@ const SearchPageBuilder = () => {
         </Carousel>
         {filteredEvents.length == 0 && (
           <div className="text-center py-12">
-            <p className="text-muted-foreground">No events found by your criteria</p>
+            <p className="text-muted-foreground">{t('noResults.message')}</p>
           </div>
         )}
         </div>

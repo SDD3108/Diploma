@@ -4,7 +4,7 @@ import SearchPageBuilder from '../../../src/pageBuilders/SearchPageBuilder/Searc
 const SearchPage = () => {
   return (
     <div>
-        <SearchPageBuilder/>
+      <SearchPageBuilder/>
     </div>
   )
 }

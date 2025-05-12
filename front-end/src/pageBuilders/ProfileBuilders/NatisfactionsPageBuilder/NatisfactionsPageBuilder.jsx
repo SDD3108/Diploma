@@ -19,8 +19,11 @@ import {
   AlertDialogTrigger,
 } from "@/src/ui/alert-dialog"
 import axios from 'axios'
+import '@/i18n'
+import { useTranslation } from 'react-i18next'
 
 const NatisfactionsPageBuilder = () => {
+  const { t } = useTranslation('common')
   const { tokenUser } = GetToken()
   const [checkedAll, setCheckedAll] = useState(false)
   const [messageOpen, setMessageOpen] = useState(false)
@@ -126,27 +129,27 @@ const NatisfactionsPageBuilder = () => {
       ) : (
         <div className='space-y-[2rem]'>
           <div className='text-3xl text-[#101828] leading-[129%] font-semibold'>
-            <h2>Уведомления</h2>
+            <h2>{t('notifications.heading')}</h2>
           </div>
           <div className='w-full flex flex-col shadow-lg min-h-[7.5rem] rounded-md'>
             <div className='flex justify-between w-full h-[3.5rem] bg-[#f6f8fa] rounded-t-md px-6 py-4'>
               <div className='flex items-center gap-2'>
                 <Checkbox checked={checkedAll} onClick={checkedAllBoxs} />
-                <h3 className='font-medium'>Выбрать все</h3>
+                <h3 className='font-medium'>{t('notifications.selectAll')}</h3>
               </div>
               <div>
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
-                    <h3 className='font-medium hover:underline cursor-pointer'>Удалить</h3>
+                    <h3 className='font-medium hover:underline cursor-pointer'>{t('notifications.delete')}</h3>
                   </AlertDialogTrigger>
                   <AlertDialogContent>
                     <AlertDialogHeader>
-                      <AlertDialogTitle>Вы уверены?</AlertDialogTitle>
-                      <AlertDialogDescription>Это действие нельзя отменить. Выбранные сообщения будут удалены навсегда.</AlertDialogDescription>
+                      <AlertDialogTitle>{t('notifications.confirm.title')}</AlertDialogTitle>
+                      <AlertDialogDescription>{t('notifications.confirm.description')}</AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
-                      <AlertDialogCancel>Отмена</AlertDialogCancel>
-                      <AlertDialogAction onClick={deleteMessages}className="bg-red-600 hover:bg-red-700">Удалить</AlertDialogAction>
+                      <AlertDialogCancel>{t('notifications.confirm.cancel')}</AlertDialogCancel>
+                      <AlertDialogAction onClick={deleteMessages}className="bg-red-600 hover:bg-red-700">{t('notifications.confirm.action')}</AlertDialogAction>
                     </AlertDialogFooter>
                   </AlertDialogContent>
                 </AlertDialog>
@@ -166,8 +169,9 @@ const NatisfactionsPageBuilder = () => {
                         <Checkbox checked={checkedItems[index]} onClick={()=> ownChecked(index)} />
                       </div>
                       <div className='flex flex-col text-nowrap w-full cursor-pointer' onClick={()=>openMessagePage(message)}>
-                        <h3 className='font-medium'>{message.title}</h3>
-                        <h4 className='text-sm font-normal'>{message.briefDescription}</h4>
+                        {/* <h3 className='font-medium'>{message.title}</h3> */}
+                        <h3 className='font-medium'>{t('notifications.message.title')}</h3>
+                        <h4 className='text-sm font-normal'>{t('notifications.message.brief')}</h4>
                       </div>
                     </div>
                     <div className='flex text-nowrap'>

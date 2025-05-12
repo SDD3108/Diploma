@@ -9,10 +9,12 @@ import EventsPageBuilder from "@/src/pageBuilders/EventsPageBuilders/EventsPageB
 import { Accordion,AccordionContent,AccordionItem,AccordionTrigger,} from "@/src/ui/accordion"
 import { Card, CardContent } from "@/src/ui/card"
 import MainImage from '@/images/mainPage/main.png'
-
 import SearchPage from '@/app/(pages)/SearchPage/page'
+import '@/i18n'
+import { useTranslation } from 'react-i18next'
 
 export default function Home() {
+  const { t } = useTranslation('common')
   const router = useRouter()
   const [array,setArray] = useState([
     {
@@ -83,12 +85,12 @@ export default function Home() {
           <CardContent className="w-full h-full flex flex-col gap-5 bg-cover bg-center bg-no-repeat">
             <div className="sticky z-2 w-full h-full flex flex-col justify-between">
               <div className="flex flex-col gap-5 w-1/2">
-                <h1 className="text-3xl lt:text-2xl text-white font-bold whitespace-normal  ">Бронирование мест в реальном времени</h1>
-                <p className="text-white text-lg">Быстрое и удобное бронирование мест на мероприятиях с мгновенным подтверждением.</p>
+                <h1 className="text-3xl lt:text-2xl text-white font-bold whitespace-normal  ">{t('landing.hero.title')}</h1>
+                <p className="text-white text-lg">{t('landing.hero.description')}</p>
               </div>
               <div className="flex gap-5 mt-5 w-1/4 mt-5">
-                <MyButton onClick={()=>router.push('/events')} className="bg-[#E50914] w-full text-white hover:bg-[#E50914] cursor-pointer">Купить билет</MyButton>
-                <MyButton onClick={()=>router.push('/events')} className="bg-[#E50914] w-full text-white hover:bg-[#E50914] cursor-pointer">Посмотреть события</MyButton>
+                <MyButton onClick={()=>router.push('/events')} className="bg-[#E50914] w-full text-white hover:bg-[#E50914] cursor-pointer">{t('landing.hero.buyTicket')}</MyButton>
+                <MyButton onClick={()=>router.push('/events')} className="bg-[#E50914] w-full text-white hover:bg-[#E50914] cursor-pointer">{t('landing.hero.viewEvents')}</MyButton>
               </div>
             </div>
             <Image className="rounded-xl w-full z-1 h-full absolute top-0 left-0" src={MainImage} alt="not found" width={100} height={100}/>
@@ -105,60 +107,40 @@ export default function Home() {
           <div className="w-1/2 flex flex-col gap-4">
           <Accordion type="single" collapsible className="bg-[#141414] rounded-xl px-4">
             <AccordionItem value="item-1">
-              <AccordionTrigger className="text-white cursor-pointer">Как работает система бронирования в реальном времени?</AccordionTrigger>
-              <AccordionContent className="text-white">
-              Используя WebSocket и Redis, мы синхронизируем статусы мест для всех пользователей мгновенно. 
-              Ваш выбор блокируется на 15 минут, чтобы дать время на оплату.
-              </AccordionContent>
+              <AccordionTrigger className="text-white cursor-pointer">{t('faq.q1')}</AccordionTrigger>
+              <AccordionContent className="text-white">{t('faq.a1')}</AccordionContent>
             </AccordionItem>
           </Accordion>
           <Accordion type="single" collapsible className="bg-[#141414] rounded-xl px-4">
             <AccordionItem value="item-1">
-              <AccordionTrigger className="text-white cursor-pointer">Что происходит, если место уже занято?</AccordionTrigger>
-              <AccordionContent className="text-white">
-                Вы автоматически попадаете в очередь. Как только место освободится, мы отправим вам 
-                уведомление и предоставим приоритетный доступ на 10 минут.
-              </AccordionContent>
+              <AccordionTrigger className="text-white cursor-pointer">{t('faq.q2')}</AccordionTrigger>
+              <AccordionContent className="text-white">{t('faq.a2')}</AccordionContent>
             </AccordionItem>
           </Accordion>
           <Accordion type="single" collapsible className="bg-[#141414] rounded-xl px-4">
             <AccordionItem value="item-1">
-              <AccordionTrigger className="text-white cursor-pointer">Насколько безопасны мои данные?</AccordionTrigger>
-              <AccordionContent className="text-white">
-                Все транзакции защищены 256-битным шифрованием. Мы не храним данные вашей карты - 
-                оплата обрабатывается через PCI DSS сертифицированные системы.
-              </AccordionContent>
+              <AccordionTrigger className="text-white cursor-pointer">{t('faq.q3')}</AccordionTrigger>
+              <AccordionContent className="text-white">{t('faq.a3')}</AccordionContent>
             </AccordionItem>
           </Accordion>
           </div>
           <div className="w-1/2 flex flex-col gap-4">
           <Accordion type="single" collapsible className="bg-[#141414] rounded-xl px-4">
             <AccordionItem value="item-1">
-              <AccordionTrigger className="text-white cursor-pointer">Какие технологии используются в проекте?</AccordionTrigger>
-              <AccordionContent className="text-white">
-                В основе: Next.js для фронтенда, Node.js + Socket.io для бэкенда, Redis для управления 
-                очередями и таймерами. Для UI - собственная сборка на shadcn/ui.
-              </AccordionContent>
+              <AccordionTrigger className="text-white cursor-pointer">{t('faq.q4')}</AccordionTrigger>
+              <AccordionContent className="text-white">{t('faq.a4')}</AccordionContent>
             </AccordionItem>
           </Accordion>
           <Accordion type="single" collapsible className="bg-[#141414] rounded-xl px-4">
             <AccordionItem value="item-1">
-              <AccordionTrigger className="text-white cursor-pointer">Какие уведомления я буду получать?</AccordionTrigger>
-              <AccordionContent className="text-white">
-                • Подтверждение бронирования<br/>
-                • Напоминание об оплате<br/>
-                • Продвижение в очереди<br/>
-                • Информацию о начале мероприятия
-              </AccordionContent>
+              <AccordionTrigger className="text-white cursor-pointer">{t('faq.q5')}</AccordionTrigger>
+              <AccordionContent className="text-white">{t('faq.a5')}</AccordionContent>
             </AccordionItem>
           </Accordion>
           <Accordion type="single" collapsible className="bg-[#141414] rounded-xl px-4">
             <AccordionItem value="item-1">
-              <AccordionTrigger className="text-white cursor-pointer">Можно ли отменить бронирование?</AccordionTrigger>
-              <AccordionContent className="text-white">
-                Да! Отмена доступна в личном кабинете за 24 часа до мероприятия. 
-                При отмене место автоматически предлагается следующему в очереди.
-              </AccordionContent>
+              <AccordionTrigger className="text-white cursor-pointer">{t('faq.q6')}</AccordionTrigger>
+              <AccordionContent className="text-white">{t('faq.a6')}</AccordionContent>
             </AccordionItem>
           </Accordion>
           </div>
