@@ -8,16 +8,16 @@ const NatisfactionsMessagePageBuilder = () => {
   const message = getData()
   return (
     <div className='space-y-[2rem]'>
-      <div className='text-3xl text-[#101828] leading-[129%] font-semibold'>
+      <div className='text-3xl text-[#101828] leading-[129%] font-semibold dark:text-white'>
         <h2>{message.title}</h2>
       </div>
       <div className='w-full flex flex-col shadow-lg min-h-[24rem] rounded-md'>
         <div className='flex flex-col justify-between p-4 min-h-[24rem] relative'>
           <div className='flex flex-col gap-1.5'>
             <div className=''>
-              <h3 className='font-medium text-[#101828] text-[1.125rem] leading-[150%]'>{message.title}</h3>
+              <h3 className='font-medium text-[#101828] text-[1.125rem] leading-[150%] dark:text-white'>{message.title}</h3>
             </div>
-            <div className='text-[#344054] text-[1.125rem] leading-[150%] font-normal'>
+            <div className='text-[#344054] text-[1.125rem] leading-[150%] font-normal dark:text-white/60'>
               <p>{message.description}</p>
             </div>
           </div>  

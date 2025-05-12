@@ -12,6 +12,9 @@ import useAuthStore from '@/src/store/AuthStore/authStore'
 import { useRouter } from 'next/navigation'
 import { Skeleton } from "@/src/ui/skeleton"
 import Link from 'next/link'
+import '@/i18n'
+import { useTranslation } from 'react-i18next'
+
 const loginSchema = z.object({
   email: z.string().email('Некорректный email'),
   password: z.string().min(6, 'Пароль должен быть не менее 6 символов'),
@@ -25,6 +28,7 @@ export const AuthForm = ({isRegister})=>{
   const {login,register,isLoading,error} = useAuthStore()
   const [showPassword,setShowPassword] = useState(false)
   const router = useRouter()
+  const { t } = useTranslation('common')
   // console.log(1);
   const form = useForm({
     resolver: zodResolver(isRegister ? registerSchema : loginSchema),
@@ -56,9 +60,9 @@ export const AuthForm = ({isRegister})=>{
             <FormField control={form.control} name="name" render={({field})=>(
 
               <FormItem>
-                <FormLabel>Имя</FormLabel>
+                <FormLabel>{t('auth.form.name')}</FormLabel>
                 <FormControl>
-                  <Input placeholder="Сатимов Дамир" {...field}/>
+                  <Input placeholder={t('auth.form.name.placeholder')} {...field}/>
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -67,16 +71,16 @@ export const AuthForm = ({isRegister})=>{
           <FormField control={form.control} name="email" render={({field})=>(
 
             <FormItem>
-              <FormLabel>Email</FormLabel>
+              <FormLabel>{t('auth.form.email')}</FormLabel>
               <FormControl>
-                <Input type="email" placeholder="example@mail.com" {...field} />
+                <Input type="email" placeholder={t('auth.form.email.placeholder')} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}/>
           <FormField control={form.control} name="password" render={({field})=>(
             <FormItem>
-              <FormLabel>Пароль</FormLabel>
+              <FormLabel>{t('auth.form.password')}</FormLabel>
               <FormControl>
                 <div className="relative">
                   <Input type={showPassword ? 'text' : 'password'} placeholder="••••••" {...field}/>
@@ -103,7 +107,7 @@ export const AuthForm = ({isRegister})=>{
             </div>
           ) : (
              <Button type="submit" className="w-full cursor-pointer" disabled={isLoading}>
-               {isRegister ? 'Зарегистрироваться' : 'Войти'}
+               {isRegister ? t('auth.form.register') : t('auth.form.login')}
              </Button>
             
           )}
@@ -112,7 +116,7 @@ export const AuthForm = ({isRegister})=>{
       <div className="space-y-4">
         <div className="flex items-center gap-4">
           <div className="flex-1 border-t" />
-          <span className="text-sm text-muted-foreground">ИЛИ</span>
+          <span className="text-sm text-muted-foreground">{t('auth.form.or')}</span>
           <div className="flex-1 border-t" />
         </div>
         <div className="flex gap-2 sm:flex-row max-sm:flex-col">
@@ -132,25 +136,25 @@ export const AuthForm = ({isRegister})=>{
 
         <div className="text-center text-sm">
           <Button variant="link" className="text-muted-foreground h-auto p-0 cursor-pointer">
-            Забыли пароль?
+            {t('auth.form.forgotPassword')}
           </Button>
         </div>
         <div className='text-center text-sm'>
           {isRegister ? (
             <Button variant="link" className='cursor-pointer hover:no-underline'>
-              Уже есть аккаунт?<Link href='/login' className='hover:underline'>Войти</Link>
+              {t('auth.form.alreadyHaveAccount')}<Link href='/login' className='hover:underline'>{t('auth.form.login')}</Link>
             </Button>
           ) : (
             <Button variant="link" className='cursor-pointer hover:no-underline'>
-              Ещё нет аккаунта?<Link href='/registration' className='hover:underline'>Зарегистрироваться</Link>
+              {t('auth.form.noAccount')}<Link href='/registration' className='hover:underline'>{t('auth.form.register')}</Link>
             </Button>
           )}
           
         </div>
         <p className="text-center text-xs text-muted-foreground">
-          Нажимая кнопку, вы соглашаетесь с
+          {t('auth.form.agreement')}
           <Button variant="link" className="text-xs h-auto p-0 cursor-pointer">
-            пользовательским соглашением
+            {t('auth.form.userAgreement')}
           </Button>
         </p>
       </div>

@@ -64,8 +64,23 @@
   "notifications.confirm.description": "Это действие нельзя отменить. Выбранные сообщения будут удалены навсегда.",
   "notifications.confirm.cancel": "Отмена",
   "notifications.confirm.action": "Удалить",
-  "notifications.message.title": "{{title}}",
-  "notifications.message.brief": "{{briefDescription}}",
-  "notifications.message.dateAgo": "{{count}} {{count, plural, one {день назад} few {дня назад} many {дней назад} other {дня назад}}"
 
+  "auth.registration.title": "Создание аккаунта",
+  "auth.registration.description": "Заполните все поля для регистрации",
+  "auth.login.title": "Вход в систему",
+  "auth.login.description": "Введите свои учетные данные для продолжения",
+
+  "auth.form.name": "Имя",
+  "auth.form.name.placeholder": "Сатимов Дамир",
+  "auth.form.email": "Email",
+  "auth.form.email.placeholder": "example@mail.com",
+  "auth.form.password": "Пароль",
+  "auth.form.register": "Зарегистрироваться",
+  "auth.form.login": "Войти",
+  "auth.form.or": "ИЛИ",
+  "auth.form.forgotPassword": "Забыли пароль?",
+  "auth.form.alreadyHaveAccount": "Уже есть аккаунт?",
+  "auth.form.noAccount": "Ещё нет аккаунта?",
+  "auth.form.agreement": "Нажимая кнопку, вы соглашаетесь с",
+  "auth.form.userAgreement": "пользовательским соглашением"
 }

@@ -114,7 +114,7 @@ const TicketInfoPageBuilder = () => {
                                     <Skeleton className='w-[10rem] h-5 rounded-lg'/>
                                 </div>
                             ) : (
-                                <span className='text-lg font-semibold text-[#101828]'>{sessionInfo.date} • {session.time} • <span className='border border-[#00F000] bg-[#00F000]/3 rounded-md px-3 py-1 text-sm text-[#00F000]'>{session.sessionLaunguage}</span></span>
+                                <span className='text-lg font-semibold text-[#101828]'>{sessionInfo.date} • {session.time} • <span className='border border-[#00F000] bg-[#00F000]/3 rounded-md px-3 py-1 text-sm text-slate-100'>{session.sessionLaunguage}</span></span>
                             )}
                         </div>
                         <div className='flex flex-col gap-3'>

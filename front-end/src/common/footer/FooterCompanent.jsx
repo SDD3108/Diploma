@@ -37,18 +37,18 @@ const FooterCompanent = () => {
       <div>
         <div className="container grid grid-cols-1 md:grid-cols-4 gap-8 pb-8">
         <div className="space-y-4">
-          <h2 className="text-2xl font-bold text-[#00F000]">{t('brand.name')}</h2>
+          <h2 className="text-2xl font-bold text-slate-100">{t('brand.name')}</h2>
           <p className="text-[#F5F5F5]">
             {t('footer.slogan')}
           </p>
           <div className="flex gap-4">
-            <Button variant="ghost" size="icon" className="text-[#F5F5F5] hover:bg-[#3D3D3D] hover:text-[#00F000]">
+            <Button variant="ghost" size="icon" className="text-[#F5F5F5] hover:bg-[#3D3D3D] hover:text-slate-100">
               <Facebook className="h-5 w-5" />
             </Button>
-            <Button variant="ghost" size="icon" className="text-[#F5F5F5] hover:bg-[#3D3D3D] hover:text-[#00F000]">
+            <Button variant="ghost" size="icon" className="text-[#F5F5F5] hover:bg-[#3D3D3D] hover:text-slate-100">
               <Instagram className="h-5 w-5" />
             </Button>
-            <Button variant="ghost" size="icon" className="text-[#F5F5F5] hover:bg-[#3D3D3D] hover:text-[#00F000]">
+            <Button variant="ghost" size="icon" className="text-[#F5F5F5] hover:bg-[#3D3D3D] hover:text-slate-100">
               <Twitter className="h-5 w-5" />
             </Button>
           </div>
@@ -56,16 +56,16 @@ const FooterCompanent = () => {
         <div className="space-y-4">
           <h3 className="text-lg font-semibold text-[#FFFFFF]">{t('footer.nav.heading')}</h3>
           <nav className="space-y-2">
-            <Button variant="link" className="text-[#F5F5F5] hover:text-[#00F000] p-0 cursor-pointer">
+            <Button variant="link" className="text-[#F5F5F5] hover:text-slate-100 p-0 cursor-pointer">
               <Link href='/'>{t('footer.main.page')}</Link>
             </Button>
-            <Button variant="link" className="text-[#F5F5F5] hover:text-[#00F000] p-0 block cursor-pointer">
+            <Button variant="link" className="text-[#F5F5F5] hover:text-slate-100 p-0 block cursor-pointer">
               <Link href='/events'>{t('nav.events')}</Link>
             </Button>
-            <Button variant="link" className="text-[#F5F5F5] hover:text-[#00F000] p-0 block cursor-pointer">
+            <Button variant="link" className="text-[#F5F5F5] hover:text-slate-100 p-0 block cursor-pointer">
               <Link href='/profile'>{t('nav.profile')}</Link>
             </Button>
-            <Button variant="link" className="text-[#F5F5F5] hover:text-[#00F000] p-0 block cursor-pointer">
+            <Button variant="link" className="text-[#F5F5F5] hover:text-slate-100 p-0 block cursor-pointer">
               <Link href='/natisfaction'>{t('nav.natisfactions')}</Link>
             </Button>
           </nav>
@@ -74,15 +74,15 @@ const FooterCompanent = () => {
           <h3 className="text-lg font-semibold text-[#FFFFFF]">{t('footer.contacts.heading')}</h3>
           <div className="space-y-2 text-[#F5F5F5]">
             <div className="flex items-center gap-2 cursor-pointer">
-              <Phone className="h-5 w-5 text-[#00F000]" />
+              <Phone className="h-5 w-5 text-slate-100" />
               <span>{t('footer.contacts.phone')}</span>
             </div>
             <div className="flex items-center gap-2 cursor-pointer">
-              <Mail className="h-5 w-5 text-[#00F000]" />
+              <Mail className="h-5 w-5 text-slate-100" />
               <span>{t('footer.contacts.email')}</span>
             </div>
             <div className="flex items-center gap-2 cursor-pointer">
-              <MapPin className="h-5 w-5 text-[#00F000]" />
+              <MapPin className="h-5 w-5 text-slate-100" />
               <span>{t('footer.contacts.address')}</span>
             </div>
           </div>

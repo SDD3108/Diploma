@@ -64,7 +64,24 @@
   "notifications.confirm.description": "Бұл әрекетті болдырту мүмкін емес. Таңдалған хабарламалар тұрақты түрде жойылады.",
   "notifications.confirm.cancel": "Болдырмау",
   "notifications.confirm.action": "Жою",
-  "notifications.message.title": "{{title}}",
-  "notifications.message.brief": "{{briefDescription}}",
-  "notifications.message.dateAgo": "{{count}} {{count, plural, one {күн бұрын} few {күн бұрын} other {күн бұрын}}"
+
+  "auth.registration.title": "Аккаунт жасау",
+  "auth.registration.description": "Тіркелу үшін барлық өрістерді толтырыңыз",
+  "auth.login.title": "Жүйеге кіру",
+  "auth.login.description": "Жалғастыру үшін тіркелгі деректеріңізді енгізіңіз",
+
+  "auth.form.name": "Аты",
+  "auth.form.name.placeholder": "Сатимов Дамир",
+  "auth.form.email": "Email",
+  "auth.form.email.placeholder": "example@mail.com",
+  "auth.form.password": "Құпия сөз",
+  "auth.form.register": "Тіркелу",
+  "auth.form.login": "Кіру",
+  "auth.form.or": "НЕМЕСЕ",
+  "auth.form.forgotPassword": "Құпия сөзді ұмыттыңыз ба?",
+  "auth.form.alreadyHaveAccount": "Аккаунтыңыз бар ма?",
+  "auth.form.noAccount": "Әлі аккаунтыңыз жоқ па?",
+  "auth.form.agreement": "Түймені басу арқылы сіз келісесіз",
+  "auth.form.userAgreement": "пайдаланушы келісімімен"
+
 }

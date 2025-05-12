@@ -12,9 +12,9 @@ const config: Config = {
   theme: {
     extend: {
       screens: {
-        'lt2': '256px',
+        '2lt': '256px',
         'lt': '384px',
-        'sm2': '512px',
+        '2sm': '512px',
       },
       boxShadow: {
         // shadow-[0_0_15px_-3px_rgba(0,0,0,0.1),0_0_6px_-4px_rgba(0,0,0,0.1)]

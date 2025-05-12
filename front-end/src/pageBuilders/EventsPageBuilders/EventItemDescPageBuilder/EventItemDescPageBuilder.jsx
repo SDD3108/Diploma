@@ -73,7 +73,7 @@ const EventItemDescPageBuilder = () => {
     getEvents()
     getUsers()
   },[])
-const aboutLogicArray = [
+  const aboutLogicArray = [
   {
     title:'Описание',
     key: 'description',
@@ -103,7 +103,7 @@ const aboutLogicArray = [
           {Object.entries(value).filter(([key]) => labelMap[key]).map(([key, val]) => (
             <li key={key} className='flex'>
               {console.log(labelMap[key])}
-              <span className='text-[#151515] font-medium text-nowrap'>{labelMap[key]}</span>
+              <span className='text-[#151515] font-medium text-nowrap dark:text-slate-100/50'>{labelMap[key]}</span>
               <div className='w-full border-b-[1px] mx-1.5 mb-1.5'></div>
               <span className='font-medium text-nowrap'>{key == 'duration' && typeof val == 'number' ? ` ${val} минут` : ` ${val || 'Не указано'}`}</span>
             </li>
@@ -117,16 +117,16 @@ const aboutLogicArray = [
     key:'',
     condition:false
   },
-]
-const ratingArray = [1,2,3,4,5]
-const TicketsContent = ()=>(
+  ]
+  const ratingArray = [1,2,3,4,5]
+  const TicketsContent = ()=>(
   <div>
     <div>
                 <div className='flex justify-between items-center px-2 md:px-2 sm:px-4 max-sm:px-2'>
                   <div>
-                    <h2 className='font-medium text-black/60'>Время</h2>
+                    <h2 className='font-medium text-black/60 dark:text-slate-100'>Время</h2>
                   </div>
-                  <div className='flex gap-2 lg:gap-2 sm:gap-9 max-sm:gap-9 font-medium text-black/60 text-base lg:text-base md:text-xs sm:text-base max-sm:text-sm'>
+                  <div className='flex gap-2 lg:gap-2 sm:gap-9 max-sm:gap-9 font-medium text-black/60 dark:text-slate-100 text-base lg:text-base md:text-xs sm:text-base max-sm:text-sm'>
                     <div className='w-[5.5rem] lg:w-[5.5rem] md:w-[3.5rem] sm:w-[3rem] max-sm:w-[2.6rem]'>
                       <h2>Язык</h2>
                     </div>
@@ -142,8 +142,8 @@ const TicketsContent = ()=>(
                   </div>
                 </div>
                 <Separator className='mt-3 bg-[#3D3D3D]'/>
-    </div>
-    <div className='h-[48rem] flex flex-col gap-2'>
+              </div>
+              <div className='h-[48rem] flex flex-col gap-2'>
                 {event?.sessions?.length == 0 ? (
                   <div className='mt-3 flex flex-col gap-2'>
                     <Skeleton className='h-[4rem]'/>
@@ -161,7 +161,7 @@ const TicketsContent = ()=>(
                       <div className='h-[4rem] md:h-[4rem] sm:h-[6rem] max-sm:h-[6rem] flex justify-between md:flex-row sm:flex-col max-sm:flex-col p-2 cursor-pointer'>
                         <div className='flex gap-3 w-1/3 lg:w-1/3 md:w-1/2 sm:w-1/2 max-sm:w-full'>
                           <div className='w-1/4 rounded-md border border-[#00F000] bg-[#00F000]/3 flex justify-center items-center'>
-                            <h3 className='font-bold text-lg text-[#00F000]'>{session.time}</h3>
+                            <h3 className='font-bold text-lg text-slate-100'>{session.time}</h3>
                           </div>
                           <div className='flex flex-col'>
                             <h2 className='sm:text-base max-sm:text-xs'> {session.sessionLocation} </h2>
@@ -317,7 +317,7 @@ const ReviewsContent =()=>{
 
           <Textarea value={reviewText} onChange={(e) => setReviewText(e.target.value)} placeholder="Напишите ваш отзыв..." className="min-h-[120px]"/>
 
-          <Button onClick={handleSubmitReview} disabled={isSubmitting}>
+          <Button onClick={handleSubmitReview} disabled={isSubmitting} className='dark:bg-neutral-900 dark:text-slate-100'>
             {isSubmitting ? 'Отправка...' : 'Отправить отзыв'}
           </Button>
         </div>
@@ -350,8 +350,6 @@ const ReviewsContent =()=>{
     </div>
   )
 }
-
-  
   if(error){
     return (
       <ErrorCompanent error={error}/>
@@ -380,7 +378,7 @@ const ReviewsContent =()=>{
         <div className='w-full flex flex-col gap-8 mt-0 md:mt-0 sm:mt-[25rem] max-sm:mt-[25rem]'>
           <div className='flex flex-col gap-4'>
             <div>
-              <h2 className='text-[#212121] text-4xl font-semibold'>{event.title}</h2>
+              <h2 className='text-[#212121] text-4xl font-semibold dark:text-slate-100'>{event.title}</h2>
             </div>
             <div className='w-1/8 sm:w-1/8 max-sm:w-1/4 rounded-md px-2 py-1 bg-black/10 flex justify-center items-center'>
               <h3 className='text-black/60 font-medium md:text-base sm:text-xs max-sm:text-xs uppercase'>{event.genre}</h3>
@@ -391,17 +389,17 @@ const ReviewsContent =()=>{
               <NavigationMenu ref={menuRef}>
                 <NavigationMenuList>
                   <NavigationMenuItem>
-                    <Button ref={firstButtonRef} className={`bg-white hover:bg-black/5 ${activeTab == 'tickets' ? 'text-black font-semibold' : 'text-black/50'}`} onClick={() => setActiveTab('tickets')}>
+                    <Button ref={firstButtonRef} className={`bg-white hover:bg-black/5 dark:bg-neutral-800 dark:text-slate-100 ${activeTab == 'tickets' ? 'text-black font-semibold' : 'text-black/50'}`} onClick={() => setActiveTab('tickets')}>
                       <span>Билеты</span>
                     </Button>
                   </NavigationMenuItem>
                   <NavigationMenuItem>
-                    <Button className={`bg-white hover:bg-black/5 ${activeTab == 'about' ? 'text-black font-semibold' : 'text-black/50'}`} onClick={() => setActiveTab('about')}>
+                    <Button className={`bg-white hover:bg-black/5 dark:bg-neutral-800 dark:text-slate-100 ${activeTab == 'about' ? 'text-black font-semibold' : 'text-black/50'}`} onClick={() => setActiveTab('about')}>
                       {event?.type == 'movie' ? 'О Фильме' : 'О Событии'}
                     </Button>
                   </NavigationMenuItem>
                   <NavigationMenuItem>
-                    <Button className={`bg-white hover:bg-black/5 ${activeTab == 'reviews' ? 'text-black font-semibold' : 'text-black/50'}`} onClick={() => setActiveTab('reviews')}>
+                    <Button className={`bg-white hover:bg-black/5 dark:bg-neutral-800 dark:text-slate-100 ${activeTab == 'reviews' ? 'text-black font-semibold' : 'text-black/50'}`} onClick={() => setActiveTab('reviews')}>
                       Отзывы
                     </Button>
                   </NavigationMenuItem>

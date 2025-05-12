@@ -62,7 +62,7 @@ const ProfilePageBuilder = () => {
     <div className='my-[5rem] px-5'>
         <div className='flex gap-[6rem]'>
             <div className='space-y-[2rem] w-1/3'>
-                <div className='text-3xl text-[#101828] leading-[129%] font-semibold'>
+                <div className='text-3xl text-[#101828] leading-[129%] font-semibold dark:text-white'>
                     <h1>Профиль</h1>
                 </div>
                 <div className='shadow-lg p-[1rem] rounded-lg flex flex-col gap-7'>
@@ -70,7 +70,7 @@ const ProfilePageBuilder = () => {
                         {!isLoading ? (
                             tabs.map((tab,index)=>(
                                 <div className='' key={index}>
-                                    <Button onClick={()=>AddCurrentTab(tab)} className='px-2 w-full justify-start bg-white h-[2.5rem] text-[#475467] shadow-none hover:bg-[#f6f8fa] text-lg'>
+                                    <Button onClick={()=>AddCurrentTab(tab)} className='px-2 w-full justify-start bg-white h-[2.5rem] text-[#475467] shadow-none hover:bg-[#f6f8fa] text-lg dark:bg-black/60'>
                                         {tab}
                                     </Button>
                                 </div>
@@ -83,12 +83,12 @@ const ProfilePageBuilder = () => {
                     </div>
                     <div className=''>
                         {user ? (
-                            <Button className='w-full text-xl font-normal h-[2.5rem] rounded-xl bg-[#e30a13] hover:bg-black/70 cursor-pointer' onClick={logout}>
+                            <Button className='w-full text-xl font-normal h-[2.5rem] rounded-xl bg-[#e30a13] hover:bg-black/70 cursor-pointer dark:text-white' onClick={logout}>
                                 Выйти
                             </Button>
                             ) : (
                             <Link href='/login'>
-                                <Button className='w-full text-xl font-normal h-[2.5rem] rounded-xl bg-[#e30a13] hover:bg-black/70 cursor-pointer'>
+                                <Button className='w-full text-xl font-normal h-[2.5rem] rounded-xl bg-[#e30a13] hover:bg-black/70 cursor-pointer dark:text-white'>
                                     Войти
                                 </Button>
                             </Link>                     
