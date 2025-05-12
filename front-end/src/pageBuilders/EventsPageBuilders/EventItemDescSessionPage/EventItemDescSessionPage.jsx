@@ -15,6 +15,7 @@ import { GetCinemaByName } from '@/src/utils/GetCinemas/GetCinemas'
 import { io } from 'socket.io-client'
 import { GetToken } from '@/src/utils/GetToken/GetToken'
 import { toast } from 'sonner'
+import { setData } from '@/src/utils/DataTransfer/DataTransfer'
 
 const cinemas = [
   {
@@ -95,25 +96,6 @@ const EventItemDescSessionPage = () => {
   const [fixedDay,setFixedDay] = useState('')
   const [fixedMounth,setFixedMounth] = useState('')
   const [isTempSeatVip, setIsTempSeatVip] = useState(false)
-  useEffect(() => {
-    console.log('Connecting to socket...');
-    const newSocket = io(process.env.NEXT_PUBLIC_SOCKET_URL);
-    
-    newSocket.on('connect', () => {
-        console.log('Socket connected!');
-    });
-    
-    newSocket.on('connect_error', (err) => {
-        console.error('Socket connection error:', err);
-    });
-
-    setSocket(newSocket);
-    
-    return () => {
-        console.log('Disconnecting socket...');
-        newSocket.disconnect();
-    };
-}, []);
   useEffect(() => {
     const newSocket = io(process.env.NEXT_PUBLIC_SOCKET_URL)
     setSocket(newSocket)
@@ -233,24 +215,6 @@ const drawSeats = useCallback(()=>{
 useEffect(() => {
   drawSeats()
 },[drawSeats])
-useEffect(() => {
-  if(!socket || !cinema){
-    return 
-  }
-
-  const handleSeatUpdate = (updatedCinema) => {
-    setCinema(updatedCinema)
-    drawSeats()
-  }
-
-  socket.on('seatReserved', handleSeatUpdate)
-  socket.on('seatPurchased', handleSeatUpdate)
-
-  return () => {
-    socket.off('seatReserved', handleSeatUpdate)
-    socket.off('seatPurchased', handleSeatUpdate)
-  }
-}, [socket, cinema, drawSeats])
 
 const handleCanvasClick = (e)=>{
   // console.log(e);
@@ -258,47 +222,55 @@ const handleCanvasClick = (e)=>{
   if(!session || !cinema){
     return
   }
-
   const canvas = canvasRef.current
   const rect = canvas.getBoundingClientRect()
-  
   const scaleX = canvas.width / rect.width
   const scaleY = canvas.height / rect.height
 
   const x = (e.clientX - rect.left) * scaleX
   const y = (e.clientY - rect.top) * scaleY
-  const { rows, seatsPerRow } = seatsConfig
 
+  const { rows, seatsPerRow } = seatsConfig
   const seatWidth = (canvas.width - GAP) / seatsPerRow - GAP
   const seatHeight = (canvas.height - GAP) / rows - GAP
 
   const clickedRow = Math.floor(y / (seatHeight + GAP)) + 1
   const clickedSeat = Math.floor(x / (seatWidth + GAP)) + 1
+
   if(clickedRow > rows || clickedSeat > seatsPerRow){
+    console.log(12);
     return
   }
   const currentHall = cinema.halls.find((hall) => hall.name == session.hall)
-  const isSelected = selectedSeats.some((seat) => seat.row == clickedRow && seat.seat == clickedSeat)
+  // const isSelected = selectedSeats.some((seat) => seat.row == clickedRow && seat.seat == clickedSeat)
   const isReserved = currentHall.reservedSeats.some((s) => s.row == clickedRow && s.seat == clickedSeat)
   const isBought = currentHall.boughtSeats.some((s) => s.row == clickedRow && s.seat == clickedSeat)
   const isVip = currentHall?.VIPSeats.some((vip) => vip.row == clickedRow && vip.seat == clickedSeat)
-  socket.emit('checkSeat',
-    {
-      cinemaId: cinema._id,
-      hall: session.hall,
-      row: clickedRow,
-      seat: clickedSeat
-    },
-    (response)=>{
-      if (response.available) {
-        setTempSeat({ row: clickedRow, seat: clickedSeat })
-        setIsTempSeatVip(isVip)
-        setIsDialogOpen(true)
-      }
-      else{
-        toast('Место уже занято!')
-      }
-    })
+  if(isReserved || isBought){
+    toast('Место уже занято!');
+    return;
+  }
+  setTempSeat({ row: clickedRow, seat: clickedSeat });
+  setIsDialogOpen(true);
+  // socket.emit('checkSeat',
+  //   {
+  //     cinemaId: cinema._id,
+  //     hall: session.hall, 
+  //     row: clickedRow,
+  //     seat: clickedSeat
+  //   },
+  //   (response)=>{
+  //     if(response.available){
+  //       console.log(response.available);
+        
+  //       setTempSeat({ row: clickedRow, seat: clickedSeat })
+  //       setIsTempSeatVip(isVip)
+  //       setIsDialogOpen(true)
+  //     }
+  //     else{
+  //       toast('Место уже занято!')
+  //     }
+  // })
   // if(!isReserved && !isBought && !isSelected){
   //   setTempSeat({row: clickedRow,seat: clickedSeat })
   //   setIsTempSeatVip(isVip)
@@ -307,9 +279,7 @@ const handleCanvasClick = (e)=>{
 }
 
 const addTicket = ()=>{
-  const isAlreadySelected = selectedSeats.some(s => 
-    s.row == tempSeat.row && s.seat === tempSeat.seat
-  )
+  const isAlreadySelected = selectedSeats.some((s) => s.row == tempSeat.row && s.seat == tempSeat.seat)
   if(!isAlreadySelected){
     // setSelectedSeats((prev) => [
     //   ...prev,
@@ -319,30 +289,51 @@ const addTicket = ()=>{
     //     price: ticketType == 'vip' ? session.vipPrice : ticketType == 'adult' ? session.adultPrice : session.childPrice,
     //   }
     // ])
-    const newSeat = {
-      ...tempSeat,
-      ticketType,
-      price: ticketType === 'vip' ? session.vipPrice : ticketType === 'adult' ? session.adultPrice : session.childPrice,
-    }
-    setSelectedSeats((prev) => [...prev,newSeat])
-    socket.emit('reserveSeat', {
-      cinemaId: cinema._id,
-      hall: session.hall,
-      seat: tempSeat,
-      userId: tokenUser?._id,
-      sessionId: params.nestedId
-    })
-    const timer = setTimeout(async() => {
-      setSelectedSeats(async(prev) => {
-        prev.filter(s => !(s.row === tempSeat.row && s.seat === tempSeat.seat))
-        await axios.post('/api/cinemas/cancelReservation', {
+    if(!isAlreadySelected){
+      const newSeat = {
+        ...tempSeat,
+        ticketType,
+        price: ticketType === 'vip' ? session.vipPrice : ticketType === 'adult' ? session.adultPrice : session.childPrice,
+      }
+      setSelectedSeats((prev) => [...prev,newSeat])
+      socket.emit('reserveSeat', {
+        cinemaId: cinema._id,
+        hall: session.hall,
+        seat: tempSeat,
+        userId: tokenUser?._id,
+        sessionId: params.nestedId
+      })
+      const timer = setTimeout(() => {
+        setSelectedSeats((prev) =>
+          prev.filter((s) => !(s.row == tempSeat.row && s.seat == tempSeat.seat))
+        )
+        // Уведомляем сервер об отмене резервации
+        axios.post('/api/cinemas/cancelReservation',{
           cinemaId: cinema._id,
           hall: session.hall,
-          seats: [tempSeat]
+          seats: [tempSeat],
         })
-    }, 900000) // 15 minutes
-    reservationTimeoutRef.current.set(`${tempSeat.row}-${tempSeat.seat}`, timer)
-    })
+      }, 900000); // 15 минут
+  
+      reservationTimeoutRef.current.set(
+        `${tempSeat.row}-${tempSeat.seat}`,
+        timer
+      )
+    }
+    
+    
+    
+    // const timer = setTimeout(async() => {
+    //   setSelectedSeats(async(prev) => {
+    //     prev.filter(s => !(s.row === tempSeat.row && s.seat === tempSeat.seat))
+    //     await axios.post('/api/cinemas/cancelReservation', {
+    //       cinemaId: cinema._id,
+    //       hall: session.hall,
+    //       seats: [tempSeat]
+    //     })
+    //   }, 900000) // 15 minutes
+    //   reservationTimeoutRef.current.set(`${tempSeat.row}-${tempSeat.seat}`, timer)
+    // })
   }
   setIsDialogOpen(false)
   setTicketType('adult')
@@ -366,21 +357,38 @@ const handlePayment = async () => {
     }
     
     localStorage.setItem('currentReservation', JSON.stringify(reservationData))
-
+    setData(reservationData)
     // Резервируем места через API
     await axios.post('/api/cinemas/reserve', {
       cinemaId: cinema._id,
       hall: session.hall,
-      seats: selectedSeats.map(s => ({ row: s.row, seat: s.seat })),
+      seats: selectedSeats.map((s) => ({ row: s.row, seat: s.seat })),
       userId: tokenUser?._id
     })
 
     router.push(`/events/${params.id}/${params.nestedId}/buy`)
-  } catch (error) {
+  }
+  catch(error){
     console.error('Ошибка при бронировании:', error)
-    alert('Не удалось забронировать места')
+    toast('Не удалось забронировать места')
   }
 }
+useEffect(() => {
+  if (!socket || !cinema) return;
+
+  const handleSeatUpdate = (updatedCinema) => {
+    setCinema(updatedCinema);
+    drawSeats();
+  };
+
+  socket.on('seatReserved', handleSeatUpdate);
+  socket.on('seatPurchased', handleSeatUpdate);
+
+  return () => {
+    socket.off('seatReserved', handleSeatUpdate);
+    socket.off('seatPurchased', handleSeatUpdate);
+  };
+}, [socket, cinema, drawSeats]);
 const totalPrice = selectedSeats.reduce((acc, seat) => acc + seat.price, 0)
 
 if(!session || !cinema){
@@ -493,7 +501,7 @@ if(!session || !cinema){
               ))}
             </div>
             <div className='flex justify-end'>
-              <Button className='w-1/6 lg:w-1/6 md:w-1/4 sm:w-full max-sm:w-full h-[3rem] bg-[#00F000] font-semibold text-lg text-white cursor-pointer rounded-lg hover:bg-[#00C000]' onClick={() => handlePayment}>
+              <Button className='w-1/6 lg:w-1/6 md:w-1/4 sm:w-full max-sm:w-full h-[3rem] bg-[#00F000] font-semibold text-lg text-white cursor-pointer rounded-lg hover:bg-[#00C000]' onClick={handlePayment}>
                 Перейти к оплате
               </Button>
             </div>

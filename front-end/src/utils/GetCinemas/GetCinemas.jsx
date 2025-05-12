@@ -5,6 +5,10 @@ export const GetCinemas = async() => {
     const resp = await axios.get('/api/cinemas')
     return resp.data
 }
+export const GetCinemaById = async(cinemaId) => {
+    const resp = await axios.get(`/api/cinemas/${cinemaId}`)
+    return resp.data
+}
 export const GetCinemaByName = async(cinemaName)=>{
     const data = await GetCinemas()
     const cinema = data.find((cinema) => cinema.name == cinemaName)

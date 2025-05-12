@@ -1,5 +1,5 @@
 import React from 'react'
-import EventItemPageBuilder from '@/src/pageBuilders/EventItemPageBuilder/Event'
+import EventItemPageBuilder from '@/src/pageBuilders/EventsPageBuilders/EventItemPageBuilder/Event'
 
 const EventItemPage = ({object,loading,error}) => {
   return (

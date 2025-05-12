@@ -8,7 +8,7 @@ const ProfileNatisfaction = () => {
   // console.log(user);
   
   return (
-    <div>
+    <div className='px-5'>
 
       <NatisfactionsPageBuilder/>
       

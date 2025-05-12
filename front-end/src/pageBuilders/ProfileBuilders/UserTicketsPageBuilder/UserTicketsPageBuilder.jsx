@@ -22,29 +22,7 @@ const UserTicketsPageBuilder = () => {
 
 
 // по sessionId ищем нужный нам объект в sessions и выводим session.time,session.sessionLocation,session.hall
-  const purchasedTickets = tokenUser?.purchasedTickets || [
-    {
-      date: '01.01.2023',
-      eventId: '68080a3e83708e68cc159f80',
-      ticketId: '68080a3e83708e68cc159f81',
-      ticketPrice: 2000,
-      ticketCount: 2,
-    },
-    {
-      date: '01.02.2023',
-      eventId: '6809069c21382f101ee29d92',
-      ticketId: '6809069c21382f101ee29d93',
-      ticketPrice: 1500,
-      ticketCount: 1,
-    },
-    {
-      date: '01.03.2024',
-      eventId: '680b387b4e6dced72b38423e',
-      ticketId: '680b387b4e6dced72b38423f',
-      ticketPrice: 2000,
-      ticketCount: 3,
-    },
-  ]
+  const purchasedTickets = tokenUser?.purchasedTickets || []
 
   useEffect(() => {
     const getEventsAndSessions = async () => {
@@ -55,9 +33,11 @@ const UserTicketsPageBuilder = () => {
       const combined = await Promise.all(purchasedTickets.map(async(ticket,index)=>{
         const eventResponse = responses[index]
         const event = eventResponse.data
-        const session = event.sessions.find(s => s._id == ticket.ticketId)
+        const session = event.sessions.find(s => s._id == ticket._id)
         return { ...ticket, event, session }
       }))
+      console.log(combined);
+      
       setCombinedTickets(combined)
       // console.log(foundSessions);
     }
@@ -68,6 +48,7 @@ const UserTicketsPageBuilder = () => {
   }, [purchasedTickets])
   
   const test = (id)=>{
+    console.log('Переданные данные в test:', id)
     setData(id)
     setTicketInfoPage(true)
   }
@@ -83,7 +64,7 @@ const UserTicketsPageBuilder = () => {
           </div>
           <div className='flex flex-col shadow-md rounded-lg p-5 min-h-[20rem] bg-white'>
           <div className='w-full h-[2.5rem] flex justify-between items-center'>
-            <span className='text-lg font-normal text-gray-800'>У вас {tokenUser?.purchasedTickets?.length > 0 ? tokenUser?.purchasedTickets?.length : 0} Приобретенных билетов</span>
+            <span className='text-lg font-normal text-gray-800'>У вас {tokenUser?.purchasedTickets?.length > 0 ? tokenUser?.purchasedTickets?.length : 'нету'} Приобретенных билетов</span>
             <span className='text-lg font-normal text-gray-800'></span>
           </div>
           <div className='grid grid-cols-2 gap-4 mt-4'>
@@ -96,7 +77,7 @@ const UserTicketsPageBuilder = () => {
               </>
             ) : 
             combinedTickets.length > 0 ? (
-              combinedTickets.map(({event,session,ticketId,eventId,date,ticketCount},index)=>(
+              combinedTickets.map(({event,session,sessionId,eventId,date,ticketCount},index)=>(
                 <div key={index} className='h-[14rem] flex rounded-lg shadow-md bg-white'>
                   <div className='relative'>
                     {imageError ? (
@@ -123,7 +104,7 @@ const UserTicketsPageBuilder = () => {
                       )}
                     </div>
                     <div>
-                      <Button onClick={()=>test({eventId,ticketId,date,ticketCount})} variant="link" className='cursor-pointer has-[>svg]:px-0 px-0' >Подробнее <ArrowRight/></Button>
+                      <Button onClick={()=>test({eventId,sessionId,date,ticketCount})} variant="link" className='cursor-pointer has-[>svg]:px-0 px-0' >Подробнее <ArrowRight/></Button>
                     </div>
                   </div>
                 </div>

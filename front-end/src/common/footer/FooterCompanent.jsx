@@ -1,25 +1,34 @@
 "use client"
-import React from 'react'
+import React,{useState} from 'react'
 import { Button } from "@/src/ui/button"
 import { Input } from "@/src/ui/input"
 import { Facebook,Instagram,Twitter,Mail,Phone,MapPin } from 'lucide-react'
-import { useRouter } from "next/navigation";
 import {HoverCard,HoverCardContent,HoverCardTrigger,} from "@/src/ui/hover-card"
 import { Separator } from '@/src/ui/separator'
+import axios from 'axios'
+import Link from 'next/link'
+import { toast } from 'sonner'
 
 const FooterCompanent = () => {
-  const router = useRouter()
-  const NavigationToHome = ()=>{
-    router.push('/')
-  }
-  const NavigationToProfile = ()=>{
-    router.push('/profile')
-  }
-  const NavigationToEvents = ()=>{
-    router.push('/events')
-  }
-  const NavigationToNatisfaction = ()=>{
-    router.push('/natisfaction')
+  const [email, setEmail] = useState('')
+  const mailingClick = async ()=>{
+    if (email.trim().length < 8) {
+      toast('Введите корректный email (минимум 8 символов)')
+      return
+    }
+    try {
+      const response = await axios.post('http://localhost:3002/send-email', {
+        from:'mrbimson1@gmail.com',
+        to: email,
+        subject: 'Добро пожаловать!',
+        text: 'Вы успешно авторизованы на платформе.',
+        html: `<p>Здравствуйте!</p><p>Вы успешно авторизованы на платформе.</p>`
+      });
+      toast('Письмо отправлено!');
+    } catch (err) {
+      console.error(err);
+      toast('Ошибка при отправке письма');
+    }
   }
   return (
     <footer className='bg-[#141414] h-[24rem] px-5 py-10 text-[#FFFFFF] sm:h-[52rem] md:h-[24rem] max-sm:h-[52rem]'>
@@ -57,17 +66,17 @@ const FooterCompanent = () => {
         <div className="space-y-4">
           <h3 className="text-lg font-semibold text-[#FFFFFF]">Навигация</h3>
           <nav className="space-y-2">
-            <Button onClick={NavigationToHome} variant="link" className="text-[#F5F5F5] hover:text-[#00F000] p-0 cursor-pointer">
-              Главная страница
+            <Button variant="link" className="text-[#F5F5F5] hover:text-[#00F000] p-0 cursor-pointer">
+              <Link href='/'>Главная страница</Link>
             </Button>
-            <Button onClick={NavigationToEvents} variant="link" className="text-[#F5F5F5] hover:text-[#00F000] p-0 block cursor-pointer">
-              События
+            <Button variant="link" className="text-[#F5F5F5] hover:text-[#00F000] p-0 block cursor-pointer">
+              <Link href='/events'>События</Link>
             </Button>
-            <Button onClick={NavigationToProfile} variant="link" className="text-[#F5F5F5] hover:text-[#00F000] p-0 block cursor-pointer">
-              Профиль
+            <Button variant="link" className="text-[#F5F5F5] hover:text-[#00F000] p-0 block cursor-pointer">
+              <Link href='/profile'>Профиль</Link>
             </Button>
-            <Button onClick={NavigationToNatisfaction} variant="link" className="text-[#F5F5F5] hover:text-[#00F000] p-0 block cursor-pointer">
-              Уведомления
+            <Button variant="link" className="text-[#F5F5F5] hover:text-[#00F000] p-0 block cursor-pointer">
+              <Link href='/natisfaction'>Уведомления</Link>
             </Button>
           </nav>
         </div>
@@ -90,10 +99,13 @@ const FooterCompanent = () => {
         </div>
         <div className="space-y-4">
           <h3 className="text-lg font-semibold text-[#FFFFFF]">Новостная рассылка</h3>
-          <form className="flex gap-2 md:flex-col lg:flex-row">
+          <form className="flex gap-2 md:flex-col lg:flex-row" onSubmit={(e) => {
+            e.preventDefault()
+            mailingClick()
+          }}>
             <HoverCard>
               <HoverCardTrigger asChild>
-                <Input type="email" placeholder="Ваш email" className="bg-[#3D3D3D] border-[#4A4A4A] text-[#FFFFFF] placeholder-[#F5F5F5]"/>
+                <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Ваш email" className="bg-[#3D3D3D] border-[#4A4A4A] text-[#FFFFFF] placeholder-[#F5F5F5]"/>
               </HoverCardTrigger>
               <HoverCardContent className="w-50">
                 <div className="flex justify-between space-x-4">
@@ -106,7 +118,7 @@ const FooterCompanent = () => {
                 </div>
               </HoverCardContent>
             </HoverCard>
-            <Button type="submit" className="bg-[#00F000] hover:bg-[#00C000] text-[#1A1A1A] cursor-pointer">
+            <Button onClick={mailingClick} type="submit" className="bg-[#00F000] hover:bg-[#00C000] text-[#1A1A1A] cursor-pointer">
               Подписаться
             </Button>
           </form>

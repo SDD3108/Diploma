@@ -1,5 +1,5 @@
 import React from 'react'
-import EventItemDescPageBuilder from '@/src/pageBuilders/EventItemDescPageBuilder/EventItemDescPageBuilder'
+import EventItemDescPageBuilder from '../../../src/pageBuilders/EventsPageBuilders/EventItemDescPageBuilder/EventItemDescPageBuilder'
 const EventPage = () => {
   return (
     <>

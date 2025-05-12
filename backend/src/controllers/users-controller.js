@@ -23,6 +23,15 @@ const createUser = async (req,res)=>{
       return res.status(400).json({message:'email уже используется'})
     }
     const newUser = await TicketFlow.create(userData)
+    newUser.messages.push({
+      isRead: false,
+      title: 'Авторизация подтверждена',
+      briefDescription: `Уважаемый ${newUser.name}, вы успешно авторизованы в системе.`,
+      description: `Здравствуйте, ${newUser.name}!  
+Благодарим вас за то, что воспользовались нашим сервисом. Ваша учетная запись активирована, и вы теперь можете полноценно использовать все возможности платформы. Если у вас возникнут какие-либо вопросы, пожалуйста, обратитесь в нашу службу поддержки.`,
+      date: `${new Date()}`,
+    })
+    await newUser.save()
     const payload = {
       userId: newUser._id,
       email: newUser.email
@@ -32,14 +41,11 @@ const createUser = async (req,res)=>{
       process.env.JWT_SECRET,
       {expiresIn: process.env.JWT_EXPIRES_IN},
     )
-    console.log(token);
-    
     const updatedUser = await TicketFlow.findByIdAndUpdate(
       newUser._id,
       { token },
       { new: true }
     )
-   
     res.status(201).json({
       _id: updatedUser._id,
       email: updatedUser.email,
@@ -70,6 +76,23 @@ const createReview = async (req,res)=>{
     res.status(500).json({message:'Ошибка при добавлении отзыва'})
   }
 }
+const addPurchase = async (req, res) => {
+  try{
+    const { userId, purchase } = req.body
+    const user = await TicketFlow.findByIdAndUpdate(
+      userId,
+      { $push: { purchasedTickets: purchase }},
+      { new: true }
+    )
+    if(!user){
+      return res.status(404).json({ error: 'Пользователь не найден' })
+    }
+    res.status(200).json({success:true})
+  }
+  catch(error){
+    res.status(500).json({error:'Ошибка сохранения покупки'})
+  }
+}
 const updateUser = async (req,res)=>{
   try {
     const updates = req.body
@@ -91,7 +114,6 @@ const updateUser = async (req,res)=>{
     })
   }
 }
-
 const deleteUser = async (req,res)=>{
   const deletedUser = await TicketFlow.findByIdAndDelete(req.params.id)
   if(!deletedUser){
@@ -100,5 +122,58 @@ const deleteUser = async (req,res)=>{
   
   res.status(200).json({ message: 'Событие удалено' })
 }
+const deleteMessage = async (req,res)=>{
+  try{
+    const messageId = req.params.id
+    const userId = req.body.userId
 
-module.exports = {getAllUsers,getUserById,createUser,createReview,updateUser,deleteUser,}
+    const user = await TicketFlow.findById(userId)
+    if(!user){
+      return res.status(404).json({message:'Пользователь не найден'})
+    }
+
+    const updatedMessages = user.messages.filter(message => message._id.toString() !== messageId)
+    user.messages = updatedMessages
+
+    await user.save()
+    res.status(200).json({message:'Сообщение успешно удалено'})
+  }
+  catch(error){
+    res.status(500).json({message:'Ошибка при удалении сообщения'})
+  }
+}
+const updateUserAvatar = async (req, res) => {
+  try {
+    const user = await TicketFlow.findById(req.params.id)
+    if(!user){
+      return res.status(404).json({message:'пользователь не найден'})
+    }
+
+    user.avatar = `/uploads/avatars/${req.file.filename}`;
+    user.isAvatar = true;
+    await user.save();
+
+    res.json({ 
+      avatarUrl: user.avatar,
+      message: 'Аватар успешно обновлён' 
+    });
+  } catch (error) {
+    console.log('error',error)
+    res.status(500).json({ message: 'Ошибка сервера' });
+  }
+}
+const deleteUserAvatar = async (req, res) => {
+  try {
+    const user = await TicketFlow.findById(req.params.id);
+    if (!user) return res.status(404).json({ message: 'Пользователь не найден' });
+
+    user.avatar = '';
+    user.isAvatar = false;
+    await user.save();
+
+    res.json({ message: 'Аватар успешно удалён' });
+  } catch (error) {
+    res.status(500).json({ message: 'Ошибка сервера' });
+  }
+}
+module.exports = {getAllUsers,getUserById,createUser,createReview,updateUser,deleteUser,addPurchase,deleteMessage,updateUserAvatar,deleteUserAvatar}

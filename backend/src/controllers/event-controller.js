@@ -24,7 +24,7 @@ const createEvent = async (req,res)=>{
     res.status(201).json(newEvent)
 }
 const createReview = async (req,res)=>{
-    console.log(req.body)
+    // console.log(req.body)
     const { userId, text, grade } = req.body
     const eventId = req.params.id
 

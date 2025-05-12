@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 // import EventsPage from "@/app/pages/EventsPage/page"
 import EventsPage from '@/app/(pages)/EventsPage/page';
-import EventsPageBuilder from "@/src/pageBuilders/EventsPageBuilder/EventsCompanent";
+import EventsPageBuilder from "@/src/pageBuilders/EventsPageBuilders/EventsPageBuilder/EventsCompanent";
 import { Accordion,AccordionContent,AccordionItem,AccordionTrigger,} from "@/src/ui/accordion"
 import { Card, CardContent } from "@/src/ui/card"
 import MainImage from '@/images/mainPage/main.png'

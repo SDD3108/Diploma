@@ -8,12 +8,12 @@ const token = jwt.sign(payload,secketKey,{
     expiresIn: '1h',
 })
 
-console.log('token',token);
+// console.log('token',token);
 
 try{
     const decoded = jwt.verify(token,secketKey)
     console.log('copleted if secret key found');
-    console.log(decoded);
+    // console.log(decoded);
 }
 catch(error){
     console.log('error!!!',error);

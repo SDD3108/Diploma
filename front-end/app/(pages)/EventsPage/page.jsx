@@ -1,5 +1,5 @@
 import React from 'react'
-import EventsPageBuilder from '../../../src/pageBuilders/EventsPageBuilder/EventsCompanent'
+import EventsPageBuilder from '@/src/pageBuilders/EventsPageBuilders/EventsPageBuilder/EventsCompanent'
 import SearchPage from '../SearchPage/page'
 
 const EventsPage = () => {

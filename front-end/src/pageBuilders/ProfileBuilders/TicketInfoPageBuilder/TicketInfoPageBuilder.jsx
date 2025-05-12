@@ -8,18 +8,20 @@ import { ArrowRight } from 'lucide-react';
 import {GetToken} from '@/src/utils/GetToken/GetToken'
 import Link from 'next/link'
 
+
 const TicketInfoPageBuilder = () => {
     const { tokenUser,loading } = GetToken()
     const [sessionInfo,setSessionInfo] = useState(null)
     const [session,setSession] = useState(null)
     const [event,setEvent] = useState(null)
     const [imageError, setImageError] = useState(false)
+    
     useEffect(()=>{
         const currentSession = getData()
         setSessionInfo(currentSession)
         
         const getSession = async() => {
-            const session = await GetSession(currentSession.eventId,currentSession.ticketId)
+            const session = await GetSession(currentSession.eventId,currentSession.sessionId)
             setSession(session)
         }
         const getEvent = async() => {
@@ -32,19 +34,29 @@ const TicketInfoPageBuilder = () => {
         getEvent()
     },[])
     const hallNumber = session?.hall?.replace(/\D/g, '')
-    const test = [{ticketArray:[
-        {place:1, ticketType: 'Adult'},
-        {place:2, ticketType: 'VIP'},
-        {place:3, ticketType: 'Child'},
-        {place:4, ticketType: 'Child'},
-        {place:5, ticketType: 'Adult'},
-        {place:6, ticketType: 'VIP'},
-        {place:7, ticketType: 'VIP'},
-        {place:8, ticketType: 'Adult'},
-    ]}]
+    const test = [{
+        ticketArray:[
+            {place:1, ticketType: 'Adult'},
+            {place:2, ticketType: 'VIP'},
+            {place:3, ticketType: 'Child'},
+            {place:4, ticketType: 'Child'},
+            {place:5, ticketType: 'Adult'},
+            {place:6, ticketType: 'VIP'},
+            {place:7, ticketType: 'VIP'},
+            {place:8, ticketType: 'Adult'},
+        ]
+    }]
     const getSortedPlaces = () => {
         // поменять на tokenUser.purchasedTickets ! ! ! ! ! !
-        return test.flatMap((ticket) => ticket.ticketArray.map((ticket) => ticket.place)).sort((a,b) => b - a)
+        // return tokenUser.purchasedTickets.flatMap((ticket) => ticket.ticketArray.map((ticket) => ticket.place)).sort((a,b) => b - a)
+        if(!tokenUser?.purchasedTickets?.length){
+            return []
+        }
+        return tokenUser.purchasedTickets.flatMap(ticket => ticket.ticketArray.map(t => t.place)).sort((a, b) => {
+            const numA = parseInt(a.match(/\d+/g).join(''))
+            const numB = parseInt(b.match(/\d+/g).join(''))
+            return numB - numA
+        })
     }
     const countTickets = () => {
         const ticketTypes = {
@@ -53,10 +65,14 @@ const TicketInfoPageBuilder = () => {
             Child: { count: 0, label: 'Child' }
         }
         // заменить на tokenUser.purchasedTickets ! ! ! ! ! !
-        test[0].ticketArray.forEach(element => {
-            ticketTypes[element.ticketType].count++
+        tokenUser?.purchasedTickets?.forEach(element => {
+            element.ticketArray.forEach((item) => {
+              if(ticketTypes[item.ticketType]){
+                ticketTypes[item.ticketType].count++
+              }
+            });
         })
-        return Object.values(ticketTypes).filter(type => type.count > 0)
+        return Object.values(ticketTypes).filter((type) => type.count > 0)
     }
     const ticketCounts = countTickets()
     const places = getSortedPlaces()
@@ -115,13 +131,13 @@ const TicketInfoPageBuilder = () => {
                             <div className='flex flex-col'>
                                 <span className='text-sm font-medium text-[#475467]'>Детали</span>
                                 <div className='flex flex-col gap-2'>
-                                    {ticketCounts.map(({label,count,index}) => (
-                                        <div className='flex justify-between' key={index}>
-                                            <span className='text-sm font-medium'>{label}</span>
-                                            <div className='border-b-[1px] w-full mx-1.5'></div>
-                                            <span className='text-sm font-medium text-[#475467]'>{count}</span>
-                                        </div>
-                                    ))}
+                                {ticketCounts.map(({ label, count }, index) => (
+                                    <div className='flex justify-between' key={`${label}-${index}`}>
+                                        <span className='text-sm font-medium'>{label}</span>
+                                        <div className='border-b-[1px] w-full mx-1.5'></div>
+                                        <span className='text-sm font-medium text-[#475467]'>{count}</span>
+                                    </div>
+                                ))}
                                 </div>
                                 
                             </div>

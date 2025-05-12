@@ -9,12 +9,16 @@ import { GetInitials } from '@/src/utils/GetInitials/GetInitials'
 import { AlertDialog,AlertDialogAction,AlertDialogCancel,AlertDialogContent,AlertDialogDescription,AlertDialogFooter,AlertDialogHeader,AlertDialogTitle,AlertDialogTrigger } from "@/src/ui/alert-dialog"
 import axios from 'axios'
 import { toast } from 'sonner'
+// import image from '../../../../../backend'
+
 const UserDatasPageBuilders = () => {
   const { tokenUser,loading } = GetToken()
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     ownDescription: '',
+    avatar:'',
+    isAvatar:false,
   })
   const [isSaving, setIsSaving] = useState(false)
   useEffect(() => {
@@ -23,9 +27,11 @@ const UserDatasPageBuilders = () => {
         name: tokenUser.name || '',
         email: tokenUser.email || '',
         ownDescription: tokenUser.ownDescription || '',
+        avatar: tokenUser.avatar || '',
+        isAvatar: tokenUser.isAvatar || false
       })
     }
-  }, [tokenUser])
+  },[tokenUser])
   const inputChange = (e)=>{
     setFormData({...formData, [e.target.name]:e.target.value})
   }
@@ -55,18 +61,83 @@ const UserDatasPageBuilders = () => {
   const test =()=>{
     console.log('working2')
   }
+  const handleFileUpload = async (e) => {
+    const file = e.target.files[0]
+    if(!file){
+      return
+    }
+
+    try {
+      if(!file.type.startsWith('image/')){
+        toast('Пожалуйста, выберите изображение')
+        return;
+      }
+
+      // Проверка размера файла (пример: до 2MB)
+      if (file.size > 2 * 1024 * 1024) {
+        toast('Максимальный размер файла - 2MB')
+        return
+      }
+
+      const formData = new FormData()
+      formData.append('avatar', file)
+
+      const response = await axios.post(`/api/users/${tokenUser._id}/avatar`,formData);
+
+      // Обновляем данные пользователя
+      setFormData(prev => ({
+        ...prev,
+        avatar: response.data.avatarUrl
+      }));
+      
+      toast.success('Аватар успешно обновлён!');
+    } catch (error) {
+      toast.error('Ошибка при загрузке аватарки');
+      console.error('Upload error:', error);
+    }
+  }
+  const handleRemoveAvatar = async () => {
+    try {
+      await axios.delete(`/api/users/${tokenUser._id}/avatar`, {
+        headers: {
+          Authorization: `Bearer ${tokenUser.token}`
+        }
+      });
+
+      // Обновляем данные пользователя
+      setFormData(prev => ({
+        ...prev,
+        avatar: ''
+      }));
+      
+      toast.success('Аватар удалён');
+    } catch (error) {
+      toast.error('Ошибка при удалении аватара');
+      console.error('Delete error:', error);
+    }
+  }
+  console.log(`http://localhost:3002${formData.avatar}`);
+  
   return (
     <div>
       <div className='flex gap-[3rem] mb-[1rem] w-1/2 lg:w-1/2 sm:w-full max-sm:w-full'>
         <div>
           <Avatar className='w-[5rem] h-[5rem] rounded-xl bg-gray-300'>
-            <AvatarImage src="" alt='@shadcn' />
-            <AvatarFallback className='rounded-xl bg-gray-100'>{GetInitials(tokenUser.name)}</AvatarFallback>
+            {formData.isAvatar ? (
+              <AvatarImage src={`http://localhost:3002${formData?.avatar}`} alt='User avatar' />
+            ) : (
+              <AvatarFallback className='rounded-xl bg-gray-100'>
+                {GetInitials(tokenUser?.name)}
+              </AvatarFallback>
+            )}
           </Avatar>
         </div>
         <div className='flex gap-5 items-center'>
-          <Button variant='line' className={`no-underline ${!tokenUser?.isAvatar ? 'cursor-pointer' : 'cursor-default'}`} disabled={!tokenUser?.isAvatar} onClick={test}>Убрать</Button>
-          <Button variant='line' className={`no-underline ${tokenUser?.isAvatar ? 'cursor-default' : 'cursor-pointer'}`} disabled={tokenUser?.isAvatar} onClick={test}>Загрузить</Button>    
+          {/* <Button variant='line' className={`no-underline ${!tokenUser?.isAvatar ? 'cursor-pointer' : 'cursor-default'}`} disabled={!tokenUser?.isAvatar} onClick={test}>Убрать</Button>
+          <Button variant='line' className={`no-underline ${tokenUser?.isAvatar ? 'cursor-default' : 'cursor-pointer'}`} disabled={tokenUser?.isAvatar} onClick={test}>Загрузить</Button> */}
+          <Input type="file" id="avatar-upload" accept="image/*" className="hidden" onChange={handleFileUpload}/>
+          <Button variant='line' className={`no-underline ${tokenUser?.isAvatar ? 'cursor-default' : 'cursor-pointer'}`} disabled={tokenUser?.isAvatar} onClick={() => document.getElementById('avatar-upload').click()}>Загрузить</Button>
+          <Button variant='line' className={`no-underline ${tokenUser?.isAvatar ? 'cursor-pointer' : 'cursor-default'}`} disabled={!tokenUser?.isAvatar} onClick={handleRemoveAvatar}>Убрать</Button>
         </div>
       </div>
       <div className='w-1/2 lg:w-1/2 sm:w-full max-sm:w-full flex flex-col gap-1.5'>
