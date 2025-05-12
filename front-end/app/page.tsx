@@ -83,7 +83,7 @@ export default function Home() {
           <CardContent className="w-full h-full flex flex-col gap-5 bg-cover bg-center bg-no-repeat">
             <div className="sticky z-2 w-full h-full flex flex-col justify-between">
               <div className="flex flex-col gap-5 w-1/2">
-                <h1 className="text-3xl text-white font-bold whitespace-normal  ">Бронирование мест в реальном времени</h1>
+                <h1 className="text-3xl lt:text-2xl text-white font-bold whitespace-normal  ">Бронирование мест в реальном времени</h1>
                 <p className="text-white text-lg">Быстрое и удобное бронирование мест на мероприятиях с мгновенным подтверждением.</p>
               </div>
               <div className="flex gap-5 mt-5 w-1/4 mt-5">

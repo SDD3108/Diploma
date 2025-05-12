@@ -15,7 +15,7 @@ const HeaderCompanent = () => {
   return (
     <header className='h-[8rem] bg-[#1A1A1A] text-[#FFFFFF] shadow-md px-5 flex items-center'>
       <div className='flex flex-col items-center w-full'>
-        <div className="flex justify-between w-full">
+        <div className="flex justify-between flex-row sm2:bg-black lt2:bg-black w-full">
           <div className="flex items-center gap-2 cursor-pointer" onClick={()=>router.push('/')}>
             <Tickets className="h-8 w-8 text-[#00F000]" />
             <span className="text-xl font-bold text-[#FFFFFF]">{t('brand.name')}</span>
