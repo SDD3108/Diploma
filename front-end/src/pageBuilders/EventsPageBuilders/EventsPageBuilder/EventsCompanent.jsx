@@ -9,8 +9,12 @@ import ErrorCompanent from "@/src/components/error/ErrorCompanent"
 import NotFoundCompanent from "@/src/components/not found/NotFoundCompanent"
 // import NavToEvent from "@/src/fea`ture/Navigations/navToEvent/NavToEvent"
 import { getData } from '@/src/utils/DataTransfer/DataTransfer';
+import '@/i18n'
+import { useTranslation } from 'react-i18next'
+
 
 const EventsPageBuilder = () => {
+    const { t } = useTranslation('common')
     const [events, setEvents] = useState([])
     const eventsTypes = [
         {
@@ -54,20 +58,6 @@ const EventsPageBuilder = () => {
             try{
                 const resp = await axios.get('/api/events')
                 setEvents(resp.data)
-                // setTimeout(() => {
-                //     console.log('main',resp.data);
-                //     console.log('1',resp.data.filter((event) => event.type == 'movie'));
-                //     console.log('2',resp.data.filter((event) => event.type == 'theater'));
-
-                //     console.log('3',resp.data.filter((event) => event.type == 'concert'));
-                //     console.log('4',resp.data.filter((event) => event.type == 'sport'));
-                    
-                //     console.log('5',resp.data.filter((event) => event.type == 'vacation'));
-                //     console.log('6',resp.data.filter((event) => event.type == 'festival'));
-                        
-                //     console.log('7',resp.data.filter((event) => event.type == 'exhibition'));
-                //     console.log('8',resp.data.filter((event) => event.type == 'workshop'));
-                // }, 2000);
             }
             catch(err){
                 setError(err.resp?.data?.message || err.message || 'Unknown error')
@@ -142,7 +132,7 @@ const EventsPageBuilder = () => {
                 <section className='px-5' key={index}>
                     <div className='w-full flex flex-col'>
                         <div>
-                            <h2 className='text-3xl font-bold text-[#151515] dark:text-slate-100'>{type.ruType}</h2>
+                            <h2 className='text-3xl font-bold text-[#151515] dark:text-slate-100'>{t(`event.type.${type.engType}`)}</h2>
                         </div>
                         <Carousel className="w-full mt-4">
                             <CarouselContent className='w-full px-[1rem] gap-4'>
@@ -191,7 +181,8 @@ const EventsPageBuilder = () => {
                         </Carousel>    
                     </div>        
                 </section>
-        )})}
+            )
+        })}
     </div>
   )
 }

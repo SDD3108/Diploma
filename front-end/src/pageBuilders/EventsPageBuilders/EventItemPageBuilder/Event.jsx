@@ -2,10 +2,12 @@ import React, { useState } from 'react'
 import Image from 'next/image'
 import { Skeleton } from "@/src/ui/skeleton"
 import { Button } from '@/src/ui/button'
+import '@/i18n'
+import { useTranslation } from 'react-i18next'
+
 const EventItemPageBuilder = ({object,loading,error}) => {
+  const { t } = useTranslation('common')
   const [imageError, setImageError] = useState(false)
-  // console.log('object',object);
-  
   return (
     <div className='w-full h-[20rem] rounded-xl cursor-pointer group '>
       <div className=''>
@@ -22,13 +24,12 @@ const EventItemPageBuilder = ({object,loading,error}) => {
           <Button variant="link" className='whitespace-normal break-words text-sm mt-2 font-bold justify-normal p-0 cursor-pointer max-h-[1rem] text-nowrap'>
             {object?.title}
           </Button>
-
         )}
         {loading || error ? (
           <Skeleton className='w-1/3 h-[1rem] rounded-full mt-1.5'/>
-          
           ) : (
           <h3 className='mt-1.5 font-medium text-sm'>{object?.genre}</h3>
+          // мне нужно сделать логику перевода если жанр там детский,война итд
         )}
         
       </div>
