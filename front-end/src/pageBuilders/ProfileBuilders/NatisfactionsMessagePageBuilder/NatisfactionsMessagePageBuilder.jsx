@@ -1,15 +1,16 @@
 import React from 'react'
-import { useParams } from 'next/navigation'
 import { getData } from '@/src/utils/DataTransfer/DataTransfer'
-import { X } from 'lucide-react';
-import { secondSetData } from '@/src/utils/SecondDataTranser/SecondDataTranser'
+import '@/i18n'
+import { useTranslation } from 'react-i18next'
 
 const NatisfactionsMessagePageBuilder = () => {  
+  const { t } = useTranslation('common')
   const message = getData()
   return (
     <div className='space-y-[2rem]'>
       <div className='text-3xl text-[#101828] leading-[129%] font-semibold dark:text-white'>
-        <h2>{message.title}</h2>
+        {/* <h2>{message.title}</h2> */}
+        {t('notifications.heading')}
       </div>
       <div className='w-full flex flex-col shadow-lg min-h-[24rem] rounded-md'>
         <div className='flex flex-col justify-between p-4 min-h-[24rem] relative'>

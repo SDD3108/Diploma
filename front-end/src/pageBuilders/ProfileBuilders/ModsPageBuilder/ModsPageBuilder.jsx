@@ -5,8 +5,11 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/src/ui/card'
 import { Switch } from '@/src/ui/switch'
 import { Label } from '@/src/ui/label'
 import { Moon, Sun } from 'lucide-react'
+import '@/i18n'
+import { useTranslation } from 'react-i18next'
 
 const ModsPageBuilder = () => {
+  const { t } = useTranslation('common')
   const [isDark, setIsDark] = useState(()=>{
     if(typeof window !== 'undefined'){
       const savedTheme = localStorage.getItem('theme')
@@ -28,7 +31,7 @@ const ModsPageBuilder = () => {
     <Card className="w-full max-w-2xl">
       <CardHeader>
         <CardTitle className="text-xl flex items-center gap-2">
-          <span className="text-primary">Настройки</span>
+          <span className="text-primary">{t('settings.card.title')}</span>
           <div className="flex items-center gap-1 text-muted-foreground">
             {isDark ? (
               <Moon className="h-5 w-5" />
@@ -41,25 +44,21 @@ const ModsPageBuilder = () => {
       <CardContent>
         <div className="flex items-center justify-between p-4 rounded-lg bg-muted">
           <div className="space-y-1">
-            <Label className="text-lg">Темная тема</Label>
+            <Label className="text-lg">{t('settings.darkTheme.label')}</Label>
             <p className="text-sm text-muted-foreground">
-              {isDark ? 'Сейчас активна темная тема' : 'Сейчас активна светлая тема'}
+              {isDark ? t('settings.darkTheme.activeDark') : t('settings.darkTheme.activeLight')}
             </p>
           </div>
-          <Switch 
-            checked={isDark}
-            onCheckedChange={setIsDark}
-            className="data-[state=checked]:bg-primary"
-          />
+          <Switch checked={isDark} onCheckedChange={setIsDark} className="data-[state=checked]:bg-primary" />
         </div>
         <div className="mt-4 flex gap-2 text-sm text-muted-foreground">
           <span className="flex items-center gap-1">
             <Sun className="h-4 w-4" />
-            Светлая
+            {t('settings.themeOption.light')}
           </span>
           <span className="flex items-center gap-1">
             <Moon className="h-4 w-4" />
-            Темная
+            {t('settings.themeOption.dark')}
           </span>
         </div>
       </CardContent>

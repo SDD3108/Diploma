@@ -16,6 +16,8 @@ import { io } from 'socket.io-client'
 import { GetToken } from '@/src/utils/GetToken/GetToken'
 import { toast } from 'sonner'
 import { setData } from '@/src/utils/DataTransfer/DataTransfer'
+import '@/i18n'
+import { useTranslation } from 'react-i18next'
 
 const cinemas = [
   {
@@ -67,15 +69,12 @@ const cinemas = [
   },
 ]
 
-// 1. isVipSeats
-// 2. vipSeats
-// 3. reservedSeats
-// 4. WebPack / Socket IO
-// 5. synchronize
+// 1. 15 min logic
 
 
 const EventItemDescSessionPage = () => {
   // const { cinema } = GetCinemaByName()
+  const { t } = useTranslation('common')
   const { tokenUser } = GetToken() // Типо юзера получаем
   const [socket, setSocket] = useState(null)
   const reservationTimeoutRef = useRef(new Map())
@@ -96,6 +95,7 @@ const EventItemDescSessionPage = () => {
   const [fixedDay,setFixedDay] = useState('')
   const [fixedMounth,setFixedMounth] = useState('')
   const [isTempSeatVip, setIsTempSeatVip] = useState(false)
+  const [currentHall,setCurrentHall] = useState('')
   useEffect(() => {
     const newSocket = io(process.env.NEXT_PUBLIC_SOCKET_URL)
     setSocket(newSocket)
@@ -136,8 +136,12 @@ useEffect(() => {
         return
       }
       const hallConfig = findCinemaByName.halls.find((hall) => hall.name == findSessionById.hall)
+      const hallNumber = findSessionById?.hall?.match(/\d+/)?.[0]
+
+      
       setEvent(eventResp.data)
       setSession(findSessionById)
+      setCurrentHall(hallNumber)
       setCinema(findCinemaByName)
       setSeatsConfig((prev) => ({
         ...prev,
@@ -277,49 +281,37 @@ const handleCanvasClick = (e)=>{
   //   setIsDialogOpen(true)
   // }
 }
-
 const addTicket = ()=>{
   const isAlreadySelected = selectedSeats.some((s) => s.row == tempSeat.row && s.seat == tempSeat.seat)
   if(!isAlreadySelected){
-    // setSelectedSeats((prev) => [
-    //   ...prev,
-    //   {
-    //     ...tempSeat,
-    //     ticketType,
-    //     price: ticketType == 'vip' ? session.vipPrice : ticketType == 'adult' ? session.adultPrice : session.childPrice,
-    //   }
-    // ])
-    if(!isAlreadySelected){
-      const newSeat = {
-        ...tempSeat,
-        ticketType,
-        price: ticketType === 'vip' ? session.vipPrice : ticketType === 'adult' ? session.adultPrice : session.childPrice,
-      }
-      setSelectedSeats((prev) => [...prev,newSeat])
-      socket.emit('reserveSeat', {
-        cinemaId: cinema._id,
-        hall: session.hall,
-        seat: tempSeat,
-        userId: tokenUser?._id,
-        sessionId: params.nestedId
-      })
-      const timer = setTimeout(() => {
-        setSelectedSeats((prev) =>
-          prev.filter((s) => !(s.row == tempSeat.row && s.seat == tempSeat.seat))
-        )
-        // Уведомляем сервер об отмене резервации
-        axios.post('/api/cinemas/cancelReservation',{
-          cinemaId: cinema._id,
-          hall: session.hall,
-          seats: [tempSeat],
-        })
-      }, 900000); // 15 минут
-  
-      reservationTimeoutRef.current.set(
-        `${tempSeat.row}-${tempSeat.seat}`,
-        timer
-      )
+    const newSeat = {
+      ...tempSeat,
+      ticketType,
+      price: ticketType == 'vip' ? session.vipPrice : ticketType == 'adult' ? session.adultPrice : session.childPrice,
     }
+    setSelectedSeats((prev) => [...prev,newSeat])
+    socket.emit('reserveSeat',{
+      cinemaId: cinema._id,
+      hall: session.hall,
+      seat: tempSeat,
+      userId: tokenUser?._id,
+      sessionId: params.nestedId
+    })
+    // const timer = setTimeout(() => {
+    //   setSelectedSeats((prev) =>
+    //     prev.filter((s) => !(s.row == tempSeat.row && s.seat == tempSeat.seat))
+    //   )
+    //   // Уведомляем сервер об отмене резервации
+    //   axios.post('/api/cinemas/cancelReservation',{
+    //     cinemaId: cinema._id,
+    //     hall: session.hall,
+    //     seats: [tempSeat],
+    //   })
+    // }, 900000)
+    // reservationTimeoutRef.current.set(
+    //   `${tempSeat.row}-${tempSeat.seat}`,
+    //   timer
+    // )
     
     
     
@@ -409,7 +401,7 @@ if(!session || !cinema){
           { imageError ? (
             <Skeleton className='w-[10rem] sm:w-[10rem] max-sm:w-full h-[10rem] rounded-xl'/>
             ) : (
-            <Image src={event?.image} alt='not found' onError={() => setImageError(true)} width={112} height={112} className='w-[10rem] sm:w-[10rem] max-sm:w-[5rem] h-auto rounded-xl'/>
+            <Image src={event?.image} alt={t('event.image.altNotFound')} onError={() => setImageError(true)} width={112} height={112} className='w-[10rem] sm:w-[10rem] max-sm:w-[5rem] h-auto rounded-xl'/>
           )}
         </div>
         <div className='flex flex-col justify-center gap-2 w-1/4 lg:w-1/4 md:w-1/3 sm:w-1/2 max-sm:w-full'>
@@ -422,7 +414,7 @@ if(!session || !cinema){
             <div>{event?.age}+</div>
           </div>
           <div>
-            <div>{session?.sessionLocation} • {session?.hall}</div>
+            <div>{session?.sessionLocation} • {t(`event.session.hall.${currentHall}`)}</div>
           </div>
         </div>
       </div>
@@ -432,16 +424,16 @@ if(!session || !cinema){
         </div>
         <div>
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogContent className='bg-white'>
+            <DialogContent className='bg-white'>
             <DialogHeader>
-              <DialogTitle>Выберите тип билета</DialogTitle>
+              <DialogTitle>{t('event.session.selectTicketType')}</DialogTitle>
             </DialogHeader>
             <RadioGroup value={ticketType} onValueChange={setTicketType} className="flex flex-col gap-4">
             {isTempSeatVip  ? (
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="vip" id="vip" className="cursor-pointer" />
                 <Label htmlFor="vip" className="cursor-pointer">
-                  VIP - {session?.vipPrice || 'Цена не указана'} ₸
+                  {t('event.selectedSeats.type.vip')} - {session?.vipPrice || t('event.priceNotSpecified')} ₸
                 </Label>
               </div>
             ) : (
@@ -449,26 +441,25 @@ if(!session || !cinema){
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="adult" id="adult" className="cursor-pointer" />
                   <Label htmlFor="adult" className="cursor-pointer">
-                    Взрослый - {session?.adultPrice} ₸
+                    {t('event.selectedSeats.type.adult')} - {session?.adultPrice} ₸
                   </Label>
                 </div>
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="child" id="child" className="cursor-pointer" />
                   <Label htmlFor="child" className="cursor-pointer">
-                    Детский - {session?.childPrice} ₸
+                    {t('event.selectedSeats.type.child')} - {session?.childPrice} ₸
                   </Label>
                 </div>
               </>
             )}
             </RadioGroup>
-
             <DialogFooter>
               <DialogClose asChild>
-                <Button variant="outline" onClick={removeTicket}>Отмена</Button>
+                <Button variant="outline" onClick={removeTicket}>{t('button.cancel')}</Button>
               </DialogClose>
-              <Button onClick={addTicket}>Подтвердить</Button>
+              <Button onClick={addTicket}>{t('button.confirm')}</Button>
             </DialogFooter>
-          </DialogContent>
+            </DialogContent>
           </Dialog>
         </div>
       </div>
@@ -477,12 +468,12 @@ if(!session || !cinema){
           <div className='flex flex-col gap-3'>
             <div className="mt-4 text-xl font-bold">
               {selectedSeats.length == 1 ? (
-                <h2>{selectedSeats.length} билет: {totalPrice} ₸</h2>
+                <h2>{selectedSeats.length} {t('event.select.ticket')}: {totalPrice} ₸</h2>
               ) : (
                 selectedSeats.length <= 4 && selectedSeats.length >= 1 ? (
-                  <h2>{selectedSeats.length} билета: {totalPrice} ₸</h2>
+                  <h2>{selectedSeats.length} {t('event.select.ticketa')}: {totalPrice} ₸</h2>
                 ) : (
-                  <h2>{selectedSeats.length} билетов: {totalPrice} ₸</h2>
+                  <h2>{selectedSeats.length} {t('event.select.tickets')}: {totalPrice} ₸</h2>
                 )
               )}
               
@@ -491,8 +482,8 @@ if(!session || !cinema){
               {selectedSeats.map((seat, index) => (
                 <div key={index} className="bg-white rounded-lg shadow px-4 py-6 lg:px-4 lg:py-6 sm:px-3 sm:py-4 max-sm:px-3 max-sm:py-4 flex justify-between">
                   <div>
-                    <h2>{seat.row} Ряд, {seat.seat} Место</h2>
-                    <p>{seat.ticketType == 'vip' || seat.ticketType == 'VIP' ? 'VIP' : seat.ticketType == 'adult' ? 'Взрослый' : 'Детский'} • {seat.price} ₸</p>
+                    <h2>{seat.row} {t('event.buy-card.row')}, {seat.seat} {t('event.buy-card.seat')}</h2>
+                    <p>{seat.ticketType == 'vip' || seat.ticketType == 'VIP' ? 'VIP' : seat.ticketType == 'adult' ? t('event.adult') : t('event.child')} • {seat.price} ₸</p>
                   </div>
                   <div>
                     <X className='cursor-pointer w-[1.5rem] h-auto' onClick={() => setSelectedSeats((prev) => prev.filter((s) => !(s.row == seat.row && s.seat == seat.seat)))} />
@@ -502,7 +493,7 @@ if(!session || !cinema){
             </div>
             <div className='flex justify-end'>
               <Button className='w-1/6 lg:w-1/6 md:w-1/4 sm:w-full max-sm:w-full h-[3rem] bg-[#00F000] font-semibold text-lg text-white cursor-pointer rounded-lg hover:bg-[#00C000]' onClick={handlePayment}>
-                Перейти к оплате
+                {t('button.proceedPayment')}
               </Button>
             </div>
           </div>

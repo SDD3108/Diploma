@@ -10,7 +10,7 @@ import { Separator } from "@/src/ui/separator";
 import { NavigationMenu,NavigationMenuItem,NavigationMenuList } from "@/src/ui/navigation-menu"
 import { Skeleton } from "@/src/ui/skeleton"
 import Link from 'next/link';
-import {GetToken} from '@/src/utils/GetToken/GetToken'
+import { GetToken } from '@/src/utils/GetToken/GetToken'
 import { Textarea } from "@/src/ui/textarea"
 import { Avatar,AvatarFallback, AvatarImage } from '@/src/ui/avatar';
 import { toast } from "sonner"
@@ -111,7 +111,7 @@ const EventItemDescPageBuilder = () => {
               {console.log(labelMap[key])}
               <span className='text-[#151515] font-medium text-nowrap dark:text-slate-100/50'>{labelMap[key]}</span>
               <div className='w-full border-b-[1px] mx-1.5 mb-1.5'></div>
-              <span className='font-medium text-nowrap'>{key == 'duration' && typeof val == 'number' ? ` ${val} минут` : ` ${val || t('event.details.notSpecified')}`}</span>
+              <span className='font-medium text-nowrap'>{key == 'duration' && typeof val == 'number' ? ` ${val} ${t('event.details.minute')}` : ` ${val || t('event.details.notSpecified')}`}</span>
             </li>
           ))}
         </ul>
@@ -167,7 +167,7 @@ const EventItemDescPageBuilder = () => {
             <div className='h-[4rem] md:h-[4rem] sm:h-[6rem] max-sm:h-[6rem] flex justify-between md:flex-row sm:flex-col max-sm:flex-col p-2 cursor-pointer'>
               <div className='flex gap-3 w-1/3 lg:w-1/3 md:w-1/2 sm:w-1/2 max-sm:w-full'>
                 <div className='w-1/4 rounded-md border border-[#00F000] bg-[#00F000]/3 flex justify-center items-center'>
-                  <h3 className='font-bold text-lg text-slate-100'>{session.time}</h3>
+                  <h3 className='font-bold text-lg text-[#00F000]'>{session.time}</h3>
                 </div>
                 <div className='flex flex-col'>
                   <h2 className='sm:text-base max-sm:text-xs'> {session.sessionLocation} </h2>

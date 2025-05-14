@@ -6,8 +6,12 @@ import { GetToken } from '@/src/utils/GetToken/GetToken'
 import { GetEvent } from '@/src/utils/GetEvents/GetEvents'
 import { GetCinemaById } from '@/src/utils/GetCinemas/GetCinemas'
 import { Separator } from '@radix-ui/react-separator'
+import '@/i18n'
+import { useTranslation } from 'react-i18next'
+// import GetToken from '@/src/store/AuthStore/authStore'
 
 const EventBuyTicketPageBuilder = () => {
+  const { t } = useTranslation('common')
   const { tokenUser } = GetToken()
   const router = useRouter()
   const [reservation, setReservation] = useState(null)
@@ -122,50 +126,48 @@ const EventBuyTicketPageBuilder = () => {
 
   return (
     <div className="px-5 py-7">
-      <h1 className="text-2xl font-bold mb-6">Оформление заказа</h1>
+      <h1 className="text-2xl font-bold mb-6">{t('checkout.page.title')}</h1>
       <div className='flex gap-[2rem]'>
         <div className="w-full bg-white rounded-lg shadow-md p-6 mb-6">
-          <h2 className="text-xl font-semibold mb-4">Детали бронирования</h2>
+          <h2 className="text-xl font-semibold mb-4">{t('checkout.reservationDetails.title')}</h2>
           <div className="space-y-2 text-nowrap">
             <div className='flex justify-between'>
-              <span className='font-bold'>Фильм</span>
+              <span className='font-bold'>{t('checkout.reservationDetails.movie')}</span>
               <div className='w-full border-b-[1px] mx-1.5 mb-1.5'></div>
               <span className='text-gray-500'>{event?.title}</span>
             </div>
             <div className='flex justify-between'>
-              <span className='font-bold'>Кинотеатр</span>
+              <span className='font-bold'>{t('checkout.reservationDetails.cinema')}</span>
               <div className='w-full border-b-[1px] mx-1.5 mb-1.5'></div>
               <span className='text-gray-500'>{cinema?.cinemaName}</span>
             </div>
             <div className='flex justify-between'>
-              <span className='font-bold'>Зал</span>
+              <span className='font-bold'>{t('checkout.reservationDetails.hall')}</span>
               <div className='w-full border-b-[1px] mx-1.5 mb-1.5'></div>
               <span className='text-gray-500'>{reservation?.hall}</span>
             </div>
           </div>
         </div>
         <div className="w-1/3 bg-white rounded-lg shadow-md p-6 mb-6">
-          <h2 className="text-xl font-semibold mb-4">Выбранные места</h2>
+          <h2 className="text-xl font-semibold mb-4">{t('checkout.selectedSeats.title')}</h2>
           <div className="grid grid-cols-1 gap-4">
             {reservation?.seats.map((seat, index) => (
               <div key={index} className="border p-4 rounded">
-                <p>Ряд: {seat.row}, Место: {seat.seat}</p>
-                <p>Тип билета: {seat.ticketType}</p>
-                <p>Цена: {seat.price} ₸</p>
+                <p>{t('event.buy-card.row')}: {seat.row}, {t('event.buy-card.seat')}: {seat.seat}</p>
+                <p>{t('checkout.seat.ticketType')}: {seat.ticketType}</p>
+                <p>{t('checkout.seat.price')}: {seat.price} ₸</p>
               </div>
             ))}
           </div>
         </div>
       </div>
       <div className="bg-white rounded-lg shadow-md p-6">
-        <h2 className="text-xl font-semibold mb-4">Оплата</h2>
+        <h2 className="text-xl font-semibold mb-4">{t('checkout.payment.title')}</h2>
         <div className="flex justify-between items-center">
           <div>
-            <p className="text-lg font-bold">Итого к оплате: {reservation.totalPrice} ₸</p>
+            <p className="text-lg font-bold">{t('checkout.payment.total')}: {reservation.totalPrice} ₸</p>
           </div>
-          <button onClick={handlePaymentConfirmation} className="bg-green-500 text-white px-6 py-3 rounded-lg hover:bg-green-600 transition-colors cursor-pointer">
-            Подтвердить оплату
-          </button>
+          <button onClick={handlePaymentConfirmation} className="bg-green-500 text-white px-6 py-3 rounded-lg hover:bg-green-600 transition-colors cursor-pointer">{t('button.confirmPayment')}</button>
         </div>
       </div>
     </div>

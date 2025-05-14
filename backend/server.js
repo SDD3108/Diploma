@@ -70,23 +70,21 @@ mongoose.connect(`mongodb+srv://${process.env.LOGIN}:${process.env.PASSWORD}@clu
       try{
         const cinemas = await TicketFlow.find()
         const now = new Date()
-
         for(const cinema of cinemas){
           for(const hall of cinema.halls){
-            const expiredReservations = hall.reservedSeats.filter(
-              seat => now - seat.reservedAt > 900000
-            )
+            const expiredReservations = hall.reservedSeats.filter((seat) => now - seat.reservedAt > 900000)
             if(expiredReservations.length > 0){
-              await TicketFlow.findByIdAndUpdate(
-                cinema._id,
-                {
-                  $pull: {
-                    'halls.$[hall].reservedSeats': {
-                      $in: expiredReservations.map((s) => ({ row: s.row, seat: s.seat }))
-                    }
+              const seatIds = expiredSeats.map(seat => seat._id)
+              await TicketFlow.findByIdAndUpdate(cinema._id,{
+                $pull: {
+                  'halls.$[hall].reservedSeats': {
+                    _id: { $in: seatIds }
                   }
-                },
-                { arrayFilters: [{ 'hall.name': hall.name }] }
+                }},
+                { 
+                  arrayFilters: [{ 'hall.name': hall.name }],
+                  multi: true
+                }
               )
             }
           }
@@ -99,7 +97,7 @@ mongoose.connect(`mongodb+srv://${process.env.LOGIN}:${process.env.PASSWORD}@clu
 })
 .catch((err) => console.error('Ошибка подключения к MongoDB:', err))
 
-// Модель Session
+// структора для сеансов / сессий
 const AutoIncrement = require('mongoose-sequence')(mongoose);
 const sessionSchema = new mongoose.Schema({
   time: { type: String, required: true },
@@ -114,8 +112,9 @@ const sessionSchema = new mongoose.Schema({
   isChildPrice: { type: Boolean, default: false },
   childPrice: { type: Number },
   isVIPPrice: { type: Boolean, default: false },
-  vipPrice: { type: Number }
-});
+  vipPrice: { type: Number },
+  
+})
 sessionSchema.plugin(AutoIncrement, { inc_field: 'cinemaId' });
 const Session = mongoose.model('Session', sessionSchema);
 Session.createIndexes({ cinemaId: 1 }, { unique: true });
@@ -154,21 +153,22 @@ io.on('connection', (socket) => {
 
   socket.on('cancelReservation', async (data) => {
     try {
-      const cinema = await TicketFlow.findById(data.cinemaId);
-      const hall = cinema.halls.find((h) => h.name === data.hall);
+      const cinema = await TicketFlow.findById(data.cinemaId)
+      const hall = cinema.halls.find((h) => h.name == data.hall)
 
       if (!hall) return;
 
       hall.reservedSeats = hall.reservedSeats.filter(
-        (s) => !(s.row === data.seat.row && s.seat === data.seat.seat)
-      );
-      await cinema.save();
+        (s) => !(s.row == data.seat.row && s.seat == data.seat.seat)
+      )
+      await cinema.save()
 
-      io.emit('seatReserved', cinema);
-    } catch (error) {
-      console.error('Ошибка отмены резервации:', error);
+      io.emit('seatReserved', cinema)
     }
-  });
+    catch(error){
+      console.error('Ошибка отмены резервации:', error)
+    }
+})
 
   socket.on('confirmPurchase', async (data) => {
     try {
@@ -187,8 +187,8 @@ io.on('connection', (socket) => {
     } catch (error) {
       console.error('Ошибка подтверждения покупки:', error);
     }
-  });
-});
+  })
+})
 
 // Маршруты
 app.use('/api/events', eventRoutes);

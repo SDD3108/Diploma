@@ -1,5 +1,5 @@
 import React,{useState,useEffect} from 'react'
-import {GetToken} from '@/src/utils/GetToken/GetToken'
+import { GetToken } from '@/src/utils/GetToken/GetToken'
 import { Skeleton } from '@/src/ui/skeleton'
 import Link from 'next/link'
 import axios from 'axios'
@@ -7,8 +7,11 @@ import { Button } from '@/src/ui/button'
 import TicketInfoPageBuilder from '@/app/profile/user tickets/ticketInfo/page'
 import { setData } from '@/src/utils/DataTransfer/DataTransfer'
 import { ArrowRight } from 'lucide-react';
+import '@/i18n'
+import { useTranslation } from 'react-i18next'
 
 const UserTicketsPageBuilder = () => {
+  const { t } = useTranslation('common')
   const { tokenUser,loading } = GetToken()
   const [events, setEvents] = useState([])
   const [sessions, setSessions] = useState([])
@@ -59,11 +62,11 @@ const UserTicketsPageBuilder = () => {
       ) : (
         <div className='flex flex-col gap-4'>
           <div className='text-3xl text-[#101828] leading-[129%] font-semibold'>
-            <h2>Мои Билеты</h2>
+            <h2>{t('profile.tickets.page.title')}</h2>
           </div>
           <div className='flex flex-col shadow-md rounded-lg p-5 min-h-[20rem] bg-white'>
           <div className='w-full h-[2.5rem] flex justify-between items-center'>
-            <span className='text-lg font-normal text-gray-800'>У вас {tokenUser?.purchasedTickets?.length > 0 ? tokenUser?.purchasedTickets?.length : 'нету'} Приобретенных билетов</span>
+            <span className='text-lg font-normal text-gray-800'>{t('profile.tickets.count.p1')} {tokenUser?.purchasedTickets?.length > 0 ? tokenUser?.purchasedTickets?.length : t('profile.tickets.count.p2')} {t('profile.tickets.count.p3')}</span>
             <span className='text-lg font-normal text-gray-800'></span>
           </div>
           <div className='grid grid-cols-2 gap-4 mt-4'>
@@ -103,15 +106,15 @@ const UserTicketsPageBuilder = () => {
                       )}
                     </div>
                     <div>
-                      <Button onClick={()=>test({eventId,sessionId,date,ticketCount})} variant="link" className='cursor-pointer has-[>svg]:px-0 px-0' >Подробнее <ArrowRight/></Button>
+                      <Button onClick={()=>test({eventId,sessionId,date,ticketCount})} variant="link" className='cursor-pointer has-[>svg]:px-0 px-0'> {t('profile.tickets.details')} <ArrowRight/></Button>
                     </div>
                   </div>
                 </div>
               ))
             ) : (
               <div className='mx-auto text-center py-[2rem] col-span-2'>
-                <h2 className='text-xl text-gray-800'>У вас нет купленных билетов</h2>
-                <h3 className='text-lg text-gray-500'>В этом разделе будут отображаться <br/> купленные билеты</h3>
+                <h2 className='text-xl text-gray-800'>{t('profile.tickets.empty.title')}</h2>
+                <h3 className='text-lg text-gray-500'>{t('profile.tickets.empty.description.p1')} <br/> {t('profile.tickets.empty.description.p2')}</h3>
               </div>
             )}
           </div>

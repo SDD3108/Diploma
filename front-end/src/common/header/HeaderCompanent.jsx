@@ -17,12 +17,12 @@ const HeaderCompanent = () => {
       <div className='flex flex-col items-center w-full'>
         <div className="flex justify-between flex-row md:gap-0 sm:gap-2 max-sm:gap-2 md:flex-row sm:flex-col max-sm:flex-col w-full">
           <div className="flex items-center gap-2 cursor-pointer" onClick={()=>router.push('/')}>
-            <Tickets className="h-8 w-8 text-slate-100" />
+            <Tickets className="h-8 w-8 text-[#00F000]" />
             <span className="text-xl font-bold text-[#FFFFFF]">{t('brand.name')}</span>
           </div>
           <div className='flex gap-2 md:justify-normal sm:justify-end max-sm:justify-end'>
             <Link href="/login">
-              <Button variant="outline" className="text-slate-100 border-[#00F000] bg-[#1A1A1A] hover:bg-[#00F000]/10 hover:text-slate-100 cursor-pointer">
+              <Button variant="outline" className="text-[#00F000] border-[#00F000] bg-[#1A1A1A] hover:bg-[#00F000]/10 hover:text-slate-100 cursor-pointer">
                 {t('auth.login')}
               </Button>
             </Link>

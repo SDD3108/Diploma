@@ -5,12 +5,14 @@ import { GetEvent } from '@/src/utils/GetEvents/GetEvents'
 import { Skeleton } from '@/src/ui/skeleton'
 import { Button } from '@/src/ui/button'
 import { ArrowRight } from 'lucide-react';
-import {GetToken} from '@/src/utils/GetToken/GetToken'
 import Link from 'next/link'
-
+import '@/i18n'
+import { useTranslation } from 'react-i18next'
+import { GetToken } from '@/src/utils/GetToken/GetToken'
 
 const TicketInfoPageBuilder = () => {
-    const { tokenUser,loading } = GetToken()
+    const { t } = useTranslation('common')
+    const { tokenUser } = GetToken()
     const [sessionInfo,setSessionInfo] = useState(null)
     const [session,setSession] = useState(null)
     const [event,setEvent] = useState(null)
@@ -60,9 +62,9 @@ const TicketInfoPageBuilder = () => {
     }
     const countTickets = () => {
         const ticketTypes = {
-            VIP: { count: 0, label: 'VIP' },
-            Adult: { count: 0, label: 'Adult' },
-            Child: { count: 0, label: 'Child' }
+            VIP: { count: 0, label: t('event.vip') },
+            Adult: { count: 0, label: t('event.adult') },
+            Child: { count: 0, label: t('event.child') }
         }
         // заменить на tokenUser.purchasedTickets ! ! ! ! ! !
         tokenUser?.purchasedTickets?.forEach(element => {
@@ -80,7 +82,7 @@ const TicketInfoPageBuilder = () => {
   return (
     <div className='flex flex-col gap-4'>
         <div className='text-3xl text-[#101828] leading-[129%] font-semibold'>
-            <h2>Детали билета</h2>
+            <h2>{t('ticketDetails.title')}</h2>
         </div>
         <div className='flex flex-col shadow-md rounded-lg p-5 min-h-[20rem] bg-white'>
             <div className='grid grid-cols-2 gap-5'>
@@ -104,32 +106,41 @@ const TicketInfoPageBuilder = () => {
                             ) : (
                                 <Skeleton className='w-[10rem] h-5 rounded-lg'/>
                             )}
-                            <Link href={`/events/${event?._id}`}><Button variant='link' className='px-0 cursor-pointer justify-normal has-[>svg]:px-0'>О фильме<ArrowRight /></Button></Link>
+                            <Link href={`/events/${event?._id}`}><Button variant='link' className='px-0 cursor-pointer justify-normal has-[>svg]:px-0'>{t('ticketDetails.link')}<ArrowRight /></Button></Link>
                         </div>
                         <div className='flex flex-col'>
-                            <span className='text-sm font-medium text-[#475467]'>Дата и время</span>
+                            <span className='text-sm font-medium text-[#475467]'>{t('ticketDetails.dateTime.label')}</span>
                             {!sessionInfo || !session || sessionInfo == null ? (
                                 <div className='flex gap-4 w-1/2'>
                                     <Skeleton className='w-[10rem] h-5 rounded-lg'/>
                                     <Skeleton className='w-[10rem] h-5 rounded-lg'/>
                                 </div>
                             ) : (
-                                <span className='text-lg font-semibold text-[#101828]'>{sessionInfo.date} • {session.time} • <span className='border border-[#00F000] bg-[#00F000]/3 rounded-md px-3 py-1 text-sm text-slate-100'>{session.sessionLaunguage}</span></span>
+                                <span className='text-lg font-semibold text-[#101828]'>{sessionInfo.date} • {session.time} • <span className='border border-[#00F000] bg-[#00F000]/3 rounded-md px-3 py-1 text-sm text-[#00F000]'>{session.sessionLaunguage}</span></span>
                             )}
                         </div>
                         <div className='flex flex-col gap-3'>
                             <div className='flex justify-between'>
-                                <span className='text-sm font-medium'>Зал</span>
+                                <span className='text-sm font-medium'>{t('ticketDetails.hall.label')}</span>
                                 <div className='border-b-[1px] w-full mx-1.5'></div>
                                 <span className='text-sm font-medium text-[#475467]'>{hallNumber}</span>
                             </div>
-                            <div className='flex justify-between'>
-                                <span className='text-sm font-medium'>{places.length > 1 ? 'Места' : 'Место'}</span>
-                                <div className='border-b-[1px] w-full mx-1.5'></div>
-                                <span className='text-sm font-medium text-[#475467] text-nowrap'>{placesText} {places.length > 1 ? 'места' : 'место'}</span>
-                            </div>
+                            {places.length >= 4 ? (
+                                <div className='flex flex-col justify-between'>
+                                    <span className='text-sm font-medium'>{places.length > 1 ? t('ticketDetails.places.many') : t('ticketDetails.places.single')}</span>
+                                    <div></div>
+                                    <span className='text-sm font-medium text-[#475467] border-b-[1px] w-full'>{placesText} {places.length > 1 ? t('ticketDetails.places.many') : t('ticketDetails.places.single')}</span>
+                                </div>
+                                
+                            ) : (
+                                <div className='flex justify-between'>
+                                    <span className='text-sm font-medium'>{places.length > 1 ? t('ticketDetails.places.many') : t('ticketDetails.places.single')}</span>
+                                    <div className='border-b-[1px] w-full text-nowrap'></div>
+                                    <span className='text-sm font-medium text-[#475467]'>{placesText} {places.length > 1 ? t('ticketDetails.places.many') : t('ticketDetails.places.single')}</span>
+                                </div>
+                            )}
                             <div className='flex flex-col'>
-                                <span className='text-sm font-medium text-[#475467]'>Детали</span>
+                                <span className='text-sm font-medium text-[#475467]'>{t('ticketDetails.details.label')}</span>
                                 <div className='flex flex-col gap-2'>
                                 {ticketCounts.map(({ label, count }, index) => (
                                     <div className='flex justify-between' key={`${label}-${index}`}>

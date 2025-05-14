@@ -171,7 +171,7 @@ const NatisfactionsPageBuilder = () => {
                       <div className='flex flex-col text-nowrap w-full cursor-pointer' onClick={()=>openMessagePage(message)}>
                         {/* <h3 className='font-medium'>{message.title}</h3> */}
                         <h3 className='font-medium'>{message.title}</h3>
-                        <h4 className='text-sm font-normal'>{message.description}</h4>
+                        <h4 className='text-sm font-normal'>{message.briefDescription}</h4>
                       </div>
                     </div>
                     <div className='flex text-nowrap'>

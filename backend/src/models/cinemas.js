@@ -24,6 +24,7 @@ const cinemasSchema = new Schema({
         text: { type: String,required: true },
         grade: { type: Number,required: true,min: 0,max: 5 },
     }],
+    // эту логику нужно было сделать в sessions структуре,но я понял это когда закончил ее давным давно
     halls: [{
         name: { type: String,required: true,enum: ['Зал 1', 'Зал 2', 'Зал 3', 'Зал 4', 'Зал 5','Зал 6'] },
         capacity: { type: Number,required: true },
@@ -33,13 +34,13 @@ const cinemasSchema = new Schema({
             row: Number,
             seat: Number,
             reservedAt: { type: Date, default: Date.now },
-            userId: { type: Schema.Types.ObjectId, ref: 'users' }
+            userId: { type: String,required:true}
         }],
         boughtSeats:[{
             row: Number,
             seat: Number,
             purchasedAt: { type: Date, default: Date.now },
-            userId: { type: Schema.Types.ObjectId, ref: 'users' }
+            userId: { type: String,required:true}
         }],
         isVipSeats: { type: Boolean,default: false },
         VIPSeats:[{

@@ -10,51 +10,55 @@ import ProfileNatisfaction from '../../../../app/profile/natisfaction/page'
 import Mods from '../../../../app/profile/mods/page'
 import Languages from '../../../../app/profile/languages/page'
 import Agreement from '../../../../app/profile/agreement/page'
-import TicketInfo from '@/app/profile/user tickets/ticketInfo/page'
 import Link from 'next/link'
 import { Skeleton } from '@/src/ui/skeleton'
+import '@/i18n'
+import { useTranslation } from 'react-i18next'
+import { GetToken } from '@/src/utils/GetToken/GetToken'
 
 const ProfilePageBuilder = () => {
-    const {user,logout,isLoading } = useAuthStore()
-    // console.log(user)
+    const { t } = useTranslation('common')
+    const {logout,isLoading } = useAuthStore()
+    const { tokenUser } = GetToken()
     const [tabs,setTabs] = useState(['','','','',''])
     const [tab,setTab] = useState('')
     const tabComponents = {
-        'Пользовательское Соглашение': <Agreement/>,
-        'Язык сайта': <Languages/>,
-        'Темная / Светлая Тема': <Mods/>,
-        'Уведомления': <ProfileNatisfaction/>,
-        'Вернуть билеты': <ReturnTickets/>,
-        'Поддержка': <Support/>,
-        'Купленные Билеты': <UserTickets/>,
-        'Данные Пользователя': <UserDatas/>,
+        [t("profile.tab.terms")]: <Agreement />,
+        [t("profile.tab.language")]: <Languages />,
+        [t("profile.tab.theme")]: <Mods />,
+        [t("profile.tab.notifications")]: <ProfileNatisfaction />,
+        [t("profile.tab.refund")]: <ReturnTickets />,
+        [t("profile.tab.support")]: <Support />,
+        [t("profile.tab.purchasedTickets")]: <UserTickets />,
+        [t("profile.tab.userData")]: <UserDatas />,
     }
+    
     useEffect(()=>{
         const updateTabs =()=>{
-            if(user){
+            if(tokenUser){
                 setTabs([
-                    'Пользовательское Соглашение', //
-                    'Язык сайта', //
-                    'Темная / Светлая Тема', //
-                    'Уведомления',
-                    'Вернуть билеты', //
-                    'Поддержка', // 
-                    'Купленные Билеты',
-                    'Данные Пользователя',
+                    t("profile.tab.terms"), //
+                    t("profile.tab.language"), //
+                    t("profile.tab.theme"), //
+                    t("profile.tab.notifications"),
+                    t("profile.tab.refund"), //
+                    t("profile.tab.support"), // 
+                    t("profile.tab.purchasedTickets"),
+                    t("profile.tab.userData"),
                 ])
             }
             else{
                 setTabs([
-                    'Пользовательское Соглашение', //
-                    'Язык сайта', //
-                    'Темная / Светлая Тема', //
-                    'Вернуть билеты', //
-                    'Поддержка', // 
+                    t("profile.tab.terms"), //
+                    t("profile.tab.language"), //
+                    t("profile.tab.theme"), //
+                    t("profile.tab.refund"), //
+                    t("profile.tab.support"), // 
                 ])
             }
         }
         updateTabs()
-    },[user])
+    },[tokenUser])
     const AddCurrentTab = (tabName)=>{
         setTab(tabName)
     }
@@ -63,7 +67,7 @@ const ProfilePageBuilder = () => {
         <div className='flex gap-[6rem]'>
             <div className='space-y-[2rem] w-1/3'>
                 <div className='text-3xl text-[#101828] leading-[129%] font-semibold dark:text-white'>
-                    <h1>Профиль</h1>
+                    <h1>{t('profile.page.title')}</h1>
                 </div>
                 <div className='shadow-lg p-[1rem] rounded-lg flex flex-col gap-7'>
                     <div className='flex flex-col gap-4'>
@@ -82,14 +86,14 @@ const ProfilePageBuilder = () => {
                         )}
                     </div>
                     <div className=''>
-                        {user ? (
+                        {tokenUser ? (
                             <Button className='w-full text-xl font-normal h-[2.5rem] rounded-xl bg-[#e30a13] hover:bg-black/70 cursor-pointer dark:text-white' onClick={logout}>
-                                Выйти
+                                {t('profile.button.logout')}
                             </Button>
                             ) : (
                             <Link href='/login'>
                                 <Button className='w-full text-xl font-normal h-[2.5rem] rounded-xl bg-[#e30a13] hover:bg-black/70 cursor-pointer dark:text-white'>
-                                    Войти
+                                    {t('profile.button.login')}
                                 </Button>
                             </Link>                     
                         )}          
@@ -100,8 +104,7 @@ const ProfilePageBuilder = () => {
                 {tab !== '' ? (
                     <div>{tabComponents[tab]}</div>
                     ) : (
-                    <div>
-                    </div>
+                    <></>
                 )}
             </div>
         </div>
