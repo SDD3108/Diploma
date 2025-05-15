@@ -118,37 +118,91 @@ const checkReservation = async (req, res) => {
     res.status(500).json({ error: 'Ошибка проверки бронирования' })
   }
 }
-
 const confirmPurchase = async (req, res) => {
-  const session = await mongoose.startSession()
-  console.log('confirmPurchase',req.body)
-  console.log('session',session)
   try {
-    await session.withTransaction(async()=>{
-      const cinema = await TicketFlow.findById(req.body.cinemaId).session(session)
-      console.log('cinema',cinema)
-      const hall = cinema.halls.find((h) => h.name == req.body.hall)
-      console.log('hall',hall)
+    const { cinemaId, hall, seats, userId } = req.body;
 
-      req.body.seats.forEach((seat) => {
-        console.log('seat',seat)
-        hall.reservedSeats = hall.reservedSeats.filter((s) => !(s.row === seat.row && s.seat == seat.seat))
-        hall.boughtSeats.push({
-          row: seat.row,
-          seat: seat.seat,
-          userId: req.body.userId,
-          purchasedAt: new Date()
-        })
-      })
+    // Проверка наличия обязательных полей
+    if (!cinemaId || !hall || !seats || !userId) {
+      return res.status(400).json({ error: "Missing required fields" });
+    }
 
-      await cinema.save({ session })
-      res.status(200).json({ success: true })
-    })
+    // Подготовка данных для обновления
+    const updateQuery = {
+      $pull: { 
+        "halls.$[hallElem].reservedSeats": {
+          $or: seats.map(seat => ({
+            row: parseInt(seat.row),
+            seat: parseInt(seat.seat)
+          }))
+        }
+      },
+      $push: {
+        "halls.$[hallElem].boughtSeats": {
+          $each: seats.map(seat => ({
+            row: parseInt(seat.row),
+            seat: parseInt(seat.seat),
+            userId: userId,
+            purchasedAt: new Date()
+          }))
+        }
+      }
+    };
+
+    // Выполнение обновления
+    const result = await TicketFlow.findOneAndUpdate(
+      { _id: cinemaId, "halls.name": hall },
+      updateQuery,
+      {
+        arrayFilters: [{ "hallElem.name": hall }],
+        new: true
+      }
+    );
+
+    if (!result) {
+      return res.status(404).json({ error: "Cinema or hall not found" });
+    }
+
+    res.status(200).json({ success: true });
   } catch (error) {
-    res.status(500).json({ error: 'Ошибка подтверждения покупки' })
-  } finally {
-    session.endSession()
+    console.error("Purchase confirmation error:", error);
+    res.status(500).json({ 
+      error: error.message || "Internal server error" 
+    });
   }
+
+  // let session
+  // try {
+  //   session = await mongoose.startSession()
+  //   await session.withTransaction(async()=>{
+  //     const cinema = await TicketFlow.findById(req.body.cinemaId).session(session)
+  //     console.log('cinema',cinema)
+  //     const hall = cinema.halls.find((h) => h.name == req.body.hall)
+  //     console.log('hall',hall)
+
+  //     req.body.seats.forEach((seat) => {
+  //       console.log('seat',seat)
+  //       hall.reservedSeats = hall.reservedSeats.filter((s) => !(s.row === seat.row && s.seat == seat.seat))
+  //       hall.boughtSeats.push({
+  //         row: seat.row,
+  //         seat: seat.seat,
+  //         userId: req.body.userId,
+  //         purchasedAt: new Date()
+  //       })
+  //     })
+
+  //     await cinema.save({ session })
+  //     res.status(200).json({ success: true })
+  //   })
+  // }
+  // catch(error){
+  //   res.status(500).json({ error: 'Ошибка подтверждения покупки' })
+  // }
+  // finally{
+  //   if(session){
+  //     session.endSession()
+  //   }
+  // }
 }
 // const confirmPurchase = async (req, res) => {
 //   try {

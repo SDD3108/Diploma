@@ -7,7 +7,7 @@ const NatisfactionsMessagePageBuilder = () => {
   const { t } = useTranslation('common')
   const message = getData()
   return (
-    <div className='space-y-[2rem]'>
+    <div className='space-y-[2rem] md:mb-0 sm:mb-[2rem] max-sm:mb-[2rem]'>
       <div className='text-3xl text-[#101828] leading-[129%] font-semibold dark:text-white'>
         {/* <h2>{message.title}</h2> */}
         {t('notifications.heading')}

@@ -84,11 +84,11 @@ export default function Home() {
         <Card className="w-full h-[24rem] rounded-xl relative z-0"> 
           <CardContent className="w-full h-full flex flex-col gap-5 bg-cover bg-center bg-no-repeat">
             <div className="sticky z-2 w-full h-full flex flex-col justify-between">
-              <div className="flex flex-col gap-5 w-1/2">
-                <h1 className="text-3xl lt:text-2xl text-white font-bold whitespace-normal  ">{t('landing.hero.title')}</h1>
+              <div className="flex flex-col gap-5 w-1/2 sm:w-1/2 max-sm:w-full">
+                <h1 className="text-3xl lg:text-2xl sm:text-lg max-sm:text-lg text-white font-bold whitespace-normal">{t('landing.hero.title')}</h1>
                 <p className="text-white text-lg">{t('landing.hero.description')}</p>
               </div>
-              <div className="flex gap-5 mt-5 w-1/4 mt-5">
+              <div className="flex md:flex-row max-sm:flex-col gap-5 mt-5 w-1/4 mt-5 sm:w-1/4 max-sm:w-full">
                 <MyButton onClick={()=>router.push('/events')} className="bg-[#E50914] w-full text-white hover:bg-[#E50914] cursor-pointer">{t('landing.hero.buyTicket')}</MyButton>
                 <MyButton onClick={()=>router.push('/events')} className="bg-[#E50914] w-full text-white hover:bg-[#E50914] cursor-pointer">{t('landing.hero.viewEvents')}</MyButton>
               </div>
@@ -103,46 +103,46 @@ export default function Home() {
         <EventsPageBuilder/>
       </section>
       <section className="px-5">
-        <div className="w-full flex gap-20 lg:gap-20 md:gap-15 sm:gap-10 max-sm:gap-">
-          <div className="w-1/2 flex flex-col gap-4">
-          <Accordion type="single" collapsible className="bg-[#141414] rounded-xl px-4">
+        <div className="w-full flex sm:flex-row max-sm:flex-col gap-20 lg:gap-20 md:gap-15 sm:gap-10 max-sm:gap-5">
+          <div className="w-1/2 sm:w-1/2 max-sm:w-full flex flex-col gap-4">
+            <Accordion type="single" collapsible className="bg-[#141414] rounded-xl px-4">
             <AccordionItem value="item-1">
               <AccordionTrigger className="text-white cursor-pointer">{t('faq.q1')}</AccordionTrigger>
               <AccordionContent className="text-white">{t('faq.a1')}</AccordionContent>
             </AccordionItem>
-          </Accordion>
-          <Accordion type="single" collapsible className="bg-[#141414] rounded-xl px-4">
+            </Accordion>
+            <Accordion type="single" collapsible className="bg-[#141414] rounded-xl px-4">
             <AccordionItem value="item-1">
               <AccordionTrigger className="text-white cursor-pointer">{t('faq.q2')}</AccordionTrigger>
               <AccordionContent className="text-white">{t('faq.a2')}</AccordionContent>
             </AccordionItem>
-          </Accordion>
-          <Accordion type="single" collapsible className="bg-[#141414] rounded-xl px-4">
+            </Accordion>
+            <Accordion type="single" collapsible className="bg-[#141414] rounded-xl px-4">
             <AccordionItem value="item-1">
               <AccordionTrigger className="text-white cursor-pointer">{t('faq.q3')}</AccordionTrigger>
               <AccordionContent className="text-white">{t('faq.a3')}</AccordionContent>
             </AccordionItem>
-          </Accordion>
+            </Accordion>
           </div>
-          <div className="w-1/2 flex flex-col gap-4">
-          <Accordion type="single" collapsible className="bg-[#141414] rounded-xl px-4">
+          <div className="w-1/2 sm:w-1/2 max-sm:w-full flex flex-col gap-4">
+            <Accordion type="single" collapsible className="bg-[#141414] rounded-xl px-4">
             <AccordionItem value="item-1">
               <AccordionTrigger className="text-white cursor-pointer">{t('faq.q4')}</AccordionTrigger>
               <AccordionContent className="text-white">{t('faq.a4')}</AccordionContent>
             </AccordionItem>
-          </Accordion>
-          <Accordion type="single" collapsible className="bg-[#141414] rounded-xl px-4">
+            </Accordion>
+            <Accordion type="single" collapsible className="bg-[#141414] rounded-xl px-4">
             <AccordionItem value="item-1">
               <AccordionTrigger className="text-white cursor-pointer">{t('faq.q5')}</AccordionTrigger>
               <AccordionContent className="text-white">{t('faq.a5')}</AccordionContent>
             </AccordionItem>
-          </Accordion>
-          <Accordion type="single" collapsible className="bg-[#141414] rounded-xl px-4">
+            </Accordion>
+            <Accordion type="single" collapsible className="bg-[#141414] rounded-xl px-4">
             <AccordionItem value="item-1">
               <AccordionTrigger className="text-white cursor-pointer">{t('faq.q6')}</AccordionTrigger>
               <AccordionContent className="text-white">{t('faq.a6')}</AccordionContent>
             </AccordionItem>
-          </Accordion>
+            </Accordion>
           </div>
         </div>
       </section>

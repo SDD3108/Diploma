@@ -255,6 +255,7 @@ const handleCanvasClick = (e)=>{
     return;
   }
   setTempSeat({ row: clickedRow, seat: clickedSeat });
+  setIsTempSeatVip(isVip)
   setIsDialogOpen(true);
   // socket.emit('checkSeat',
   //   {
@@ -438,18 +439,22 @@ if(!session || !cinema){
               </div>
             ) : (
               <>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="adult" id="adult" className="cursor-pointer" />
-                  <Label htmlFor="adult" className="cursor-pointer">
-                    {t('event.selectedSeats.type.adult')} - {session?.adultPrice} ₸
-                  </Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="child" id="child" className="cursor-pointer" />
-                  <Label htmlFor="child" className="cursor-pointer">
-                    {t('event.selectedSeats.type.child')} - {session?.childPrice} ₸
-                  </Label>
-                </div>
+                {session.isAdultPrice && (
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="adult" id="adult" className="cursor-pointer" />
+                    <Label htmlFor="adult" className="cursor-pointer">
+                      {t('event.selectedSeats.type.adult')} - {session?.adultPrice} ₸
+                    </Label>
+                  </div>
+                )}
+                {session?.isChildPrice && (
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="child" id="child" className="cursor-pointer" />
+                    <Label htmlFor="child" className="cursor-pointer">
+                      {t('event.selectedSeats.type.child')} - {session?.childPrice} ₸
+                    </Label>
+                  </div>
+                )}
               </>
             )}
             </RadioGroup>
@@ -478,7 +483,7 @@ if(!session || !cinema){
               )}
               
             </div>
-            <div className="grid grid-cols-6 gap-2 lg:grid-cols-6 sm:grid-cols-3 max-sm:grid-cols-2">
+            <div className="grid grid-cols-6 gap-2 lg:grid-cols-6 sm:grid-cols-3 max-sm:grid-cols-1">
               {selectedSeats.map((seat, index) => (
                 <div key={index} className="bg-white rounded-lg shadow px-4 py-6 lg:px-4 lg:py-6 sm:px-3 sm:py-4 max-sm:px-3 max-sm:py-4 flex justify-between">
                   <div>

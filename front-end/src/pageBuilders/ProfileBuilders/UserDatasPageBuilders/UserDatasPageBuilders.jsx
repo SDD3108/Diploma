@@ -1,3 +1,4 @@
+"use client"
 import React, { useEffect, useState } from 'react'
 import { Input } from '@/src/ui/input'
 import { Button } from '@/src/ui/button'
@@ -11,6 +12,7 @@ import axios from 'axios'
 import { toast } from 'sonner'
 import '@/i18n'
 import { useTranslation } from 'react-i18next'
+
 
 const UserDatasPageBuilders = () => {
   const { t } = useTranslation('common')
@@ -119,7 +121,8 @@ const UserDatasPageBuilders = () => {
   // console.log(`http://localhost:3002${formData.avatar}`);
   
   return (
-    <div>
+    // md:px-0 sm:px-5 max-sm:px-5 md:my-0 sm:my-[2rem] max-sm:my-[2rem]
+    <div className='px-5 my-[2rem]'>
       <div className='flex gap-[3rem] mb-[1rem] w-1/2 lg:w-1/2 sm:w-full max-sm:w-full'>
         <div>
           <Avatar className='w-[5rem] h-[5rem] rounded-xl bg-gray-300'>

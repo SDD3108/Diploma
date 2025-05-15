@@ -20,6 +20,7 @@ const EventBuyTicketPageBuilder = () => {
   const [event, setEvent] = useState(null)
   const savedData = JSON.parse(localStorage.getItem('currentReservation'))
   const [cinema, setCinema] = useState(null)
+  const [displaySize,setDisplaySize] = useState(window.innerWidth,)
   useEffect(()=>{
     const loadReservation = async () => {
       try{
@@ -72,13 +73,19 @@ const EventBuyTicketPageBuilder = () => {
       }
 
     }
+    const getDisplaySize = ()=>{
+      const display = window.innerWidth
+      setDisplaySize(display)
+    }
     loadReservation()
     getEventRequest()
     getCinemaRequest()
+    window.addEventListener('resize', getDisplaySize)
   },[])
+console.log(displaySize);
 
   const handlePaymentConfirmation = async () => {
-    try {
+    try{
       await axios.post('/api/cinemas/confirm-purchase', {
         cinemaId: reservation.cinemaId,
         hall: reservation.hall,
@@ -91,7 +98,7 @@ const EventBuyTicketPageBuilder = () => {
         sessionId: reservation.sessionId,
         ticketPrice: reservation.totalPrice,
         ticketCount: reservation.seats.length,
-        ticketArray: reservation.seats.map(seat => ({
+        ticketArray: reservation.seats.map((seat) => ({
           place: `Ряд ${seat.row}, Место ${seat.seat}`,
           ticketType: seat.ticketType == 'vip' ? 'VIP' : seat.ticketType == 'child' ? 'Child' : 'Adult'
         }))
@@ -126,29 +133,55 @@ const EventBuyTicketPageBuilder = () => {
 
   return (
     <div className="px-5 py-7">
-      <h1 className="text-2xl font-bold mb-6">{t('checkout.page.title')}</h1>
-      <div className='flex gap-[2rem]'>
-        <div className="w-full bg-white rounded-lg shadow-md p-6 mb-6">
+      <div className='text-2xl font-bold mb-6'>
+        <h1>{t('checkout.page.title')}</h1>
+      </div>
+      <div className='flex gap-[2rem] sm:flex-row max-sm:flex-col'>
+        <div className="w-full bg-white rounded-lg shadow-md p-6 sm:px-6 max-sm:px-3 mb-6">
           <h2 className="text-xl font-semibold mb-4">{t('checkout.reservationDetails.title')}</h2>
           <div className="space-y-2 text-nowrap">
-            <div className='flex justify-between'>
-              <span className='font-bold'>{t('checkout.reservationDetails.movie')}</span>
-              <div className='w-full border-b-[1px] mx-1.5 mb-1.5'></div>
-              <span className='text-gray-500'>{event?.title}</span>
-            </div>
-            <div className='flex justify-between'>
-              <span className='font-bold'>{t('checkout.reservationDetails.cinema')}</span>
-              <div className='w-full border-b-[1px] mx-1.5 mb-1.5'></div>
-              <span className='text-gray-500'>{cinema?.cinemaName}</span>
-            </div>
-            <div className='flex justify-between'>
+            {displaySize <= 384 ? (
+              <div className='flex flex-col'>
+                <span className='font-bold'>{t('checkout.reservationDetails.movie')}</span>
+                <span className='text-gray-500 text-end'>{event?.title}</span>
+                <div className='w-full border-b-[1px] mx-1.5 mb-1.5'></div>
+              </div>
+            ) : (
+              <div className='flex justify-between'>
+                <span className='font-bold'>{t('checkout.reservationDetails.movie')}</span>
+                <div className='w-full border-b-[1px] mx-1.5 mb-1.5'></div>
+                <span className='text-gray-500'>{event?.title}</span>
+              </div>
+            )}
+            {displaySize <= 384 ? (
+              <div className='flex flex-col'>
+                <span className='font-bold'>{t('checkout.reservationDetails.cinema')}</span>
+                <span className='text-gray-500 text-end'>{cinema?.cinemaName}</span>
+                <div className='w-full border-b-[1px] mx-1.5 mb-1.5'></div>
+              </div>
+            ) : (
+              <div className='flex justify-between'>
+                <span className='font-bold'>{t('checkout.reservationDetails.cinema')}</span>
+                <div className='w-full border-b-[1px] mx-1.5 mb-1.5'></div>
+                <span className='text-gray-500'>{cinema?.cinemaName}</span>
+              </div>
+            )}
+            {displaySize <= 384 ? (
+              <div className='flex flex-col'>
               <span className='font-bold'>{t('checkout.reservationDetails.hall')}</span>
+              <span className='text-gray-500 text-end'>{reservation?.hall}</span>
               <div className='w-full border-b-[1px] mx-1.5 mb-1.5'></div>
-              <span className='text-gray-500'>{reservation?.hall}</span>
             </div>
+            ) : (
+              <div className='flex justify-between'>
+                <span className='font-bold'>{t('checkout.reservationDetails.hall')}</span>
+                <div className='w-full border-b-[1px] mx-1.5 mb-1.5'></div>
+                <span className='text-gray-500'>{reservation?.hall}</span>
+              </div>
+            )}
           </div>
         </div>
-        <div className="w-1/3 bg-white rounded-lg shadow-md p-6 mb-6">
+        <div className="w-1/3 sm:w-1/2 max-sm:w-full bg-white rounded-lg shadow-md p-6 mb-6">
           <h2 className="text-xl font-semibold mb-4">{t('checkout.selectedSeats.title')}</h2>
           <div className="grid grid-cols-1 gap-4">
             {reservation?.seats.map((seat, index) => (
@@ -163,11 +196,13 @@ const EventBuyTicketPageBuilder = () => {
       </div>
       <div className="bg-white rounded-lg shadow-md p-6">
         <h2 className="text-xl font-semibold mb-4">{t('checkout.payment.title')}</h2>
-        <div className="flex justify-between items-center">
+        <div className="flex sm:flex-row max-sm:flex-col sm:items-center max-sm:items-start justify-between items-center">
           <div>
-            <p className="text-lg font-bold">{t('checkout.payment.total')}: {reservation.totalPrice} ₸</p>
+            <p className="text-lg font-bold">{t('checkout.payment.total')} {reservation.totalPrice}₸</p>
           </div>
-          <button onClick={handlePaymentConfirmation} className="bg-green-500 text-white px-6 py-3 rounded-lg hover:bg-green-600 transition-colors cursor-pointer">{t('button.confirmPayment')}</button>
+          <div>
+            <button onClick={handlePaymentConfirmation} className="bg-green-500 text-white px-6 py-3 rounded-lg hover:bg-green-600 transition-colors cursor-pointer">{t('button.confirmPayment')}</button>
+          </div>
         </div>
       </div>
     </div>

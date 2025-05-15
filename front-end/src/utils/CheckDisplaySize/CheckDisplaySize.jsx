@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 
-export function CheckDisplaySize(breakpoint = 240){
+export function CheckDisplaySize(breakpoint = 768){
   const [isMobile, setIsMobile] = useState(false)
 
   useEffect(()=>{

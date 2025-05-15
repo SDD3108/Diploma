@@ -127,7 +127,7 @@ const NatisfactionsPageBuilder = () => {
           <ProfileNatisfactionMessage/>
         </>
       ) : (
-        <div className='space-y-[2rem]'>
+        <div className='space-y-[2rem] md:mb-0 sm:mb-[2rem] max-sm:mb-[2rem]'>
           <div className='text-3xl text-[#101828] leading-[129%] font-semibold dark:text-white'>
             <h2>{t('notifications.heading')}</h2>
           </div>
@@ -158,7 +158,7 @@ const NatisfactionsPageBuilder = () => {
             <div className='flex flex-col'>
               {messages?.map((message,index)=>(
                 <div key={index}>
-                  <div className='flex justify-between items-center pl-2 pr-[4rem] py-1 min-h-[4rem]'>
+                  <div className='flex sm:flex-row max-sm:flex-col justify-between items-center sm:items-center max-sm:items-end pl-2 pr-[4rem] sm:pr-[4rem] max-sm:pr-4 py-1 min-h-[4rem]'>
                     <div className='flex items-center gap-[1.5rem] w-full'>
                       <div className='flex items-center gap-2'>
                         {message.isRead ? (
@@ -168,7 +168,7 @@ const NatisfactionsPageBuilder = () => {
                         )}
                         <Checkbox checked={checkedItems[index]} onClick={()=> ownChecked(index)} />
                       </div>
-                      <div className='flex flex-col text-nowrap w-full cursor-pointer' onClick={()=>openMessagePage(message)}>
+                      <div className='flex flex-col text-nowrap sm:text-nowrap max-sm:text-wrap w-full cursor-pointer' onClick={()=>openMessagePage(message)}>
                         <h3 className='font-medium'>{message.title}</h3>
                         <h4 className='text-sm font-normal'>{message.briefDescription}</h4>
                       </div>

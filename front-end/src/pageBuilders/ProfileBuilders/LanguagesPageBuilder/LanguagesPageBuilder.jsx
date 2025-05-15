@@ -25,7 +25,7 @@ const LanguagesPageBuilder = () => {
     }
   }
   return (
-    <Card className="w-full max-w-2xl">
+    <Card className="w-full max-w-2xl md:mx-0 sm:mx-auto max-sm:mx-auto md:my-0 sm:my-[2rem] max-sm:my-[2rem]">
       <CardHeader>
         <CardTitle className="text-xl">{t("description")}</CardTitle>
       </CardHeader>

@@ -149,7 +149,7 @@ const EventItemDescPageBuilder = () => {
       </div>
       <Separator className='mt-3 bg-[#3D3D3D]'/>
     </div>
-    <div className='h-[48rem] flex flex-col gap-2'>
+    <div className='h-[48rem] flex flex-col'>
       {event?.sessions?.length == 0 ? (
         <div className='mt-3 flex flex-col gap-2'>
           <Skeleton className='h-[4rem]'/>
@@ -223,7 +223,7 @@ const EventItemDescPageBuilder = () => {
             </div>
             </Link>
             {index !== event?.sessions?.length - 1 && (
-              <Separator className='my-3 bg-[#3D3D3D]'/>
+              <Separator className='my-3 bg-neutral-300'/>
             )}
           </div>
         ))
@@ -384,7 +384,7 @@ const EventItemDescPageBuilder = () => {
             <div>
               <h2 className='text-[#212121] text-4xl font-semibold dark:text-slate-100'>{event.title}</h2>
             </div>
-            <div className='w-1/8 sm:w-1/8 max-sm:w-1/4 rounded-md px-2 py-1 bg-black/10 flex justify-center items-center'>
+            <div className='w-1/8 sm:w-1/8 max-sm:w-1/4 min-w-1/4 max-w-1/8 rounded-md px-2 py-1 bg-black/10 flex justify-center items-center'>
               <h3 className='text-black/60 font-medium md:text-base sm:text-xs max-sm:text-xs uppercase'>{t(`event.genre.${event.genre}`)}</h3>
             </div>
           </div>

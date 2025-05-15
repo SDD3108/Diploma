@@ -1,10 +1,11 @@
+"use client"
 import React,{useState,useEffect} from 'react'
 import { GetToken } from '@/src/utils/GetToken/GetToken'
 import { Skeleton } from '@/src/ui/skeleton'
 import Link from 'next/link'
 import axios from 'axios'
 import { Button } from '@/src/ui/button'
-import TicketInfoPageBuilder from '@/app/profile/user tickets/ticketInfo/page'
+import TicketInfoPageBuilder from '@/app/profile/userTickets/ticketInfo/page'
 import { setData } from '@/src/utils/DataTransfer/DataTransfer'
 import { ArrowRight } from 'lucide-react';
 import '@/i18n'
@@ -20,8 +21,6 @@ const UserTicketsPageBuilder = () => {
   const [TicketInfoPage, setTicketInfoPage] = useState(false)
 // получаем eventId,пробигаемся циклом по events и ищем по eventId нужный нам объект
 // потом выводим event.image и event.title
-
-
 
 // по sessionId ищем нужный нам объект в sessions и выводим session.time,session.sessionLocation,session.hall
   const purchasedTickets = tokenUser?.purchasedTickets || []
@@ -60,16 +59,15 @@ const UserTicketsPageBuilder = () => {
       {TicketInfoPage ? (
         <TicketInfoPageBuilder/>
       ) : (
-        <div className='flex flex-col gap-4'>
-          <div className='text-3xl text-[#101828] leading-[129%] font-semibold'>
+        <div className='flex flex-col gap-4 md:mx-0 sm:mx-auto max-sm:mx-auto md:my-0 sm:my-[1rem] max-sm:my-[1rem]'>
+          <div className='text-3xl text-[#101828] leading-[129%] font-semibold px-5'>
             <h2>{t('profile.tickets.page.title')}</h2>
           </div>
-          <div className='flex flex-col shadow-md rounded-lg p-5 min-h-[20rem] bg-white'>
+          <div className='flex flex-col shadow-md md:shadow-md sm:shadow-none max-sm:shadow-none rounded-lg p-5 min-h-[20rem] bg-white'>
           <div className='w-full h-[2.5rem] flex justify-between items-center'>
             <span className='text-lg font-normal text-gray-800'>{t('profile.tickets.count.p1')} {tokenUser?.purchasedTickets?.length > 0 ? tokenUser?.purchasedTickets?.length : t('profile.tickets.count.p2')} {t('profile.tickets.count.p3')}</span>
-            <span className='text-lg font-normal text-gray-800'></span>
           </div>
-          <div className='grid grid-cols-2 gap-4 mt-4'>
+          <div className='grid grid-cols-2 md:grid-cols-1 lg:grid-cols-2 gap-4 mt-4'>
           {loading ? (
               <>
                 <Skeleton className='w-full h-[14rem] rounded-lg'/>

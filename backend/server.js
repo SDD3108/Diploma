@@ -74,7 +74,7 @@ mongoose.connect(`mongodb+srv://${process.env.LOGIN}:${process.env.PASSWORD}@clu
           for(const hall of cinema.halls){
             const expiredReservations = hall.reservedSeats.filter((seat) => now - seat.reservedAt > 900000)
             if(expiredReservations.length > 0){
-              const seatIds = expiredSeats.map(seat => seat._id)
+              const seatIds = expiredReservations.map(seat => seat._id) //
               await TicketFlow.findByIdAndUpdate(cinema._id,{
                 $pull: {
                   'halls.$[hall].reservedSeats': {
@@ -115,13 +115,13 @@ const sessionSchema = new mongoose.Schema({
   vipPrice: { type: Number },
   
 })
-sessionSchema.plugin(AutoIncrement, { inc_field: 'cinemaId' });
-const Session = mongoose.model('Session', sessionSchema);
-Session.createIndexes({ cinemaId: 1 }, { unique: true });
+sessionSchema.plugin(AutoIncrement,{inc_field:'cinemaId'})
+const Session = mongoose.model('Session',sessionSchema)
+Session.createIndexes({cinemaId:1},{unique:true})
 
 // Socket.IO события
 io.on('connection', (socket) => {
-  console.log('Новое подключение:', socket.id);
+  console.log('Новое подключение:', socket.id)
 
   socket.on('reserveSeat', async (data) => {
     try {
@@ -137,9 +137,9 @@ io.on('connection', (socket) => {
         (s) => s.row === data.seat.row && s.seat === data.seat.seat
       );
 
-      if (isReserved || isBought) {
-        socket.emit('seatUnavailable', { seat: data.seat });
-        return;
+      if(isReserved || isBought){
+        socket.emit('seatUnavailable',{ seat: data.seat })
+        return
       }
 
       hall.reservedSeats.push({ ...data.seat, reservedAt: new Date() });
@@ -149,7 +149,7 @@ io.on('connection', (socket) => {
     } catch (error) {
       console.error('Ошибка резервирования места:', error);
     }
-  });
+  })
 
   socket.on('cancelReservation', async (data) => {
     try {
@@ -168,7 +168,7 @@ io.on('connection', (socket) => {
     catch(error){
       console.error('Ошибка отмены резервации:', error)
     }
-})
+  })
 
   socket.on('confirmPurchase', async (data) => {
     try {
@@ -191,12 +191,26 @@ io.on('connection', (socket) => {
 })
 
 // Маршруты
-app.use('/api/events', eventRoutes);
-app.use('/api/cinemas', cinemaRoutes);
-app.use('/api/users', userRoutes);
+app.use('/api/events', eventRoutes)
+app.use('/api/cinemas', cinemaRoutes)
+app.use('/api/users', userRoutes)
 
 // Запуск сервера
-const PORT = process.env.PORT || 3002;
-server.listen(PORT, () => {
+const PORT = process.env.PORT || 3002
+server.listen(PORT,()=>{
   console.log(`Сервер запущен на порту ${PORT}`);
-});
+})
+// fetch('http://localhost:3002/api/events', {
+//   method: 'POST',
+//   headers: {
+//     'Content-Type': 'application/json',
+//   },
+//   body: JSON.stringify(),
+// })
+// fetch('http://localhost:3002/api/cinemas', {
+//   method: 'POST',
+//   headers: {
+//     'Content-Type': 'application/json',
+//   },
+//   body: JSON.stringify(),
+// })

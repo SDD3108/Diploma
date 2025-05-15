@@ -13,9 +13,9 @@ const HeaderCompanent = () => {
   const { t } = useTranslation('common')
   const router = useRouter()
   return (
-    <header className='h-[8rem] bg-[#1A1A1A] text-[#FFFFFF] shadow-md px-5 flex items-center'>
+    <header className='h-[8rem] md:h-[8rem] sm:h-[10rem] max-sm:h-[10rem] bg-[#1A1A1A] text-[#FFFFFF] shadow-md px-5 flex items-center'>
       <div className='flex flex-col items-center w-full'>
-        <div className="flex justify-between flex-row md:gap-0 sm:gap-2 max-sm:gap-2 md:flex-row sm:flex-col max-sm:flex-col w-full">
+        <div className="flex justify-between flex-row md:flex-row sm:flex-col max-sm:flex-col w-full">
           <div className="flex items-center gap-2 cursor-pointer" onClick={()=>router.push('/')}>
             <Tickets className="h-8 w-8 text-[#00F000]" />
             <span className="text-xl font-bold text-[#FFFFFF]">{t('brand.name')}</span>

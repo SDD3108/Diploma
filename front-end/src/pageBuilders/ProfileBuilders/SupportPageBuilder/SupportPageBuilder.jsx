@@ -10,7 +10,7 @@ import { useTranslation } from 'react-i18next'
 const SupportPageBuilder = () => {
   const { t } = useTranslation('common')
   return (
-    <Card className="w-full max-w-2xl">
+    <Card className="w-full max-w-2xl md:mx-0 sm:mx-auto max-sm:mx-auto md:my-0 sm:my-[2rem] max-sm:my-[2rem]">
       <CardHeader className="pb-4">
         <div className="flex items-center gap-3">
           <CardTitle className="text-2xl">{t('support.card.title')}</CardTitle>
