@@ -50,8 +50,6 @@ const TicketInfoPageBuilder = () => {
         ]
     }]
     const getSortedPlaces = () => {
-        // поменять на tokenUser.purchasedTickets ! ! ! ! ! !
-        // return tokenUser.purchasedTickets.flatMap((ticket) => ticket.ticketArray.map((ticket) => ticket.place)).sort((a,b) => b - a)
         if(tokenUser?.purchasedTickets?.length == 0){
             return []
         }
@@ -61,17 +59,6 @@ const TicketInfoPageBuilder = () => {
             const numB = parseInt(b.match(/\d+/g).join(''))
             return numB - numA
         })
-        // const filteredTickets = tokenUser?.purchasedTickets.filter((ticket) => ticket.eventId == sessionInfo.eventId && ticket.sessionId == sessionInfo.sessionId)
-        // return filteredTickets.flatMap((ticket) => ticket.ticketArray.map((t) => t.place).sort((a, b)=>{
-        //     const numA = parseInt(a.match(/\d+/g).join(''))
-        //     const numB = parseInt(b.match(/\d+/g).join(''))
-        //     return numB - numA
-        // }))
-        // return tokenUser.purchasedTickets.flatMap((ticket) => ticket.ticketArray.map(t => t.place)).sort((a, b) => {
-        //     const numA = parseInt(a.match(/\d+/g).join(''))
-        //     const numB = parseInt(b.match(/\d+/g).join(''))
-        //     return numB - numA
-        // })
     }
     const countTickets = ()=>{
         const ticketTypes = {
@@ -98,25 +85,9 @@ const TicketInfoPageBuilder = () => {
                 }
             })
         })
-
-        // const filteredTickets = tokenUser.purchasedTickets.filter((ticket) => ticket.eventId == sessionInfo.eventId && ticket.sessionId == sessionInfo.sessionId)
-        // заменить на tokenUser.purchasedTickets ! ! ! ! ! !
-        // filteredTickets.forEach((element)=>{
-        //     element.ticketArray.forEach((item)=>{ 
-        //         if(ticketTypes[item.ticketType]){
-        //             ticketTypes[item.ticketType].count++
-        //         }
-        //     })
-        // })
         return Object.values(ticketTypes).filter((type) => type.count > 0)
     }
-    // const test2 = async()=>{
-    //     const foundBuy = await tokenUser?.purchasedTickets.find((item)=> item.sessionId == sessionId && item.eventId == eventId)
-    //     console.log(foundBuy.ticketArray[0]);
-    //     return foundBuy.ticketArray[0]
-    // }
-    // test2()
-    const ticketCounts = countTickets()    
+    const ticketCounts = countTickets()
     const places = getSortedPlaces()
     console.log(places);
     const placesText = places?.join(', ')

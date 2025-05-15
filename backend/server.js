@@ -70,6 +70,10 @@ mongoose.connect(`mongodb+srv://${process.env.LOGIN}:${process.env.PASSWORD}@clu
       try{
         const cinemas = await TicketFlow.find()
         const now = new Date()
+        const day = String(now.getDate()).padStart(2,'0')
+        const month = String(now.getMonth() + 1).padStart(2,'0')
+        const year = now.getFullYear()
+        const date = `${day}.${month}.${year}`
         for(const cinema of cinemas){
           for(const hall of cinema.halls){
             const expiredReservations = hall.reservedSeats.filter((seat) => now - seat.reservedAt > 900000)

@@ -121,7 +121,11 @@ const checkReservation = async (req, res) => {
 const confirmPurchase = async (req, res) => {
   try {
     const { cinemaId, hall, seats, userId } = req.body;
-
+    const now = new Date()
+    const day = String(now.getDate()).padStart(2,'0')
+    const month = String(now.getMonth() + 1).padStart(2,'0')
+    const year = now.getFullYear() // или .toString().slice(2) для 2-значного
+    const date = `${day}.${month}.${year}`
     // Проверка наличия обязательных полей
     if (!cinemaId || !hall || !seats || !userId) {
       return res.status(400).json({ error: "Missing required fields" });
@@ -143,7 +147,7 @@ const confirmPurchase = async (req, res) => {
             row: parseInt(seat.row),
             seat: parseInt(seat.seat),
             userId: userId,
-            purchasedAt: new Date()
+            purchasedAt: date
           }))
         }
       }

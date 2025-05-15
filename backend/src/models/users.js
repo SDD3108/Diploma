@@ -17,7 +17,13 @@ const userSchema = new Schema({
         grade:{type:Number,min:0,max:5}
     }],
     purchasedTickets:[{
-        date:{type:String,default: Date.now},
+        date:{type:String,default:()=>{
+            const now = new Date()
+            const day = String(now.getDate()).padStart(2,'0')
+            const month = String(now.getMonth() + 1).padStart(2,'0')
+            const year = now.getFullYear().toString().slice(2)
+            return `${day}.${month}.${year}`
+        }},
         eventId:{type:String,required: true},
         sessionId:{type:String,required: true},
         ticketPrice:{type:Number,required: true},

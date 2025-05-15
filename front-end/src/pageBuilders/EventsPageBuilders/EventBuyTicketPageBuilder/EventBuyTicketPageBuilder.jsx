@@ -86,14 +86,20 @@ console.log(displaySize);
 
   const handlePaymentConfirmation = async () => {
     try{
+      const now = new Date()
+      const day = String(now.getDate()).padStart(2,'0')
+      const month = String(now.getMonth() + 1).padStart(2,'0')
+      const year = now.getFullYear().toString().slice(2)
+      const date = `${day}.${month}.${year}`
       await axios.post('/api/cinemas/confirm-purchase', {
+        date:date,
         cinemaId: reservation.cinemaId,
         hall: reservation.hall,
         seats: reservation.seats,
         userId: tokenUser?._id
       })
       const purchaseData = {
-        date: new Date(),
+        date: date,
         eventId: reservation.eventId,
         sessionId: reservation.sessionId,
         ticketPrice: reservation.totalPrice,
@@ -198,7 +204,7 @@ console.log(displaySize);
         <h2 className="text-xl font-semibold mb-4">{t('checkout.payment.title')}</h2>
         <div className="flex sm:flex-row max-sm:flex-col sm:items-center max-sm:items-start justify-between items-center">
           <div>
-            <p className="text-lg font-bold">{t('checkout.payment.total')} {reservation.totalPrice}₸</p>
+            <p className="text-lg font-bold">{t('checkout.payment.total')} {reservation?.totalPrice}₸</p>
           </div>
           <div>
             <button onClick={handlePaymentConfirmation} className="bg-green-500 text-white px-6 py-3 rounded-lg hover:bg-green-600 transition-colors cursor-pointer">{t('button.confirmPayment')}</button>

@@ -34,7 +34,7 @@ const UserTicketsPageBuilder = () => {
       const combined = await Promise.all(purchasedTickets.map(async(ticket,index)=>{
         const eventResponse = responses[index]
         const event = eventResponse.data
-        const session = event.sessions.find(s => s._id == ticket._id)
+        const session = event.sessions.find((s) => s._id == ticket._id)
         return { ...ticket, event, session }
       }))
       console.log(combined);

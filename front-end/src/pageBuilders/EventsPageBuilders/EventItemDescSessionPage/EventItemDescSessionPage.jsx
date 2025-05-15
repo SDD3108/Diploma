@@ -257,30 +257,6 @@ const handleCanvasClick = (e)=>{
   setTempSeat({ row: clickedRow, seat: clickedSeat });
   setIsTempSeatVip(isVip)
   setIsDialogOpen(true);
-  // socket.emit('checkSeat',
-  //   {
-  //     cinemaId: cinema._id,
-  //     hall: session.hall, 
-  //     row: clickedRow,
-  //     seat: clickedSeat
-  //   },
-  //   (response)=>{
-  //     if(response.available){
-  //       console.log(response.available);
-        
-  //       setTempSeat({ row: clickedRow, seat: clickedSeat })
-  //       setIsTempSeatVip(isVip)
-  //       setIsDialogOpen(true)
-  //     }
-  //     else{
-  //       toast('Место уже занято!')
-  //     }
-  // })
-  // if(!isReserved && !isBought && !isSelected){
-  //   setTempSeat({row: clickedRow,seat: clickedSeat })
-  //   setIsTempSeatVip(isVip)
-  //   setIsDialogOpen(true)
-  // }
 }
 const addTicket = ()=>{
   const isAlreadySelected = selectedSeats.some((s) => s.row == tempSeat.row && s.seat == tempSeat.seat)
