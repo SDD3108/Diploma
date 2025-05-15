@@ -15,8 +15,11 @@ import { Skeleton } from '@/src/ui/skeleton'
 import '@/i18n'
 import { useTranslation } from 'react-i18next'
 import { GetToken } from '@/src/utils/GetToken/GetToken'
+import { CheckDisplaySize } from '@/src/utils/CheckDisplaySize/CheckDisplaySize'
+import { useRouter } from 'next/navigation'
 
 const ProfilePageBuilder = () => {
+    const router = useRouter()
     const { t } = useTranslation('common')
     const {logout,isLoading } = useAuthStore()
     const { tokenUser } = GetToken()
@@ -32,7 +35,6 @@ const ProfilePageBuilder = () => {
         [t("profile.tab.purchasedTickets")]: <UserTickets />,
         [t("profile.tab.userData")]: <UserDatas />,
     }
-    
     useEffect(()=>{
         const updateTabs =()=>{
             if(tokenUser){
