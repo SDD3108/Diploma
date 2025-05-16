@@ -316,7 +316,15 @@
   "ticketDetails.hall.label": "Зал",
   "ticketDetails.places.single": "Орын",
   "ticketDetails.places.many": "Орындар",
-  "ticketDetails.details.label": "Мәліметтер"
+  "ticketDetails.details.label": "Мәліметтер",
+
+  "captcha.title": "Сіз адам екеніңізді растаңыз",
+  "captcha.description": "Суреттен мәтінді енгізіңіз",
+  "captcha.success":"Сынақтан өтті",
+  "captcha.fail":"Жарамсыз енгізу",
+  "captcha.update":"Жаңарту",
+  "captcha.checking":"Емтихан...",
+  "captcha.confirm":"Растау"
 
 
 }

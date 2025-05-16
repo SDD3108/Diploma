@@ -318,5 +318,15 @@
   "ticketDetails.hall.label": "Зал",
   "ticketDetails.places.single": "Место",
   "ticketDetails.places.many": "Места",
-  "ticketDetails.details.label": "Детали"
+  "ticketDetails.details.label": "Детали",
+
+  "captcha.title": "Подтвердите, что вы человек",
+  "captcha.description": "Введите текст с картинки",
+  "captcha.success":"Проверка пройдена",
+  "captcha.fail":"Неверный ввод",
+  "captcha.update":"Обновить",
+  "captcha.checking":"Проверка...",
+  "captcha.confirm":"Подтвердить"
+
+
 }

@@ -316,5 +316,14 @@
   "ticketDetails.hall.label": "Hall",
   "ticketDetails.places.single": "Seat",
   "ticketDetails.places.many": "Seats",
-  "ticketDetails.details.label": "Details"
+  "ticketDetails.details.label": "Details",
+
+  "captcha.title": "Please confirm that you are human",
+  "captcha.description": "Enter text from the image",
+  "captcha.success":"Captcha passed",
+  "captcha.fail":"Invalid input",
+  "captcha.update":"Refresh",
+  "captcha.checking":"Examination...",
+  "captcha.confirm":"Confirm"
+  
 }

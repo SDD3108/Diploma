@@ -49,7 +49,7 @@ export const Captcha = ({success})=>{
     return (
         <Card className="w-[350px]">
             <CardHeader>
-              <CardTitle>Подтвердите, что вы человек</CardTitle>
+              <CardTitle>{t('captcha.title')}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="grid w-full items-center gap-4">
@@ -57,10 +57,9 @@ export const Captcha = ({success})=>{
                   <div className="absolute inset-0 overflow-hidden">
                     {[...Array(10)].map((_, i) => (
                       <div key={i} className="absolute w-full h-px bg-gray-400/30" style={{
-                          top: `${Math.random() * 100}%`,
-                          transform: `rotate(${Math.random() * 60 - 30}deg)`
-                        }}
-                      />
+                        top: `${Math.random() * 100}%`,
+                        transform: `rotate(${Math.random() * 60 - 30}deg)`
+                      }}/>
                     ))}
                   </div>
                   {captchaText.split('').map((char, index) => (
@@ -78,17 +77,12 @@ export const Captcha = ({success})=>{
                 </div>
 
                 <div className="flex flex-col space-y-2">
-                  <Label htmlFor="captcha">Введите текст с картинки</Label>
-                  <Input
-                    id="captcha"
-                    value={userInput}
-                    onChange={(e) => setUserInput(e.target.value)}
-                    disabled={isLoading}
-                  />
+                  <Label htmlFor="captcha">{t('captcha.description')}</Label>
+                  <Input id="captcha" value={userInput} onChange={(e) => setUserInput(e.target.value)} disabled={isLoading}/>
 
                   {isVerified !== null && (
                     <p className={`text-sm ${isVerified ? 'text-green-600' : 'text-red-600'}`}>
-                      {isVerified ? '✓ Проверка пройдена' : 'Неверный ввод'}
+                      {isVerified ? `✓ ${t('captcha.success')}` : t('captcha.fail')}
                     </p>
                   )}
                 </div>
@@ -100,13 +94,13 @@ export const Captcha = ({success})=>{
                     disabled={isLoading}
                   >
                     <ReloadIcon className="mr-2 h-4 w-4" />
-                    Обновить
+                    {t("captcha.update")}
                   </Button>
                   <Button 
                     onClick={verifyCheck}
                     disabled={isLoading || !userInput}
                   >
-                    {isLoading ? 'Проверка...' : 'Подтвердить'}
+                    {isLoading ? t('captcha.checking') : t('captcha.confirm')}
                   </Button>
                 </div>
               </div>
