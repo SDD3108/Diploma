@@ -77,8 +77,6 @@ const EventItemDescPageBuilder = () => {
     getEvents()
     getUsers()
   },[])
-  console.log(t('faq.a5'));
-  
   const tabsPageLogic = [
   {
     title:t('event.description'),
@@ -125,7 +123,7 @@ const EventItemDescPageBuilder = () => {
   },
   ]
   const ratingArray = [1,2,3,4,5]
-  const TicketsContent = ()=>(
+  const TicketsContent = useMemo(()=> ()=>(
   <div>
     <div>
       <div className='flex justify-between items-center px-2 md:px-2 sm:px-4 max-sm:px-2'>
@@ -230,8 +228,8 @@ const EventItemDescPageBuilder = () => {
       )}
     </div>
   </div>
-  )
-  const AboutContent = ()=>(
+  ),[event?.sessions,params.id,t])
+  const AboutContent = useMemo(()=> ()=>(
   <div className='w-full'>
     <div className='grid grid-cols-2 grid-rows-2 gap-x-8 gap-y-4'>
       {tabsPageLogic.map(({title,key,condition,render},index)=>(
@@ -248,9 +246,9 @@ const EventItemDescPageBuilder = () => {
       ))}
     </div>
   </div>
-  )
-  const ReviewsContent =()=>{
-  const handleSubmitReview = async () => {
+  ),[event,t])
+  const ReviewsContent = useMemo(()=> ()=>{
+    const handleSubmitReview = async () => {
     if(!rating || !reviewText.trim()){
       toast(t('event.reviews.fillFields'))
       return
@@ -291,8 +289,8 @@ const EventItemDescPageBuilder = () => {
     finally{
       setIsSubmitting(false)
     }
-  }
-  const renderStars =(currentRating,isInteractive = true)=>{
+    }
+    const renderStars =(currentRating,isInteractive = true)=>{
     return (
       <div className="flex gap-1">
         {ratingArray.map((star)=>(
@@ -302,58 +300,58 @@ const EventItemDescPageBuilder = () => {
         ))}
       </div>
     )
-  }  
-  if(!event.isReviews){
+    }  
+    if(!event.isReviews){
+      return (
+        <div className="text-gray-500">{t('event.reviews.disabled')}</div>
+      )
+    }
     return (
-      <div className="text-gray-500">{t('event.reviews.disabled')}</div>
-    )
-  }
-  return (
-    <div className="space-y-8">
-      {tokenUser && (
-        <div className="border p-6 rounded-lg space-y-4">
-          <h3 className="text-xl font-semibold">{t('event.reviews.leaveReview')}</h3>
-          
-          <div className="space-y-2">
-            <label className="block text-sm font-medium">{t('event.reviews.rating')}</label>
-            {renderStars(rating)}
-          </div>
+      <div className="space-y-8">
+        {tokenUser && (
+          <div className="border p-6 rounded-lg space-y-4">
+            <h3 className="text-xl font-semibold">{t('event.reviews.leaveReview')}</h3>
 
-          <Textarea value={reviewText} onChange={(e) => setReviewText(e.target.value)} placeholder={t('event.reviews.placeholder')} className="min-h-[120px]"/>
-
-          <Button onClick={handleSubmitReview} disabled={isSubmitting} className='dark:bg-neutral-900 dark:text-slate-100'>
-            {isSubmitting ? t('event.reviews.submitting') : t('event.reviews.submit')}
-          </Button>
-        </div>
-      )}
-      <div className="space-y-4">
-        {event.reviews?.length > 0 ? (
-          event.reviews.map((review,index)=>{
-            const user = users.find((u) => u._id == review.userId)
-            return (
-              <div key={index} className="border p-4 rounded-lg">
-                <div className="flex justify-between items-start mb-2">
-                  <div className='flex gap-2 items-center'>
-                    <Avatar>
-                      <AvatarImage src={user?.avatar} />
-                      <AvatarFallback>{GetInitials(user?.name)}</AvatarFallback>
-                    </Avatar>
-                    <p className="font-medium">{user?.name || t('event.reviews.username')}</p> 
-                  </div>
-                  {renderStars(review.grade,false)}
-                </div>
-                <p className="text-gray-600">{review.text}</p>
+            <div className="space-y-2">
+              <label className="block text-sm font-medium">{t('event.reviews.rating')}</label>
+              {renderStars(rating)}
             </div>
-            )
-            
-          })
-        ) : (
-          <p className="text-gray-500">{t('event.reviews.noReviews')}</p>
+
+            <Textarea value={reviewText} onChange={(e) => setReviewText(e.target.value)} placeholder={t('event.reviews.placeholder')} className="min-h-[120px]"/>
+
+            <Button onClick={handleSubmitReview} disabled={isSubmitting} className='dark:bg-neutral-900 dark:text-slate-100'>
+              {isSubmitting ? t('event.reviews.submitting') : t('event.reviews.submit')}
+            </Button>
+          </div>
         )}
+        <div className="space-y-4">
+          {event.reviews?.length > 0 ? (
+            event.reviews.map((review,index)=>{
+              const user = users.find((u) => u._id == review.userId)
+              return (
+                <div key={index} className="border p-4 rounded-lg">
+                  <div className="flex justify-between items-start mb-2">
+                    <div className='flex gap-2 items-center'>
+                      <Avatar>
+                        <AvatarImage src={user?.avatar} />
+                        <AvatarFallback>{GetInitials(user?.name)}</AvatarFallback>
+                      </Avatar>
+                      <p className="font-medium">{user?.name || t('event.reviews.username')}</p> 
+                    </div>
+                    {renderStars(review.grade,false)}
+                  </div>
+                  <p className="text-gray-600">{review.text}</p>
+              </div>
+              )
+
+            })
+          ) : (
+            <p className="text-gray-500">{t('event.reviews.noReviews')}</p>
+          )}
+        </div>
       </div>
-    </div>
-  )
-  }
+    )
+  },[event,users,tokenUser,rating,reviewText,t])
   if(error){
     return (
       <ErrorCompanent error={error}/>
