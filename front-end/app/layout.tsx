@@ -6,6 +6,7 @@ import HeaderCompanent from "@/src/common/header/HeaderCompanent";
 import FooterCompanent from "@/src/common/footer/FooterCompanent";
 import { ThemeProvider } from "@/src/utils/ThemeProvider/ThemeProvider"
 import { Toaster } from "@/src/ui/sonner"
+import { CaptchaModal } from '@/src/hooks/CaptchaModal/CaptchaModal'
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -31,6 +32,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+          <CaptchaModal/>
           <HeaderCompanent/>
             {children}
             <Toaster/>

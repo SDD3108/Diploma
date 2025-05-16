@@ -382,7 +382,7 @@ const EventItemDescPageBuilder = () => {
             <div>
               <h2 className='text-[#212121] text-4xl font-semibold dark:text-slate-100'>{event.title}</h2>
             </div>
-            <div className='w-1/8 sm:w-1/8 max-sm:w-1/4 min-w-1/4 max-w-1/8 rounded-md px-2 py-1 bg-black/10 flex justify-center items-center'>
+            <div className='w-1/8 sm:w-1/8 max-sm:w-1/4 min-w-1/8 max-w-1/4 rounded-md px-2 py-1 bg-black/10 flex justify-center items-center'>
               <h3 className='text-black/60 font-medium md:text-base sm:text-xs max-sm:text-xs uppercase'>{t(`event.genre.${event.genre}`)}</h3>
             </div>
           </div>
