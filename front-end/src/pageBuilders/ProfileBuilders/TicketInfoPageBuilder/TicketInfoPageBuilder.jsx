@@ -97,7 +97,7 @@ const TicketInfoPageBuilder = () => {
             <h2>{t('ticketDetails.title')}</h2>
         </div>
         <div className='flex flex-col shadow-md rounded-lg p-5 min-h-[20rem] bg-white'>
-            <div className='grid grid-cols-2 sm:grid-cols-2 max-sm:grid-cols-1 gap-5'>
+            <div className='grid grid-cols-2 lg:grid-cols-2 sm:grid-cols-2 max-sm:grid-cols-1 gap-5'>
                 <div className='w-full min-h-[30rem] rounded-lg shadow-md'>
                     <div>
                         {imageError ? (
@@ -137,7 +137,7 @@ const TicketInfoPageBuilder = () => {
                                 <div className='border-b-[1px] w-full mx-1.5'></div>
                                 <span className='text-sm font-medium text-[#475467]'>{hallNumber}</span>
                             </div>
-                            {places?.length >= 4 ? (
+                            {places?.length >= 2 ? (
                                 <div className='flex flex-col justify-between'>
                                     <span className='text-sm font-medium'>{places?.length > 1 ? t('ticketDetails.places.many') : t('ticketDetails.places.single')}</span>
                                     <div></div>
