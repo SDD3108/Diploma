@@ -92,9 +92,9 @@ const UserDatasPageBuilders = () => {
         avatar: response.data.avatarUrl
       }));
       
-      toast.success('Аватар успешно обновлён!');
+      toast('Аватар успешно обновлён!');
     } catch (error) {
-      toast.error('Ошибка при загрузке аватарки');
+      toast('Ошибка при загрузке аватарки');
       console.error('Upload error:', error);
     }
   }
@@ -112,9 +112,10 @@ const UserDatasPageBuilders = () => {
         avatar: ''
       }));
       
-      toast.success('Аватар удалён');
-    } catch (error) {
-      toast.error('Ошибка при удалении аватара');
+      toast('Аватар удалён');
+    }
+    catch(error){
+      toast('Ошибка при удалении аватара')
       console.error('Delete error:', error);
     }
   }

@@ -3,7 +3,7 @@ import AdminPageBuilder from '../../src/pageBuilders/AdminPageBuilder/AdminPageB
 const AdminPage = () => {
   return (
     <div>
-      
+      <AdminPageBuilder/>
     </div>
   )
 }
