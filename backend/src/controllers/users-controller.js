@@ -176,4 +176,66 @@ const deleteUserAvatar = async (req, res) => {
     res.status(500).json({ message: 'Ошибка сервера' });
   }
 }
-module.exports = {getAllUsers,getUserById,createUser,createReview,updateUser,deleteUser,addPurchase,deleteMessage,updateUserAvatar,deleteUserAvatar}
+const updateTempPassword = async (req, res) => {
+  try {
+    const { email, tempPassword } = req.body;
+    
+    // Валидация входящих данных
+    if (!email || !tempPassword) {
+      return res.status(400).json({ message: 'Необходимы email и временный пароль' });
+    }
+
+    const user = await TicketFlow.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ message: 'Пользователь не найден' });
+    }
+    
+    user.tempPassword = tempPassword;
+    await user.save();
+    
+    res.status(200).json({ success: true });
+  } catch (error) {
+    console.error('Ошибка обновления временного пароля:', error);
+    res.status(500).json({ 
+      message: 'Ошибка сервера при обновлении временного пароля',
+      error: error.message 
+    });
+  }
+}
+const changePassword = async (req, res) => {
+  try {
+    const { userId, newPassword } = req.body
+    const user = await User.findById(userId)
+    
+    if(user.tempPassword === null){
+      return res.status(400).json({message: 'Password already changed'})
+    }
+
+    user.password = newPassword
+    user.tempPassword = null
+    await user.save()
+    
+    res.status(200).json({success: true})
+  }
+  catch(error){
+    console.error('Ошибка сервера при измении пароля', error);
+    res.status(500).json({ 
+      message: 'Ошибка сервера при измении пароля',
+      error: error.message 
+    })
+  }
+}
+module.exports = {
+  getAllUsers,
+  getUserById,
+  createUser,
+  createReview,
+  updateUser,
+  deleteUser,
+  addPurchase,
+  deleteMessage,
+  updateUserAvatar,
+  deleteUserAvatar,
+  updateTempPassword,
+  changePassword
+}

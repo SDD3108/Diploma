@@ -19,7 +19,8 @@ const FooterCompanent = () => {
       return
     }
     try {
-      const response = await axios.post('http://localhost:3002/send-email', {
+      const backendApi = process.env.NEXT_PUBLIC_SOCKET_URL
+      const response = await axios.post(`${backendApi}/send-email`, {
         from:'mrbimson1@gmail.com',
         to: email,
         subject: 'Добро пожаловать!',

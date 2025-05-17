@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next'
 
 export default function LoginPage(){
   const { t } = useTranslation('common')
+  
   return (
     <div className="flex min-h-screen items-center justify-center p-4 bg-gray-100 dark:bg-neutral-950">
       <Card className="w-full max-w-md shadow-lg">

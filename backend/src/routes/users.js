@@ -12,7 +12,7 @@ const storage = multer.diskStorage({
       const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9)
       cb(null, `${req.params.id}-${uniqueSuffix}${path.extname(file.originalname)}`)
     }
-  })
+})
 
 const upload = multer({
     storage: storage,
@@ -36,4 +36,7 @@ router.post('/add-purchase', usersController.addPurchase)
 router.post('/messages/:id', usersController.deleteMessage)
 router.post('/:id/avatar',upload.single('avatar'), usersController.updateUserAvatar)
 router.delete('/:id/avatar',usersController.deleteUserAvatar) 
+router.patch('/update-temp-password', usersController.updateTempPassword)
+router.patch('/change-password', usersController.changePassword)
+
 module.exports = router

@@ -1,6 +1,5 @@
 import { create } from 'zustand';
 import axios from 'axios';
-
 // const getUsers = async()=>{
 //   const response = await axios.get('/api/users')
 //   console.log(response.data)
@@ -24,22 +23,28 @@ const useAuthStore = create((set) => ({
   login: async(email, password)=>{
     set({ isLoading: true, error: null })
     try{
-      // console.log('store',1);
       const response = await axios.get('/api/users')
-      // console.log('store',2);
-      const user = response.data.find((u) => u.email == email && u.password == password)
-      // console.log('store',3);
+      const user = response.data.find((u) => u.email == email && (u.password == password || u.tempPassword == password))
+      console.log(1);
+      
       if(!user){
-        // console.log('store',3.1);
+        console.log(2);
         set({error:'Неверные данные', isLoading:false })
-        // console.log('store',3.2);
         return {success:false}
       }
-      if(!user?.token){
+      else if(user.tempPassword == password){
+        console.log(3);
+        localStorage.setItem('force-password-change','true')
+        return { success: true, needsPasswordChange: true }
+      }
+      else if(!user?.token){
+        console.log(4);
         set({error:'ошибка авторизации: токен отсутствует', isLoading:false})
         return {success:false}
       }
+      console.log(5);
       localStorage.setItem('user-token', user.token)
+      console.log(6);
       set({ 
         user: {
           _id: user._id,
@@ -50,12 +55,11 @@ const useAuthStore = create((set) => ({
         }, 
         isLoading: false 
       })
+      console.log(7);
       return { success: true }
     }
     catch(error){
-      // console.log('store',5)
       set({error: 'ошибка сервера при авторизации', isLoading:false})
-      // console.log('store',5.1)
       return { success: false }
     }
   },
@@ -93,11 +97,20 @@ const useAuthStore = create((set) => ({
       return {success:false}
     }
   },
-
   logout:()=>{
     localStorage.removeItem('user-token')
     set({user:null})
   },
+  setTempPassword: async(email,tempPassword)=>{
+    const response = await axios.get('/api/users')
+    const user = response.data.find((u) => u.email == email)
+    if(!user){
+      return { success: false }
+    }
+    await axios.patch('/api/users/update-temp-password', { email, tempPassword })
+    return { success: true }
+  
+  }
 }))
 
 export default useAuthStore

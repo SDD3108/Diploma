@@ -43,6 +43,7 @@ const userSchema = new Schema({
         description:{type:String,required:true},
         date:{type:String,default: Date.now}
     }],
+    tempPassword:{type:String,select: false}
 },{timestamps: true})
 
 const TicketFlow = mongoose.model('users',userSchema)
