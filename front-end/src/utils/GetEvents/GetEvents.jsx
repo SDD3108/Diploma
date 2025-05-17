@@ -1,5 +1,6 @@
 import React from 'react'
 import axios from 'axios'
+
 export const GetEvents = async() => {
     const resp = await axios.get('/api/events')
     return resp.data
