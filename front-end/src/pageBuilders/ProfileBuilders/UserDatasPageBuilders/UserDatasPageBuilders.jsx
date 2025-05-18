@@ -57,7 +57,7 @@ const UserDatasPageBuilders = () => {
     }
     catch(error){
       toast.error(error.response?.data?.message || 'ошибка сохранения данных')
-      console.error('ошибка сохранения:',error)
+      // console.error('ошибка сохранения:',error)
     }
     finally{
       setIsSaving(false)
@@ -95,7 +95,7 @@ const UserDatasPageBuilders = () => {
       toast('Аватар успешно обновлён!');
     } catch (error) {
       toast('Ошибка при загрузке аватарки');
-      console.error('Upload error:', error);
+      // console.error('Upload error:', error);
     }
   }
   const handleRemoveAvatar = async () => {
@@ -116,7 +116,7 @@ const UserDatasPageBuilders = () => {
     }
     catch(error){
       toast('Ошибка при удалении аватара')
-      console.error('Delete error:', error);
+      // console.error('Delete error:', error);
     }
   }
   // console.log(`http://localhost:3002${formData.avatar}`);

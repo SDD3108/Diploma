@@ -37,7 +37,7 @@ const UserTicketsPageBuilder = () => {
         const session = event.sessions.find((s) => s._id == ticket._id)
         return { ...ticket, event, session }
       }))
-      console.log(combined);
+      // console.log(combined);
       
       setCombinedTickets(combined)
       // console.log(foundSessions);

@@ -106,7 +106,7 @@ const EventItemDescPageBuilder = () => {
         <ul className='flex flex-col gap-1'>
           {Object.entries(value).filter(([key]) => labelMap[key]).map(([key, val]) => (
             <li key={key} className='flex'>
-              {console.log(labelMap[key])}
+              {/* {console.log(labelMap[key])} */}
               <span className='text-[#151515] font-medium text-nowrap dark:text-slate-100/50'>{labelMap[key]}</span>
               <div className='w-full border-b-[1px] mx-1.5 mb-1.5'></div>
               <span className='font-medium text-nowrap'>{key == 'duration' && typeof val == 'number' ? ` ${val} ${t('event.details.minute')}` : ` ${val || t('event.details.notSpecified')}`}</span>
@@ -283,7 +283,7 @@ const EventItemDescPageBuilder = () => {
     }
     catch(error){
       toast(t('event.reviews.error'))
-      console.log(error);
+      // console.log(error);
       
     }
     finally{

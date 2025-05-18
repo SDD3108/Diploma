@@ -23,13 +23,16 @@ const createUser = async (req,res)=>{
       return res.status(400).json({message:'email уже используется'})
     }
     const newUser = await TicketFlow.create(userData)
+    const month = ('0' + (new Date().getMonth() + 1)).slice(-2)
+    const day = ('0' + new Date().getDate()).slice(-2)
+    const year = new Date().getFullYear()
     newUser.messages.push({
       isRead: false,
       title: 'Авторизация подтверждена',
       briefDescription: `Уважаемый ${newUser.name}, вы успешно авторизованы в системе.`,
-      description: `Здравствуйте, ${newUser.name}!  
-Благодарим вас за то, что воспользовались нашим сервисом. Ваша учетная запись активирована, и вы теперь можете полноценно использовать все возможности платформы. Если у вас возникнут какие-либо вопросы, пожалуйста, обратитесь в нашу службу поддержки.`,
-      date: `${new Date()}`,
+      description: `Здравствуйте, ${newUser.name}!
+      Благодарим вас за то, что воспользовались нашим сервисом. Ваша учетная запись активирована, и вы теперь можете полноценно использовать все возможности платформы. Если у вас возникнут какие-либо вопросы, пожалуйста, обратитесь в нашу службу поддержки.`,
+      date:`${day} ${month} ${year}`,
     })
     await newUser.save()
     const payload = {
@@ -149,9 +152,9 @@ const updateUserAvatar = async (req, res) => {
       return res.status(404).json({message:'пользователь не найден'})
     }
 
-    user.avatar = `/uploads/avatars/${req.file.filename}`;
-    user.isAvatar = true;
-    await user.save();
+    user.avatar = `/uploads/avatars/${req.file.filename}`
+    user.isAvatar = true
+    await user.save()
 
     res.json({ 
       avatarUrl: user.avatar,
@@ -178,9 +181,7 @@ const deleteUserAvatar = async (req, res) => {
 }
 const updateTempPassword = async (req, res) => {
   try {
-    const { email, tempPassword } = req.body;
-    
-    // Валидация входящих данных
+    const { email, tempPassword } = req.body
     if (!email || !tempPassword) {
       return res.status(400).json({ message: 'Необходимы email и временный пароль' });
     }
@@ -205,10 +206,12 @@ const updateTempPassword = async (req, res) => {
 const changePassword = async (req, res) => {
   try {
     const { userId, newPassword } = req.body
-    const user = await User.findById(userId)
-    
-    if(user.tempPassword === null){
-      return res.status(400).json({message: 'Password already changed'})
+    const user = await TicketFlow.findById(userId)
+    if(!user){
+      return res.status(404).json({ message: 'пользователь не найден' })
+    }
+    else if(user.tempPassword == null){
+      return res.status(400).json({message: 'пароль уже изменен'})
     }
 
     user.password = newPassword
@@ -225,6 +228,32 @@ const changePassword = async (req, res) => {
     })
   }
 }
+const addMessage = async (req,res)=>{
+  try{
+    const { title } = req.body
+    const userId = req.params.id
+    const user = await TicketFlow.findById(userId)
+    if(!user){
+      res.status(404).json({message:'пользователь не найден'})
+    }
+    const month = ('0' + (new Date().getMonth() + 1)).slice(-2)
+    const day = ('0' + new Date().getDate()).slice(-2)
+    const year = new Date().getFullYear()
+    user.messages.push({
+      isRead: false,
+      title: 'Квитанция о покупке',
+      briefDescription: `Поздравляем с успешной покупкой билета!`,
+      description: `Здравствуйте, ${user.name}!
+      Благодарим вас уважаемый ${user.name}, вы успешно приобрели билет на фильм ${title}.`,
+      date:`${day} ${month} ${year}`,
+    })
+    await user.save()
+    res.status(201).json({success:true,message:'Уведомление о покупке успешно добавлено'})
+  }
+  catch(error){
+    res.status(500).json({success: false,message: 'Внутренняя ошибка сервера при добавлении уведомления'})
+  }
+}
 module.exports = {
   getAllUsers,
   getUserById,
@@ -237,5 +266,6 @@ module.exports = {
   updateUserAvatar,
   deleteUserAvatar,
   updateTempPassword,
-  changePassword
+  changePassword,
+  addMessage,
 }

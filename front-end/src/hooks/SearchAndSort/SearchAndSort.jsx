@@ -11,13 +11,13 @@ export const SearchAndSort = (events) => {
             event.title?.toLowerCase().includes(searchTerm.toLowerCase()) // Исправлено на title
           )
           .filter(event => 
-            genre ? event.genre?.toLowerCase() === genre.toLowerCase() : true // Учтён регистр
+            genre ? event.genre?.toLowerCase() == genre.toLowerCase() : true // Учтён регистр
           )
           .filter(event => 
             Number(event.rating) >= rating // Преобразование в число
           )
           .sort((a, b) => 
-            sortOrder === 'asc' 
+            sortOrder == 'asc' 
               ? Number(a.rating) - Number(b.rating) 
               : Number(b.rating) - Number(a.rating)
           );

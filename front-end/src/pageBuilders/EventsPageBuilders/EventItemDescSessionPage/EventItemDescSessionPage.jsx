@@ -159,7 +159,7 @@ useEffect(() => {
   }
   fetchSession()
 },[params.nestedId,params.nestedId])
-console.log(ticketType);
+// console.log(ticketType);
 
 const drawSeats = useCallback(()=>{
   const canvas = canvasRef.current
@@ -242,7 +242,7 @@ const handleCanvasClick = (e)=>{
   const clickedSeat = Math.floor(x / (seatWidth + GAP)) + 1
 
   if(clickedRow > rows || clickedSeat > seatsPerRow){
-    console.log(12);
+    // console.log(12);
     return
   }
   const currentHall = cinema.halls.find((hall) => hall.name == session.hall)
@@ -294,7 +294,7 @@ const addTicket = ()=>{
     
     // const timer = setTimeout(async() => {
     //   setSelectedSeats(async(prev) => {
-    //     prev.filter(s => !(s.row === tempSeat.row && s.seat === tempSeat.seat))
+    //     prev.filter(s => !(s.row == tempSeat.row && s.seat == tempSeat.seat))
     //     await axios.post('/api/cinemas/cancelReservation', {
     //       cinemaId: cinema._id,
     //       hall: session.hall,

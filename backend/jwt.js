@@ -12,7 +12,7 @@ const token = jwt.sign(payload,secketKey,{
 
 try{
     const decoded = jwt.verify(token,secketKey)
-    console.log('copleted if secret key found');
+    // console.log('copleted if secret key found');
     // console.log(decoded);
 }
 catch(error){

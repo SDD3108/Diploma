@@ -18,6 +18,7 @@ import { InputOTP,InputOTPGroup,InputOTPSeparator,InputOTPSlot } from "@/src/ui/
 import axios from 'axios'
 import { toast } from 'sonner'
 
+
 const loginSchema = z.object({
   email: z.string().email('Некорректный email'),
   password: z.string().min(6, 'Пароль должен быть не менее 6 символов'),
@@ -63,14 +64,6 @@ export const AuthForm = ({isRegister})=>{
   },[resendTimeout])
   const schema = showForgotPassword ? forgotPasswordSchema : isRegister ? registerSchema : loginSchema
 
-  // const form = useForm({
-  //   resolver: zodResolver(isRegister ? registerSchema : loginSchema),
-  //   defaultValues:{
-  //     email:'',
-  //     password:'',
-  //     ...(isRegister && {name:''}),
-  //   }
-  // })
   const form = useForm({
     resolver: zodResolver(schema),
     defaultValues:{
@@ -80,34 +73,25 @@ export const AuthForm = ({isRegister})=>{
       ...(isRegister && {name:''}),
     }
   })
-  // useEffect(()=>{
-  //   form.setResolver(zodResolver(schema))
-  // },[showForgotPassword, isRegister])
-  const handleForgotPassword = async()=>{
+  const ForgotPassword = async()=>{
     try{
       await z.string().email().parseAsync(form.getValues('email'))
     }
     catch{
-      form.setError('email', { message: 'Некорректный email' })
+      form.setError('email', { message: t('auth.form.invalidEmail') })
       return
     }
-    console.log('AuthForm render',1)
     const email = form.getValues('email')
-    console.log('AuthForm render',2)
     if(!email){
-      toast('Введите email для восстановления')
+      toast(t('auth.form.enterEmail'))
       return
     }
-    console.log('AuthForm render',3)
     const newOtp = generateOTPnumbers()
-    console.log('AuthForm render',4)
     const newTempPassword = generateTempPassword()
-    console.log('AuthForm render',5)
     const response = await axios.patch('/api/users/update-temp-password',{
       email,
       tempPassword: newTempPassword
     })
-    console.log('AuthForm render',6)
     await axios.post(`${backendApi}/send-email`,{
       from: 'mrbimson1@gmail.com',
       to: email,
@@ -123,13 +107,16 @@ export const AuthForm = ({isRegister})=>{
     setUserEmail(email)
     setShowForgotPassword(true)
     setResendTimeout(60)
-    toast('Код отправлен на вашу почту')    
+    toast(t('auth.form.otp.sent'))    
   }
-  const handleResend = async()=>{
-    console.log('handleResend triggered');
+  const resendMessage = async()=>{
     const newOtp = generateOTPnumbers()
     const newTempPassword = generateTempPassword()
     setOtpCode(newOtp)
+    await axios.patch('/api/users/update-temp-password', {
+      email: userEmail,
+      tempPassword: newTempPassword
+    })
     const response = await axios.post(`${backendApi}/send-email`,{
       from: 'mrbimson1@gmail.com',
       to: userEmail,
@@ -138,27 +125,22 @@ export const AuthForm = ({isRegister})=>{
       html: `<p>Ваш новый код для восстановления: <strong>${newOtp}</strong></p>
       <p>Временный пароль: <strong>${newTempPassword}</strong></p>`
     })
-    if(response.status == 200){
-      toast('Новый код отправлен')
-      setResendTimeout(60)
-    }
+    setOtpCode(newOtp)
+    setResendTimeout(60)
+    toast.success(t('auth.form.otp.newSent'))
   }
-  const onSubmit = async(data)=>{
+  const submit = async(data)=>{
     if(showForgotPassword){
-      console.log(otpCode);
       if(data.otp !== otpCode){
-        toast('Неверный код подтверждения')
+        toast(t('auth.form.otp.invalid'))
         return
       }
-      console.log(tempPassword);
-      
       const result = await login(userEmail,tempPassword)
       if(result.success){
         if(result.needsPasswordChange == true){
           router.push('/change-password')
         }
-        console.log(1.8);
-        toast('Авторизация прошла успешно')
+        toast(t('auth.form.success'))
         setShowForgotPassword(false)
         setEnteredOtp('')
         setOtpCode('')
@@ -179,7 +161,7 @@ export const AuthForm = ({isRegister})=>{
   return (
     <div className="mx-auto max-w-sm space-y-6">
       <Form key={schema._def.description || schema.toString()} {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <form onSubmit={form.handleSubmit(submit)} className="space-y-4">
           {!showForgotPassword ? (
             <>
               {isRegister && (
@@ -223,12 +205,11 @@ export const AuthForm = ({isRegister})=>{
             </>
           ) : (
             <>
-            <FormField control={form.control} className="flex justify-center" name="otp" render={({ field }) => (
-              <FormItem className="flex flex-col justify-center">
-                <FormLabel className="flex justify-center items-center">Код подтверждения</FormLabel>
-                <FormControl className="flex justify-center">
-                  {/* <div className='flex justify-center'> */}
-                    <InputOTP maxLength={6} value={field.value} onChange={field.onChange} className="flex justify-center">
+              <FormField control={form.control} name="otp" render={({ field }) => (
+              <FormItem className="flex flex-col items-center justify-center">
+                <Button variant='link' type="button" className="w-full cursor-pointer" onClick={resendMessage} disabled={resendTimeout > 0}>{resendTimeout > 0 ? `${t('auth.form.otp.resend')} (${resendTimeout})` : t('auth.form.otp.resend')}</Button>
+                <FormControl>
+                    <InputOTP maxLength={6} value={field.value} onChange={field.onChange}>
                       <InputOTPGroup className=''>
                         <InputOTPSlot index={0} />
                         <InputOTPSlot index={1} />
@@ -241,41 +222,10 @@ export const AuthForm = ({isRegister})=>{
                         <InputOTPSlot index={5} />
                       </InputOTPGroup>
                     </InputOTP>
-                  {/* </div> */}
                 </FormControl>
               </FormItem>
               )}/>
             </>
-
-            // <div className="space-y-4">
-            //   <p className="text-sm text-muted-foreground text-center">
-            //     Мы отправили вам на почту 6-значный код
-            //   </p>
-            //   <div className='flex justify-center'>
-            //     <InputOTP maxLength={6} className='' value={enteredOtp} onChange={(value) => setEnteredOtp(value)}>
-            // <InputOTPGroup>
-            //   <InputOTPSlot index={0} />
-            //   <InputOTPSlot index={1} />
-            //   <InputOTPSlot index={2} />
-            // </InputOTPGroup>
-            // <InputOTPSeparator />
-            // <InputOTPGroup>
-            //   <InputOTPSlot index={3} />
-            //   <InputOTPSlot index={4} />
-            //   <InputOTPSlot index={5} />
-            // </InputOTPGroup>
-            //     </InputOTP>
-            //   </div>
-            //   <Button
-            //     type="button"
-            //     variant="link"
-            //     className="w-full cursor-pointer"
-            //     onClick={handleResend}
-            //     disabled={resendTimeout > 0}
-            //   >
-            //     Отправить сообщение повторно{resendTimeout > 0 && ` (${resendTimeout})`}
-            //   </Button>
-            // </div>
           )}
           {error && (
             <div className="text-sm font-medium text-destructive text-center">
@@ -318,7 +268,7 @@ export const AuthForm = ({isRegister})=>{
       )}
       <div className="text-center text-sm m-0">
         {!isRegister && !showForgotPassword && (
-          <Button type='button' variant="link" className="text-muted-foreground h-auto p-0 cursor-pointer" onClick={handleForgotPassword}>
+          <Button type='button' variant="link" className="text-muted-foreground h-auto p-0 cursor-pointer" onClick={ForgotPassword}>
             {t('auth.form.forgotPassword')}
           </Button>
         )}

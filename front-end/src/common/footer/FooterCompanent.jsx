@@ -28,8 +28,9 @@ const FooterCompanent = () => {
         html: `<p>Здравствуйте!</p><p>Вы успешно авторизованы на платформе.</p>`
       });
       toast('Письмо отправлено!');
-    } catch (err) {
-      console.error(err);
+    }
+    catch(err){
+      // console.error(err);
       toast('Ошибка при отправке письма');
     }
   }

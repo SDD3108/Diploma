@@ -21,6 +21,7 @@ const EventBuyTicketPageBuilder = () => {
   const savedData = JSON.parse(localStorage.getItem('currentReservation'))
   const [cinema, setCinema] = useState(null)
   const [displaySize,setDisplaySize] = useState(window.innerWidth,)
+  const backendApi = process.env.NEXT_PUBLIC_SOCKET_URL
   useEffect(()=>{
     const loadReservation = async () => {
       try{
@@ -29,7 +30,7 @@ const EventBuyTicketPageBuilder = () => {
           return new Error('Бронирование не найдено')
         }
         // Проверяем актуальность брони
-        console.log(savedData?.eventId);
+        // console.log(savedData?.eventId);
         
         const response = await axios.get(`/api/cinemas/${savedData.cinemaId}/check-reservation`, {
           params: {
@@ -37,15 +38,21 @@ const EventBuyTicketPageBuilder = () => {
             seats: savedData.seats
           }
         })
-        console.log(response.data);
+        // console.log(response.data);
         
         if(!response.data.valid){
           throw new Error('Бронирование устарело или места уже заняты')
         }
         setReservation(savedData)
+        const [eventData, cinemaData] = await Promise.all([
+          GetEvent(savedData.eventId),
+          GetCinemaById(savedData.cinemaId)
+        ])
+        setEvent(eventData)
+        setCinema(cinemaData)
       }
       catch(error){
-        console.error('Ошибка загрузки бронирования:', error)
+        // console.error('Ошибка загрузки бронирования:', error)
         setError(error.message)
       }
       finally{
@@ -54,11 +61,13 @@ const EventBuyTicketPageBuilder = () => {
     }
     const getEventRequest = async () => {
       try{
+        console.log(savedData);
+        
         const eventData = await GetEvent(savedData?.eventId)
         setEvent(eventData)
       }
       catch(error){
-        console.error('Ошибка загрузки события:', error)
+        // console.error('Ошибка загрузки события:', error)
         setError('Ошибка загрузки события')
       }
     }
@@ -68,7 +77,7 @@ const EventBuyTicketPageBuilder = () => {
         setCinema(cinemaData)
       }
       catch(error){
-        console.error('Ошибка загрузки кинотеатра:', error)
+        // console.error('Ошибка загрузки кинотеатра:', error)
         setError('Ошибка загрузки кинотеатра')
       }
 
@@ -82,17 +91,17 @@ const EventBuyTicketPageBuilder = () => {
     getCinemaRequest()
     window.addEventListener('resize', getDisplaySize)
   },[])
-console.log(displaySize);
+// console.log(displaySize);
 
   const handlePaymentConfirmation = async () => {
     try{
       const now = new Date()
       const day = String(now.getDate()).padStart(2,'0')
       const month = String(now.getMonth() + 1).padStart(2,'0')
-      const year = now.getFullYear().toString().slice(2)
+      const year = now.getFullYear()
       const date = `${day}.${month}.${year}`
-      await axios.post('/api/cinemas/confirm-purchase', {
-        date:date,
+      await axios.post('/api/cinemas/confirm-purchase',{
+        date:now,
         cinemaId: reservation.cinemaId,
         hall: reservation.hall,
         seats: reservation.seats,
@@ -109,9 +118,18 @@ console.log(displaySize);
           ticketType: seat.ticketType == 'vip' ? 'VIP' : seat.ticketType == 'child' ? 'Child' : 'Adult'
         }))
       }
-      await axios.post('/api/users/add-purchase', 
-        { userId: tokenUser?._id, purchase: purchaseData }
-      )
+      await axios.post('/api/users/add-purchase',{userId:tokenUser?._id,purchase: purchaseData})
+      await axios.post(`/api/users/${tokenUser?._id}/add-message`,{title: event?.title})
+      await axios.post(`${backendApi}/send-email`,{
+        from: 'mrbimson1@gmail.com',
+        to: tokenUser?.email,
+        subject: 'Квитанция о покупке',
+        text: `Поздравляем с успешной покупкой билета ${tokenUser?.name}!`,
+        html: `
+          <p>Благодарим вас уважаемый <strong>${tokenUser?.name},</strong></p>
+          <p>вы успешно приобрели билет на фильм: <strong>${event?.title}.</strong></p>
+        `
+      })
       localStorage.removeItem('currentReservation')
       // после успешной оплаты добавляем покупку пользователю в purchasedTickets
       router.push(`/profile`)

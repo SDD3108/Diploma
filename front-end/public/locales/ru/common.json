@@ -326,7 +326,33 @@
   "captcha.fail":"Неверный ввод",
   "captcha.update":"Обновить",
   "captcha.checking":"Проверка...",
-  "captcha.confirm":"Подтвердить"
+  "captcha.confirm":"Подтвердить",
 
+  "auth.form.otp.resend": "Отправить код повторно",
+  "auth.form.otp.invalid": "Неверный код подтверждения",
+  "auth.form.otp.sent": "Код отправлен на вашу почту",
+  "auth.form.otp.newSent": "Новый код отправлен",
+  "auth.form.tempPassword": "Временный пароль",
+  "auth.form.changePassword": "Сменить пароль",
+  "auth.form.success": "Авторизация прошла успешно",
+  "auth.form.enterEmail": "Введите email для восстановления",
+  "auth.form.invalidEmail": "Некорректный email",
+  "auth.form.passwordMin": "Пароль должен быть не менее 6 символов",
+  "auth.form.nameMin": "Имя должно быть не менее 2 символов",
+  "auth.form.otp.length": "Код должен содержать 6 цифр",
 
+  "change-password.title":"Введите новый пароль",
+  "change-password.enter-newPassword":"Новый пароль",
+  "change-password.enter-newPassword.confirm":"Подтвердите пароль",
+
+  "auth.changePassword": "Сменить пароль",
+  "auth.changePasswordDescription": "Пожалуйста, введите ваш новый пароль ниже",
+  "auth.newPassword": "Новый пароль",
+  "auth.newPasswordPlaceholder": "Введите новый пароль",
+  "auth.confirmPassword": "Подтвердите пароль",
+  "auth.confirmPasswordPlaceholder": "Подтвердите новый пароль",
+  "auth.changePasswordButton": "Сменить пароль",
+  "auth.passwordsNotMatch": "Пароли не совпадают",
+  "auth.passwordChanged": "Пароль успешно изменён!",
+  "auth.changePasswordError": "Ошибка при смене пароля"
 }

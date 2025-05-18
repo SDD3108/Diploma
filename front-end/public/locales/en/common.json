@@ -324,6 +324,34 @@
   "captcha.fail":"Invalid input",
   "captcha.update":"Refresh",
   "captcha.checking":"Examination...",
-  "captcha.confirm":"Confirm"
+  "captcha.confirm":"Confirm",
+
+  "auth.form.otp.resend": "Resend code",
+  "auth.form.otp.invalid": "Invalid verification code",
+  "auth.form.otp.sent": "Code sent to your email",
+  "auth.form.otp.newSent": "New code sent",
+  "auth.form.tempPassword": "Temporary password",
+  "auth.form.changePassword": "Change password",
+  "auth.form.success": "Authentication successful",
+  "auth.form.enterEmail": "Enter your email to recover password",
+  "auth.form.invalidEmail": "Invalid email",
+  "auth.form.passwordMin": "Password must be at least 6 characters",
+  "auth.form.nameMin": "Name must be at least 2 characters",
+  "auth.form.otp.length": "Code must be 6 digits",
+
+  "change-password.title":"Enter new password",
+  "change-password.enter-newPassword":"New Password",
+  "change-password.enter-newPassword.confirm":"Confirm password",
+
+  "auth.changePassword": "Change Password",
+  "auth.changePasswordDescription": "Please enter your new password below",
+  "auth.newPassword": "New Password",
+  "auth.newPasswordPlaceholder": "Enter new password",
+  "auth.confirmPassword": "Confirm Password",
+  "auth.confirmPasswordPlaceholder": "Confirm your new password",
+  "auth.changePasswordButton": "Change Password",
+  "auth.passwordsNotMatch": "Passwords do not match",
+  "auth.passwordChanged": "Password changed successfully!",
+  "auth.changePasswordError": "Error changing password"
   
 }

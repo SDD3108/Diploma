@@ -38,5 +38,6 @@ router.post('/:id/avatar',upload.single('avatar'), usersController.updateUserAva
 router.delete('/:id/avatar',usersController.deleteUserAvatar) 
 router.patch('/update-temp-password', usersController.updateTempPassword)
 router.patch('/change-password', usersController.changePassword)
+router.post('/:id/add-message', usersController.addMessage)
 
 module.exports = router

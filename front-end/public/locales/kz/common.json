@@ -324,7 +324,35 @@
   "captcha.fail":"Жарамсыз енгізу",
   "captcha.update":"Жаңарту",
   "captcha.checking":"Емтихан...",
-  "captcha.confirm":"Растау"
+  "captcha.confirm":"Растау",
+
+  "auth.form.otp.resend": "Кодты қайта жіберу",
+  "auth.form.otp.invalid": "Растау коды дұрыс емес",
+  "auth.form.otp.sent": "Код сіздің электрондық поштаңызға жіберілді",
+  "auth.form.otp.newSent": "Жаңа код жіберілді",
+  "auth.form.tempPassword": "Уақытша құпиясөз",
+  "auth.form.changePassword": "Құпиясөзді өзгерту",
+  "auth.form.success": "Аутентификация сәтті өтті",
+  "auth.form.enterEmail": "Құпиясөзді қалпына келтіру үшін электрондық поштаңызды енгізіңіз",
+  "auth.form.invalidEmail": "Электрондық пошта дұрыс емес",
+  "auth.form.passwordMin": "Құпиясөз кемінде 6 таңбадан тұруы керек",
+  "auth.form.nameMin": "Аты кемінде 2 таңбадан тұруы керек",
+  "auth.form.otp.length": "Код 6 цифрдан тұруы керек",
+
+  "change-password.title":"Жаңа құпия сөзді енгізіңіз",
+  "change-password.enter-newPassword":"Жаңа құпия сөз",
+  "change-password.enter-newPassword.confirm":"Құпия сөзді Растау",
+
+  "auth.changePassword": "Құпия сөзді өзгерту",
+  "auth.changePasswordDescription": "Төменге жаңа құпия сөзіңізді енгізіңіз",
+  "auth.newPassword": "Жаңа құпия сөз",
+  "auth.newPasswordPlaceholder": "Жаңа құпия сөзді енгізіңіз",
+  "auth.confirmPassword": "Құпия сөзді растау",
+  "auth.confirmPasswordPlaceholder": "Жаңа құпия сөзді растаңыз",
+  "auth.changePasswordButton": "Құпия сөзді өзгерту",
+  "auth.passwordsNotMatch": "Құпия сөздер сәйкес емес",
+  "auth.passwordChanged": "Құпия сөз сәтті өзгерді!",
+  "auth.changePasswordError": "Құпия сөзді өзгерту кезінде қате"
 
 
 }

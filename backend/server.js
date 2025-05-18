@@ -101,7 +101,6 @@ mongoose.connect(`mongodb+srv://${process.env.LOGIN}:${process.env.PASSWORD}@clu
 })
 .catch((err) => console.error('Ошибка подключения к MongoDB:', err))
 
-// структора для сеансов / сессий
 const AutoIncrement = require('mongoose-sequence')(mongoose);
 const sessionSchema = new mongoose.Schema({
   time: { type: String, required: true },
@@ -127,16 +126,16 @@ Session.createIndexes({cinemaId:1},{unique:true})
 io.on('connection', (socket) => {
   console.log('Новое подключение:', socket.id)
 
-  socket.on('reserveSeat', async (data) => {
-    try {
-      const cinema = await TicketFlow.findById(data.cinemaId);
-      const hall = cinema.halls.find((h) => h.name === data.hall);
-
-      if (!hall) return;
-
+  socket.on('reserveSeat',async(data)=>{
+    try{
+      const cinema = await TicketFlow.findById(data.cinemaId)
+      const hall = cinema.halls.find((h) => h.name === data.hall)
+      if(!hall){
+        return
+      }
       const isReserved = hall.reservedSeats.some(
         (s) => s.row === data.seat.row && s.seat === data.seat.seat
-      );
+      )
       const isBought = hall.boughtSeats.some(
         (s) => s.row === data.seat.row && s.seat === data.seat.seat
       );
@@ -177,12 +176,12 @@ io.on('connection', (socket) => {
   socket.on('confirmPurchase', async (data) => {
     try {
       const cinema = await TicketFlow.findById(data.cinemaId);
-      const hall = cinema.halls.find((h) => h.name === data.hall);
+      const hall = cinema.halls.find((h) => h.name == data.hall);
 
       if (!hall) return;
 
       hall.reservedSeats = hall.reservedSeats.filter(
-        (s) => !(s.row === data.seat.row && s.seat === data.seat.seat)
+        (s) => !(s.row == data.seat.row && s.seat == data.seat.seat)
       );
       hall.boughtSeats.push(data.seat);
       await cinema.save();

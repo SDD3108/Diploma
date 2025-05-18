@@ -89,7 +89,7 @@ const TicketInfoPageBuilder = () => {
     }
     const ticketCounts = countTickets()
     const places = getSortedPlaces()
-    console.log(places);
+    // console.log(places);
     const placesText = places?.join(', ')
   return (
     <div className='flex flex-col gap-4'>

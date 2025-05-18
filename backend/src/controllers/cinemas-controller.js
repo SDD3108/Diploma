@@ -26,7 +26,7 @@ const updateCinema = async (req,res)=>{
     if(updates.rating !== undefined){
         updates.isRating = true
     }
-    else if(updates.rating == null){
+    else if(updates.rating === null){
         updates.isRating = false
     }
 
@@ -124,11 +124,10 @@ const confirmPurchase = async (req, res) => {
     const now = new Date()
     const day = String(now.getDate()).padStart(2,'0')
     const month = String(now.getMonth() + 1).padStart(2,'0')
-    const year = now.getFullYear() // или .toString().slice(2) для 2-значного
+    const year = now.getFullYear().toString().slice(2)
     const date = `${day}.${month}.${year}`
-    // Проверка наличия обязательных полей
-    if (!cinemaId || !hall || !seats || !userId) {
-      return res.status(400).json({ error: "Missing required fields" });
+    if(!cinemaId || !hall || !seats || !userId){
+      return res.status(400).json({ error: "Missing required fields" })
     }
 
     // Подготовка данных для обновления
@@ -174,121 +173,5 @@ const confirmPurchase = async (req, res) => {
       error: error.message || "Internal server error" 
     });
   }
-
-  // let session
-  // try {
-  //   session = await mongoose.startSession()
-  //   await session.withTransaction(async()=>{
-  //     const cinema = await TicketFlow.findById(req.body.cinemaId).session(session)
-  //     console.log('cinema',cinema)
-  //     const hall = cinema.halls.find((h) => h.name == req.body.hall)
-  //     console.log('hall',hall)
-
-  //     req.body.seats.forEach((seat) => {
-  //       console.log('seat',seat)
-  //       hall.reservedSeats = hall.reservedSeats.filter((s) => !(s.row === seat.row && s.seat == seat.seat))
-  //       hall.boughtSeats.push({
-  //         row: seat.row,
-  //         seat: seat.seat,
-  //         userId: req.body.userId,
-  //         purchasedAt: new Date()
-  //       })
-  //     })
-
-  //     await cinema.save({ session })
-  //     res.status(200).json({ success: true })
-  //   })
-  // }
-  // catch(error){
-  //   res.status(500).json({ error: 'Ошибка подтверждения покупки' })
-  // }
-  // finally{
-  //   if(session){
-  //     session.endSession()
-  //   }
-  // }
 }
-// const confirmPurchase = async (req, res) => {
-//   try {
-//     const { cinemaId, hall, seats, userId } = req.body;
-
-//     // 1. Находим кинотеатр и проверяем существование
-//     const cinema = await TicketFlow.findById(cinemaId);
-//     if (!cinema) {
-//       return res.status(404).json({ error: 'Кинотеатр не найден' });
-//     }
-
-//     // 2. Находим нужный зал
-//     const hallObj = cinema.halls.find(h => h.name === hall);
-//     if (!hallObj) {
-//       return res.status(404).json({ error: 'Зал не найден' });
-//     }
-
-//     // 3. Проверка резерваций
-//     const seatsToPurchase = seats.map(seat => ({
-//       row: parseInt(seat.row),
-//       seat: parseInt(seat.seat)
-//     }));
-
-//     const isAllReserved = seatsToPurchase.every(seat => 
-//       hallObj.reservedSeats.some(r => 
-//         r.row === seat.row && 
-//         r.seat === seat.seat && 
-//         r.userId.toString() === userId
-//       )
-//     );
-
-//     if (!isAllReserved) {
-//       return res.status(400).json({ error: 'Некоторые места не забронированы вами' });
-//     }
-
-//     // 4. Атомарное обновление
-//     const updateResult = await TicketFlow.findOneAndUpdate(
-//       { 
-//         _id: cinemaId,
-//         'halls.name': hall 
-//       },
-//       {
-//         $pull: {
-//           'halls.$[hallElem].reservedSeats': {
-//             $or: seatsToPurchase.map(seat => ({
-//               row: seat.row,
-//               seat: seat.seat
-//             }))
-//           }
-//         },
-//         $push: {
-//           'halls.$[hallElem].boughtSeats': {
-//             $each: seatsToPurchase.map(seat => ({
-//               row: seat.row,
-//               seat: seat.seat,
-//               userId: userId,
-//               purchasedAt: new Date()
-//             }))
-//           }
-//         }
-//       },
-//       {
-//         arrayFilters: [{ 'hallElem.name': hall }],
-//         new: true
-//       }
-//     );
-
-//     if (!updateResult) {
-//       return res.status(500).json({ error: 'Ошибка обновления данных' });
-//     }
-
-//     res.status(200).json({ 
-//       success: true,
-//       updatedCinema: updateResult
-//     });
-
-//   } catch (error) {
-//     console.error('Ошибка подтверждения покупки:', error);
-//     res.status(500).json({ 
-//       error: error.message || 'Внутренняя ошибка сервера' 
-//     });
-//   }
-// };
-
 module.exports = {getAllCinemas,getCinemaById,createCinema,updateCinema,reserveSeats,purchaseSeats,checkReservation,confirmPurchase}

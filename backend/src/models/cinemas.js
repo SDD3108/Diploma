@@ -38,7 +38,7 @@ const cinemasSchema = new Schema({
         boughtSeats:[{
             row: Number,
             seat: Number,
-            purchasedAt: { type: Date, default: Date.now },
+            purchasedAt: { type: String,required:true },
             userId: { type: String,required:true}
         }],
         isVipSeats: { type: Boolean,default: false },
