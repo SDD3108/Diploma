@@ -25,6 +25,10 @@ const loginSchema = z.object({
 const registerSchema = loginSchema.extend({
   name: z.string().min(2, 'Имя должно быть не менее 2 символов'),
 })
+const forgotPasswordSchema = z.object({
+  otp: z.string().length(6, 'Код должен содержать 6 цифр'),
+})
+
 
 export const AuthForm = ({isRegister})=>{
   
@@ -57,7 +61,36 @@ export const AuthForm = ({isRegister})=>{
     }
     return () => clearInterval(interval)
   },[resendTimeout])
+  const schema = showForgotPassword ? forgotPasswordSchema : isRegister ? registerSchema : loginSchema
+
+  // const form = useForm({
+  //   resolver: zodResolver(isRegister ? registerSchema : loginSchema),
+  //   defaultValues:{
+  //     email:'',
+  //     password:'',
+  //     ...(isRegister && {name:''}),
+  //   }
+  // })
+  const form = useForm({
+    resolver: zodResolver(schema),
+    defaultValues:{
+      email:'',
+      password:'',
+      otp: '',
+      ...(isRegister && {name:''}),
+    }
+  })
+  // useEffect(()=>{
+  //   form.setResolver(zodResolver(schema))
+  // },[showForgotPassword, isRegister])
   const handleForgotPassword = async()=>{
+    try{
+      await z.string().email().parseAsync(form.getValues('email'))
+    }
+    catch{
+      form.setError('email', { message: 'Некорректный email' })
+      return
+    }
     console.log('AuthForm render',1)
     const email = form.getValues('email')
     console.log('AuthForm render',2)
@@ -110,38 +143,18 @@ export const AuthForm = ({isRegister})=>{
       setResendTimeout(60)
     }
   }
-  const form = useForm({
-    resolver: zodResolver(isRegister ? registerSchema : loginSchema),
-    defaultValues:{
-      email:'',
-      password:'',
-      ...(isRegister && {name:''}),
-    }
-  })
   const onSubmit = async(data)=>{
-    console.log(data);
-    console.log(1);
     if(showForgotPassword){
-      console.log(1.1);
-      if(enteredOtp !== otpCode){
-        console.log(1.2);
+      console.log(otpCode);
+      if(data.otp !== otpCode){
         toast('Неверный код подтверждения')
         return
       }
-      if(enteredOtp.length !== 6){
-        console.log(1.3);
-        toast('Введите полный код из 6 цифр')
-        return
-      }
-      console.log(1.4);
+      console.log(tempPassword);
+      
       const result = await login(userEmail,tempPassword)
-      console.log(1.5);
-      console.log(result);
       if(result.success){
-        console.log(result.needsPasswordChange);
-        console.log(1.6);
         if(result.needsPasswordChange == true){
-          console.log(1.7);
           router.push('/change-password')
         }
         console.log(1.8);
@@ -154,21 +167,18 @@ export const AuthForm = ({isRegister})=>{
         router.push('/change-password')
       }
     }
-    console.log(showForgotPassword);
-    console.log(2);
-    const result = isRegister ? await register(data) : await login(data.email,data.password)
-    console.log(3);
-    if(result.success){
-      console.log(3.1);
-      form.reset()
-      console.log(3.2);
-      router.push(isRegister ? '/login' : '/')
-      console.log(3.3);
+    else{
+      const result = isRegister ? await register(data) : await login(data.email,data.password)
+      if(result.success){
+        form.reset()
+        router.push(isRegister ? '/login' : '/')
+      }
     }
+    
   }
   return (
     <div className="mx-auto max-w-sm space-y-6">
-      <Form {...form}>
+      <Form key={schema._def.description || schema.toString()} {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
           {!showForgotPassword ? (
             <>
@@ -212,35 +222,60 @@ export const AuthForm = ({isRegister})=>{
               )}/>
             </>
           ) : (
-            <div className="space-y-4">
-              <p className="text-sm text-muted-foreground text-center">
-                Мы отправили вам на почту 6-значный код
-              </p>
-              <div className='flex justify-center'>
-                <InputOTP maxLength={6} className='' value={enteredOtp} onChange={(value) => setEnteredOtp(value)}>
-                  <InputOTPGroup>
-                    <InputOTPSlot index={0} />
-                    <InputOTPSlot index={1} />
-                    <InputOTPSlot index={2} />
-                  </InputOTPGroup>
-                  <InputOTPSeparator />
-                  <InputOTPGroup>
-                    <InputOTPSlot index={3} />
-                    <InputOTPSlot index={4} />
-                    <InputOTPSlot index={5} />
-                  </InputOTPGroup>
-                </InputOTP>
-              </div>
-              <Button
-                type="button"
-                variant="link"
-                className="w-full cursor-pointer"
-                onClick={handleResend}
-                disabled={resendTimeout > 0}
-              >
-                Отправить сообщение повторно{resendTimeout > 0 && ` (${resendTimeout})`}
-              </Button>
-            </div>
+            <>
+            <FormField control={form.control} className="flex justify-center" name="otp" render={({ field }) => (
+              <FormItem className="flex flex-col justify-center">
+                <FormLabel className="flex justify-center items-center">Код подтверждения</FormLabel>
+                <FormControl className="flex justify-center">
+                  {/* <div className='flex justify-center'> */}
+                    <InputOTP maxLength={6} value={field.value} onChange={field.onChange} className="flex justify-center">
+                      <InputOTPGroup className=''>
+                        <InputOTPSlot index={0} />
+                        <InputOTPSlot index={1} />
+                        <InputOTPSlot index={2} />
+                      </InputOTPGroup>
+                      <InputOTPSeparator />
+                      <InputOTPGroup>
+                        <InputOTPSlot index={3} />
+                        <InputOTPSlot index={4} />
+                        <InputOTPSlot index={5} />
+                      </InputOTPGroup>
+                    </InputOTP>
+                  {/* </div> */}
+                </FormControl>
+              </FormItem>
+              )}/>
+            </>
+
+            // <div className="space-y-4">
+            //   <p className="text-sm text-muted-foreground text-center">
+            //     Мы отправили вам на почту 6-значный код
+            //   </p>
+            //   <div className='flex justify-center'>
+            //     <InputOTP maxLength={6} className='' value={enteredOtp} onChange={(value) => setEnteredOtp(value)}>
+            // <InputOTPGroup>
+            //   <InputOTPSlot index={0} />
+            //   <InputOTPSlot index={1} />
+            //   <InputOTPSlot index={2} />
+            // </InputOTPGroup>
+            // <InputOTPSeparator />
+            // <InputOTPGroup>
+            //   <InputOTPSlot index={3} />
+            //   <InputOTPSlot index={4} />
+            //   <InputOTPSlot index={5} />
+            // </InputOTPGroup>
+            //     </InputOTP>
+            //   </div>
+            //   <Button
+            //     type="button"
+            //     variant="link"
+            //     className="w-full cursor-pointer"
+            //     onClick={handleResend}
+            //     disabled={resendTimeout > 0}
+            //   >
+            //     Отправить сообщение повторно{resendTimeout > 0 && ` (${resendTimeout})`}
+            //   </Button>
+            // </div>
           )}
           {error && (
             <div className="text-sm font-medium text-destructive text-center">

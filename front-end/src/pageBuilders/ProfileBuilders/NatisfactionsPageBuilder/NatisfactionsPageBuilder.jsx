@@ -58,7 +58,8 @@ const NatisfactionsPageBuilder = () => {
   useEffect(()=>{
     const closeMessagePage = secondGetData()
     setMessageOpen(closeMessagePage)
-    // setMessages(tokenUser.messages)
+    setMessages(tokenUser.messages)
+    getUser()
   },[])
   const deleteMessages = async ()=>{
     const selectedIds = messages.filter((_, index) => checkedItems[index]).map(message => message._id)

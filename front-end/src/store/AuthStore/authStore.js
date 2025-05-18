@@ -24,12 +24,15 @@ const useAuthStore = create((set) => ({
     set({ isLoading: true, error: null })
     try{
       const response = await axios.get('/api/users')
-      const user = response.data.find((u) => u.email == email && (u.password == password || u.tempPassword == password))
+      console.log(password);
+      
+      const user = response.data.find((u) => u.email == email && u.password == password || u.tempPassword == password)
+      const userTempPassword = response.data.find((u) => u.tempPassword == password)
       console.log(1);
       
       if(!user){
         console.log(2);
-        set({error:'Неверные данные', isLoading:false })
+        set({error:'Неверные данные',isLoading:false})
         return {success:false}
       }
       else if(user.tempPassword == password){
