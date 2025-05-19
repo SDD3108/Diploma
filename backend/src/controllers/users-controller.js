@@ -3,21 +3,20 @@ const jwt = require('jsonwebtoken')
 require('dotenv').config()
 
 const getAllUsers = async (req,res)=>{
-    const users = await TicketFlow.find()
-    res.status(200).json(users)
+  const users = await TicketFlow.find()
+  res.status(200).json(users)
 }
 const getUserById = async (req,res)=>{
-    const user = await TicketFlow.findById(req.params.id)
-    if(!user){
-        return res.status(404).json({ message: 'Событие не найдено' })
-    }
-    res.status(200).json(user)
+  const user = await TicketFlow.findById(req.params.id)
+  if(!user){
+    return res.status(404).json({message: 'событие не найдено'})
+  }
+  res.status(200).json(user)
 }
 
 const createUser = async (req,res)=>{
   try{
     const userData = req.body
-    // console.log(userData);
     const exists = await TicketFlow.findOne({email:userData.email})
     if(exists){
       return res.status(400).json({message:'email уже используется'})
@@ -36,47 +35,47 @@ const createUser = async (req,res)=>{
     })
     await newUser.save()
     const payload = {
-      userId: newUser._id,
-      email: newUser.email
+      userId:newUser._id,
+      email:newUser.email,
     }
     const token = jwt.sign(
       payload,
       process.env.JWT_SECRET,
-      {expiresIn: process.env.JWT_EXPIRES_IN},
+      {
+        expiresIn:process.env.JWT_EXPIRES_IN
+      },
     )
     const updatedUser = await TicketFlow.findByIdAndUpdate(
       newUser._id,
-      { token },
-      { new: true }
+      {token},
+      {new:true},
     )
     res.status(201).json({
       _id: updatedUser._id,
       email: updatedUser.email,
-      token: updatedUser.token
+      token: updatedUser.token,
     })
   }
   catch(error){
-    res.status(500).json({message:'Ошибка создания пользователя' })
+    res.status(500).json({message:'ошибка создания пользователя' })
   }
 }
 const createReview = async (req,res)=>{
   try{
-    const { eventId, text, grade } = req.body
+    const { eventId,text,grade } = req.body
     const userId = req.params.id
-
     const user = await TicketFlow.findById(userId)
     if(!user){
-      return res.status(404).json({message:'Пользователь не найден'})
+      return res.status(404).json({message:'пользователь не найден'})
     }
-
-    const review = { eventId, text, grade }
+    const review = { eventId,text,grade }
     user.reviews.push(review)
 
     await user.save()
-    res.status(201).json({message:'Отзыв успешно добавлен'})
+    res.status(201).json({message:'отзыв успешно добавлен'})
   }
   catch(error){
-    res.status(500).json({message:'Ошибка при добавлении отзыва'})
+    res.status(500).json({message:'ошибка при добавлении отзыва'})
   }
 }
 const addPurchase = async (req, res) => {
@@ -84,131 +83,128 @@ const addPurchase = async (req, res) => {
     const { userId, purchase } = req.body
     const user = await TicketFlow.findByIdAndUpdate(
       userId,
-      { $push: { purchasedTickets: purchase }},
-      { new: true }
+      {
+        $push:{purchasedTickets: purchase}
+      },
+      {
+        new:true
+      },
     )
     if(!user){
-      return res.status(404).json({ error: 'Пользователь не найден' })
+      return res.status(404).json({error: 'пользователь не найден'})
     }
     res.status(200).json({success:true})
   }
   catch(error){
-    res.status(500).json({error:'Ошибка сохранения покупки'})
+    res.status(500).json({error:'ошибка сохранения покупки'})
   }
 }
 const updateUser = async (req,res)=>{
-  try {
+  try{
     const updates = req.body
     updates.isRating = updates.rating !== undefined
 
     const updatedUser = await TicketFlow.findByIdAndUpdate(
       req.params.id,
-      { $set: updates },
-      { new: true, runValidators: true }
+      {$set: updates},
+      {new:true, runValidators:true}
     )
     if(!updatedUser){
-      return res.status(404).json({ message:'пользователь не найден'})
+      return res.status(404).json({message: 'пользователь не найден'})
     }
     res.status(200).json(updatedUser)
   }
   catch(error){
-    res.status(500).json({ 
-      message: 'ошибка обновления' + error.message 
-    })
+    res.status(500).json({message:'ошибка обновления' + error.message})
   }
 }
 const deleteUser = async (req,res)=>{
   const deletedUser = await TicketFlow.findByIdAndDelete(req.params.id)
   if(!deletedUser){
-    return res.status(404).json({ message: 'Событие не найдено' })
+    return res.status(404).json({message: 'событие не найдено'})
   }
   
-  res.status(200).json({ message: 'Событие удалено' })
+  res.status(200).json({ message: 'событие удалено' })
 }
 const deleteMessage = async (req,res)=>{
   try{
     const messageId = req.params.id
     const userId = req.body.userId
-
     const user = await TicketFlow.findById(userId)
     if(!user){
-      return res.status(404).json({message:'Пользователь не найден'})
+      return res.status(404).json({message:'пользователь не найден'})
     }
-
     const updatedMessages = user.messages.filter(message => message._id.toString() !== messageId)
     user.messages = updatedMessages
 
     await user.save()
-    res.status(200).json({message:'Сообщение успешно удалено'})
+    res.status(200).json({message:'сообщение успешно удалено'})
   }
   catch(error){
-    res.status(500).json({message:'Ошибка при удалении сообщения'})
+    res.status(500).json({message:'ошибка при удалении сообщения'})
   }
 }
-const updateUserAvatar = async (req, res) => {
-  try {
+const updateUserAvatar = async (req,res)=>{
+  try{
     const user = await TicketFlow.findById(req.params.id)
     if(!user){
       return res.status(404).json({message:'пользователь не найден'})
     }
-
     user.avatar = `/uploads/avatars/${req.file.filename}`
     user.isAvatar = true
     await user.save()
 
-    res.json({ 
-      avatarUrl: user.avatar,
-      message: 'Аватар успешно обновлён' 
-    });
-  } catch (error) {
-    console.log('error',error)
-    res.status(500).json({ message: 'Ошибка сервера' });
+    res.json({avatarUrl: user.avatar, message:'Аватар успешно обновлён',})
+  }
+  catch(error){
+    res.status(500).json({message: 'ошибка сервера'})
   }
 }
-const deleteUserAvatar = async (req, res) => {
-  try {
-    const user = await TicketFlow.findById(req.params.id);
-    if (!user) return res.status(404).json({ message: 'Пользователь не найден' });
-
-    user.avatar = '';
-    user.isAvatar = false;
-    await user.save();
-
-    res.json({ message: 'Аватар успешно удалён' });
-  } catch (error) {
-    res.status(500).json({ message: 'Ошибка сервера' });
-  }
-}
-const updateTempPassword = async (req, res) => {
-  try {
-    const { email, tempPassword } = req.body
-    if (!email || !tempPassword) {
-      return res.status(400).json({ message: 'Необходимы email и временный пароль' });
+const deleteUserAvatar = async (req,res)=>{
+  try{
+    const user = await TicketFlow.findById(req.params.id)
+    if(!user){
+      res.status(404).json({message: 'пользователь не найден'})
+      return
     }
 
-    const user = await TicketFlow.findOne({ email });
-    if (!user) {
-      return res.status(404).json({ message: 'Пользователь не найден' });
-    }
-    
-    user.tempPassword = tempPassword;
-    await user.save();
-    
-    res.status(200).json({ success: true });
-  } catch (error) {
-    console.error('Ошибка обновления временного пароля:', error);
-    res.status(500).json({ 
-      message: 'Ошибка сервера при обновлении временного пароля',
-      error: error.message 
-    });
+    user.avatar = ''
+    user.isAvatar = false
+    await user.save()
+
+    res.json({message: 'Аватар успешно удалён'})
+  }
+  catch(error){
+    res.status(500).json({message:'ошибка сервера'})
   }
 }
-const changePassword = async (req, res) => {
+const updateTempPassword = async(req,res)=>{
+  try{
+    const { email,tempPassword } = req.body
+    if(!email || !tempPassword){
+      return res.status(400).json({message: 'вам необходимы email и временный пароль'})
+    }
+
+    const user = await TicketFlow.findOne({email})
+    if(!user){
+      return res.status(404).json({message: 'пользователь не найден'})
+    }
+    
+    user.tempPassword = tempPassword
+    await user.save()
+    
+    res.status(200).json({success: true})
+  }
+  catch(error){
+    res.status(500).json({ message: 'ошибка сервера при обновлении временного пароля', error: error.message,})
+  }
+}
+const changePassword = async(req,res)=>{
   try {
     const { userId, newPassword } = req.body
     const user = await TicketFlow.findById(userId)
     if(!user){
-      return res.status(404).json({ message: 'пользователь не найден' })
+      return res.status(404).json({message: 'пользователь не найден'})
     }
     else if(user.tempPassword == null){
       return res.status(400).json({message: 'пароль уже изменен'})

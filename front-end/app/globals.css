@@ -12,7 +12,9 @@
   --background: 0 0% 100%;
   --foreground: 222.2 84% 4.9%;
 } */
-
+*{
+  User-select: none;
+}
 @media (prefers-color-scheme: dark){
   :root {
     --background: 222.2 84% 4.9%;

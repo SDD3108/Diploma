@@ -29,8 +29,6 @@ const EventBuyTicketPageBuilder = () => {
         if(!savedData){
           return new Error('Бронирование не найдено')
         }
-        // Проверяем актуальность брони
-        // console.log(savedData?.eventId);
         
         const response = await axios.get(`/api/cinemas/${savedData.cinemaId}/check-reservation`, {
           params: {

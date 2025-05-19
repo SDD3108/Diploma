@@ -18,7 +18,6 @@ import { toast } from 'sonner'
 import { setData } from '@/src/utils/DataTransfer/DataTransfer'
 import '@/i18n'
 import { useTranslation } from 'react-i18next'
-
 const cinemas = [
   {
     id: 1,
@@ -69,13 +68,12 @@ const cinemas = [
   },
 ]
 
-// 1. 15 min logic
 
 
 const EventItemDescSessionPage = () => {
   // const { cinema } = GetCinemaByName()
   const { t } = useTranslation('common')
-  const { tokenUser } = GetToken() // Типо юзера получаем
+  const { tokenUser } = GetToken()
   const [socket, setSocket] = useState(null)
   const reservationTimeoutRef = useRef(new Map())
   const params = useParams()
@@ -96,12 +94,49 @@ const EventItemDescSessionPage = () => {
   const [fixedMounth,setFixedMounth] = useState('')
   const [isTempSeatVip, setIsTempSeatVip] = useState(false)
   const [currentHall,setCurrentHall] = useState('')
-  useEffect(() => {
-    const newSocket = io(process.env.NEXT_PUBLIC_SOCKET_URL)
-    setSocket(newSocket)
+  
+  useEffect(()=>{
+    const newSocket = io(process.env.NEXT_PUBLIC_SOCKET_URL,{
+      transports: ['websocket'],
+      path: '/socket.io',
+      reconnection: true,
+      reconnectionAttempts: 5,
+      reconnectionDelay: 1000,
+    })
 
+    newSocket.on('connect_error',(err)=>{
+      toast('Connection error. Please refresh the page.')
+    })
+    setSocket(newSocket)
     return () => newSocket.disconnect()
-  }, [])
+  },[])
+useEffect(() => {
+  if(!socket || !cinema?._id || !session?._id){
+    return
+  }
+  const roomData = {
+    cinemaId: cinema._id,
+    sessionId: session._id
+  }
+  socket.emit('joinSession', roomData)
+},[socket, cinema, session])
+
+  useEffect(() => {
+    if(!socket){
+      return
+    }
+    const onReserved = (updatedCinema)=> setCinema(updatedCinema)
+    const onPurchased = (updatedCinema)=> setCinema(updatedCinema)
+
+    socket.on('seatReserved',onReserved)
+    socket.on('seatPurchased',onPurchased)
+
+    return () => {
+      socket.off('seatReserved',onReserved)
+      socket.off('seatPurchased',onPurchased)
+    }
+  },[socket])
+  
   const dateNow = new Date()
   const year = dateNow.getFullYear()
   useEffect(()=>{
@@ -125,7 +160,9 @@ const EventItemDescSessionPage = () => {
 
 useEffect(() => {
   const fetchSession = async ()=>{
-    try {
+    try{
+      console.log(params.id)
+      
       const eventResp = await axios.get(`/api/events/${params.id}`)
       const sessions = eventResp.data.sessions
       const findSessionById = sessions.find((session)=>session._id == params.nestedId)
@@ -150,7 +187,7 @@ useEffect(() => {
       }))
  
     }
-    catch (error){
+    catch(error){
       setError(error)
     }
     finally{
@@ -159,7 +196,6 @@ useEffect(() => {
   }
   fetchSession()
 },[params.nestedId,params.nestedId])
-// console.log(ticketType);
 
 const drawSeats = useCallback(()=>{
   const canvas = canvasRef.current
@@ -183,7 +219,6 @@ const drawSeats = useCallback(()=>{
   const seatHeight = (displayHeight - GAP) / rows - GAP
   ctx.clearRect(0, 0, displayWidth, displayHeight)
 
-  // Получение текущего зала
   const currentHall = cinema.halls.find((hall) => hall.name == session.hall)
   if(!currentHall){
     return
@@ -217,6 +252,29 @@ const drawSeats = useCallback(()=>{
   }
 },[cinema,session,selectedSeats,seatsConfig])
 useEffect(() => {
+  if(!socket){
+    return
+  }
+  
+  const handleSeatUpdate = (updatedCinema)=>{
+    setCinema(prev => ({ 
+      ...prev,
+      halls: updatedCinema.halls.map(hall => ({
+        ...hall,
+        reservedSeats: [...hall.reservedSeats],
+        boughtSeats: [...hall.boughtSeats],
+      }))
+    }))
+    drawSeats()
+  }
+  socket.on('seatReserved', handleSeatUpdate)
+  socket.on('seatPurchased', handleSeatUpdate)
+  return () => {
+    socket.off('seatReserved', handleSeatUpdate)
+    socket.off('seatPurchased', handleSeatUpdate)
+  }
+},[socket, drawSeats])
+useEffect(()=>{
   drawSeats()
 },[drawSeats])
 
@@ -242,19 +300,17 @@ const handleCanvasClick = (e)=>{
   const clickedSeat = Math.floor(x / (seatWidth + GAP)) + 1
 
   if(clickedRow > rows || clickedSeat > seatsPerRow){
-    // console.log(12);
     return
   }
   const currentHall = cinema.halls.find((hall) => hall.name == session.hall)
-  // const isSelected = selectedSeats.some((seat) => seat.row == clickedRow && seat.seat == clickedSeat)
   const isReserved = currentHall.reservedSeats.some((s) => s.row == clickedRow && s.seat == clickedSeat)
   const isBought = currentHall.boughtSeats.some((s) => s.row == clickedRow && s.seat == clickedSeat)
   const isVip = currentHall?.VIPSeats.some((vip) => vip.row == clickedRow && vip.seat == clickedSeat)
   if(isReserved || isBought){
-    toast('Место уже занято!');
-    return;
+    toast('Место уже занято!')
+    return
   }
-  setTempSeat({ row: clickedRow, seat: clickedSeat });
+  setTempSeat({row: clickedRow,seat: clickedSeat})
   setIsTempSeatVip(isVip)
   setIsDialogOpen(true);
 }
@@ -266,44 +322,34 @@ const addTicket = ()=>{
       ticketType,
       price: ticketType == 'vip' ? session.vipPrice : ticketType == 'adult' ? session.adultPrice : session.childPrice,
     }
+    const seatKey = `${tempSeat.row}-${tempSeat.seat}`
     setSelectedSeats((prev) => [...prev,newSeat])
+
+    setCinema(prev => {
+      const halls = prev.halls.map(h =>
+        h.name == session.hall
+          ? { ...h, reservedSeats: [...h.reservedSeats, { ...tempSeat, reservedAt: new Date() }] }
+          : h
+      );
+      return { ...prev, halls };
+    })
     socket.emit('reserveSeat',{
       cinemaId: cinema._id,
       hall: session.hall,
       seat: tempSeat,
       userId: tokenUser?._id,
       sessionId: params.nestedId
-    })
-    // const timer = setTimeout(() => {
-    //   setSelectedSeats((prev) =>
-    //     prev.filter((s) => !(s.row == tempSeat.row && s.seat == tempSeat.seat))
-    //   )
-    //   // Уведомляем сервер об отмене резервации
-    //   axios.post('/api/cinemas/cancelReservation',{
-    //     cinemaId: cinema._id,
-    //     hall: session.hall,
-    //     seats: [tempSeat],
-    //   })
-    // }, 900000)
-    // reservationTimeoutRef.current.set(
-    //   `${tempSeat.row}-${tempSeat.seat}`,
-    //   timer
-    // )
-    
-    
-    
-    // const timer = setTimeout(async() => {
-    //   setSelectedSeats(async(prev) => {
-    //     prev.filter(s => !(s.row == tempSeat.row && s.seat == tempSeat.seat))
-    //     await axios.post('/api/cinemas/cancelReservation', {
-    //       cinemaId: cinema._id,
-    //       hall: session.hall,
-    //       seats: [tempSeat]
-    //     })
-    //   }, 900000) // 15 minutes
-    //   reservationTimeoutRef.current.set(`${tempSeat.row}-${tempSeat.seat}`, timer)
-    // })
-  }
+    },
+    (response)=>{
+      if(response.status == 'error'){
+        setCinema(prev => {
+          const halls = prev.halls.map((h) => h.name == session.hall ? {...h,reservedSeats: h.reservedSeats.filter((s) => !(s.row == tempSeat.row && s.seat == tempSeat.seat)) }: h)
+          return {...prev, halls}
+        })
+        toast('Упс, место уже заняли!')
+      }
+    }
+  )}
   setIsDialogOpen(false)
   setTicketType('adult')
   setIsTempSeatVip(false)
@@ -314,8 +360,7 @@ const removeTicket = ()=>{
   setIsTempSeatVip(false)
 }
 const handlePayment = async () => {
-  try {
-    // Сохраняем выбранные места в localStorage
+  try{
     const reservationData = {
       eventId: params.id,
       sessionId: params.nestedId,
@@ -342,22 +387,6 @@ const handlePayment = async () => {
     toast('Не удалось забронировать места')
   }
 }
-useEffect(() => {
-  if (!socket || !cinema) return;
-
-  const handleSeatUpdate = (updatedCinema) => {
-    setCinema(updatedCinema);
-    drawSeats();
-  };
-
-  socket.on('seatReserved', handleSeatUpdate);
-  socket.on('seatPurchased', handleSeatUpdate);
-
-  return () => {
-    socket.off('seatReserved', handleSeatUpdate);
-    socket.off('seatPurchased', handleSeatUpdate);
-  };
-}, [socket, cinema, drawSeats]);
 const totalPrice = selectedSeats.reduce((acc, seat) => acc + seat.price, 0)
 
 if(!session || !cinema){

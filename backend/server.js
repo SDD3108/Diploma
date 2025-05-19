@@ -14,59 +14,57 @@ const TicketFlow = require('../backend/src/models/cinemas')
 const app = express()
 const server = http.createServer(app)
 
-
-const io = new Server(server, {
-  cors: {
-    origin: 'http://localhost:3000',
-    methods: ['GET', 'POST'],
+const io = new Server(server,{
+  cors:{
+    origin:'http://localhost:3000',
+    methods:['GET','POST'],
     credentials: true,
   },
   transports: ['websocket'],
-  path: '/socket.io',
+  path:'/socket.io',
 })
 
 app.use(cors({
-  origin: 'http://localhost:3000',
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true,
+  origin:'http://localhost:3000',
+  methods:['GET','POST','PUT','DELETE','OPTIONS'],
+  allowedHeaders:['Content-Type','Authorization'],
+  credentials:true,
 }))
 app.use(express.json())
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')))
+app.use('/uploads',express.static(path.join(__dirname,'uploads')))
 
 const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST,
-  port: Number(process.env.SMTP_PORT),
-  secure: false,
-  auth: {
+  host:process.env.SMTP_HOST,
+  port:Number(process.env.SMTP_PORT),
+  secure:false,
+  auth:{
     user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS
+    pass: process.env.SMTP_PASS,
   }
 })
-app.post('/send-email', async (req, res) => {
-  const { to, subject, text, html } = req.body
-  try {
+app.post('/send-email', async(req,res)=>{
+  const { to,subject,text,html } = req.body
+  try{
     const info = await transporter.sendMail({
       from: process.env.FROM_EMAIL,
       to,
       subject,
       text,
-      html
+      html,
     })
-    console.log('Email sent:', info.messageId)
-    res.status(200).json({ message: 'Email sent', id: info.messageId })
-  } catch (err) {
-    console.error('Error sending email:', err)
-    res.status(500).json({ error: 'Failed to send email' })
+    res.status(200).json({message:'Email sent', id: info.messageId})
+  }
+  catch(error){
+    res.status(500).json({error:'Failed to send email'})
   }
 })
 
 mongoose.connect(`mongodb+srv://${process.env.LOGIN}:${process.env.PASSWORD}@cluster0.pirt6.mongodb.net/TicketFlow?retryWrites=true&w=majority`)
 .then(async () => {
     console.log('Успешное подключение к MongoDB')
-    const cron = require('node-cron');
+    const cron = require('node-cron')
     const TicketFlow = require('./src/models/cinemas')
-    cron.schedule('*/5 * * * *', async ()=>{
+    cron.schedule('*/5 * * * *', async()=>{
       try{
         const cinemas = await TicketFlow.find()
         const now = new Date()
@@ -78,16 +76,16 @@ mongoose.connect(`mongodb+srv://${process.env.LOGIN}:${process.env.PASSWORD}@clu
           for(const hall of cinema.halls){
             const expiredReservations = hall.reservedSeats.filter((seat) => now - seat.reservedAt > 900000)
             if(expiredReservations.length > 0){
-              const seatIds = expiredReservations.map(seat => seat._id) //
+              const seatIds = expiredReservations.map(seat => seat._id)
               await TicketFlow.findByIdAndUpdate(cinema._id,{
-                $pull: {
-                  'halls.$[hall].reservedSeats': {
-                    _id: { $in: seatIds }
+                $pull:{
+                  'halls.$[hall].reservedSeats':{
+                    _id:{$in: seatIds},
                   }
                 }},
                 { 
-                  arrayFilters: [{ 'hall.name': hall.name }],
-                  multi: true
+                  arrayFilters:[{'hall.name':hall.name}],
+                  multi:true,
                 }
               )
             }
@@ -101,7 +99,7 @@ mongoose.connect(`mongodb+srv://${process.env.LOGIN}:${process.env.PASSWORD}@clu
 })
 .catch((err) => console.error('Ошибка подключения к MongoDB:', err))
 
-const AutoIncrement = require('mongoose-sequence')(mongoose);
+const AutoIncrement = require('mongoose-sequence')(mongoose)
 const sessionSchema = new mongoose.Schema({
   time: { type: String, required: true },
   sessionLocation: { type: String, required: true },
@@ -122,98 +120,79 @@ sessionSchema.plugin(AutoIncrement,{inc_field:'cinemaId'})
 const Session = mongoose.model('Session',sessionSchema)
 Session.createIndexes({cinemaId:1},{unique:true})
 
-// Socket.IO события
-io.on('connection', (socket) => {
-  console.log('Новое подключение:', socket.id)
-
-  socket.on('reserveSeat',async(data)=>{
+io.on('connection',(socket)=>{
+  console.log('Новое подключение', socket.id)
+  socket.on('joinSession',({cinemaId,sessionId})=>{
+    const room = `${cinemaId}_${sessionId}`
+    socket.join(room)
+  })
+  socket.on('reserveSeat',async(data,callback)=>{
     try{
       const cinema = await TicketFlow.findById(data.cinemaId)
-      const hall = cinema.halls.find((h) => h.name === data.hall)
+      const hall = cinema.halls.find((h) => h.name == data.hall)
+      const conflict = hall.reservedSeats.some((s) => s.row == data.seat.row && s.seat == data.seat.seat) || hall.boughtSeats.some((s) => s.row == data.seat.row && s.seat == data.seat.seat)
+      if(!hall){
+        return callback({ status: 'error', message: 'Hall not found' })
+      }
+      if(conflict){
+        return callback({status:'error'})
+      }
+      const isReserved = hall.reservedSeats.some((s) => s.row == data.seat.row && s.seat == data.seat.seat)
+      const isBought = hall.boughtSeats.some((s) => s.row == data.seat.row && s.seat == data.seat.seat)
+      if(isReserved || isBought){
+        socket.emit('seatUnavailable',{seat: data.seat})
+        return
+      }
+      hall.reservedSeats.push({...data.seat, reservedAt: new Date(),userId: data.userId})
+      await cinema.save()
+
+      // io.emit('seatReserved',cinema)
+      const room = `${data.cinemaId}_${data.sessionId}`
+      io.to(room).emit('seatReserved', cinema)
+      callback({ status: 'ok' })
+    }
+    catch(error){
+      console.error('Ошибка резервирования места:', error)
+    }
+  })
+  socket.on('cancelReservation', async(data)=>{
+    try{
+      const cinema = await TicketFlow.findById(data.cinemaId)
+      const hall = cinema.halls.find((h) => h.name == data.hall)
       if(!hall){
         return
       }
-      const isReserved = hall.reservedSeats.some(
-        (s) => s.row === data.seat.row && s.seat === data.seat.seat
-      )
-      const isBought = hall.boughtSeats.some(
-        (s) => s.row === data.seat.row && s.seat === data.seat.seat
-      );
-
-      if(isReserved || isBought){
-        socket.emit('seatUnavailable',{ seat: data.seat })
-        return
-      }
-
-      hall.reservedSeats.push({ ...data.seat, reservedAt: new Date() });
-      await cinema.save();
-
-      io.emit('seatReserved', cinema);
-    } catch (error) {
-      console.error('Ошибка резервирования места:', error);
-    }
-  })
-
-  socket.on('cancelReservation', async (data) => {
-    try {
-      const cinema = await TicketFlow.findById(data.cinemaId)
-      const hall = cinema.halls.find((h) => h.name == data.hall)
-
-      if (!hall) return;
-
-      hall.reservedSeats = hall.reservedSeats.filter(
-        (s) => !(s.row == data.seat.row && s.seat == data.seat.seat)
-      )
+      hall.reservedSeats = hall.reservedSeats.filter((s) => !(s.row == data.seat.row && s.seat == data.seat.seat))
       await cinema.save()
-
-      io.emit('seatReserved', cinema)
+      io.emit('seatReserved',cinema)
     }
     catch(error){
-      console.error('Ошибка отмены резервации:', error)
+      console.error('Ошибка отмены резервации:',error)
     }
   })
-
-  socket.on('confirmPurchase', async (data) => {
-    try {
-      const cinema = await TicketFlow.findById(data.cinemaId);
-      const hall = cinema.halls.find((h) => h.name == data.hall);
-
-      if (!hall) return;
-
-      hall.reservedSeats = hall.reservedSeats.filter(
-        (s) => !(s.row == data.seat.row && s.seat == data.seat.seat)
-      );
-      hall.boughtSeats.push(data.seat);
-      await cinema.save();
-
-      io.emit('seatPurchased', cinema);
-    } catch (error) {
-      console.error('Ошибка подтверждения покупки:', error);
+  socket.on('confirmPurchase', async(data)=>{
+    try{
+      const cinema = await TicketFlow.findById(data.cinemaId)
+      const hall = cinema.halls.find((h) => h.name == data.hall)
+      if(!hall){
+        return
+      }
+      hall.reservedSeats = hall.reservedSeats.filter((s) => !(s.row == data.seat.row && s.seat == data.seat.seat))
+      hall.boughtSeats.push(data.seat)
+      await cinema.save()
+      io.emit('seatPurchased', cinema)
+    }
+    catch(error){
+      console.error('ошибка подтверждения покупки', error)
     }
   })
 })
 
-// Маршруты
 app.use('/api/events', eventRoutes)
 app.use('/api/cinemas', cinemaRoutes)
 app.use('/api/users', userRoutes)
 
-// Запуск сервера
 const PORT = process.env.PORT || 3002
 server.listen(PORT,()=>{
   console.log(`Сервер запущен на порту ${PORT}`);
 })
-// fetch('http://localhost:3002/api/events', {
-//   method: 'POST',
-//   headers: {
-//     'Content-Type': 'application/json',
-//   },
-//   body: JSON.stringify(),
-// })
-// fetch('http://localhost:3002/api/cinemas', {
-//   method: 'POST',
-//   headers: {
-//     'Content-Type': 'application/json',
-//   },
-//   body: JSON.stringify(),
-// })
