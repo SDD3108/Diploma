@@ -102,10 +102,21 @@ const EventItemDescSessionPage = () => {
 
     newSocket.on('connect_error',(err)=>{
       toast('Connection error. Please refresh the page.')
+      console.log(err);
+      
     })
     setSocket(newSocket)
     return () => newSocket.disconnect()
   },[])
+    useEffect(() => {
+    if (!socket || !cinema?._id || !session?._id) return
+    const room = `${cinema._id}_${session._id}`
+    socket.emit('joinSession', { cinemaId: cinema._id, sessionId: session._id })
+    socket.on('seatReserved', updatedCinema => { setCinema(updatedCinema); drawSeats() })
+    socket.on('seatReleased', updatedCinema => { setCinema(updatedCinema); drawSeats() })
+    socket.on('seatPurchased', updatedCinema => { setCinema(updatedCinema); drawSeats() })
+    return () => socket.off('seatReserved').off('seatReleased').off('seatPurchased')
+  }, [socket, cinema, session])
 useEffect(() => {
   if(!socket || !cinema?._id || !session?._id){
     return
