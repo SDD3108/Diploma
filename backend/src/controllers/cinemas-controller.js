@@ -170,4 +170,15 @@ const confirmPurchase = async(req,res)=>{
     res.status(500).json({error: error.message})
   }
 }
-module.exports = {getAllCinemas,getCinemaById,createCinema,updateCinema,reserveSeats,purchaseSeats,checkReservation,confirmPurchase}
+const seatsCheck = async(req,res)=>{
+  try {
+    const cinema = await TicketFlow.findById(req.body.cinemaId)
+    const hall = cinema.halls.find((h) => h.name == req.body.hall)
+    const isAvailable = req.body.seats.every((seat) => !hall.reservedSeats.some((s) => s.row == seat.row && s.seat == seat.seat) && !hall.boughtSeats.some((s) => s.row == seat.row && s.seat == seat.seat))
+    res.json({available: isAvailable})
+  }
+  catch(error){
+    res.status(500).json({error: 'Server error'})
+  }
+}
+module.exports = {seatsCheck,getAllCinemas,getCinemaById,createCinema,updateCinema,reserveSeats,purchaseSeats,checkReservation,confirmPurchase}

@@ -91,7 +91,6 @@ const EventItemDescSessionPage = () => {
   const [fixedMounth,setFixedMounth] = useState('')
   const [isTempSeatVip, setIsTempSeatVip] = useState(false)
   const [currentHall,setCurrentHall] = useState('')
-  
   useEffect(()=>{
     const newSocket = io(process.env.NEXT_PUBLIC_SOCKET_URL,{
       transports: ['websocket'],
@@ -226,6 +225,7 @@ const drawSeats = useCallback(()=>{
       const isBought = currentHall.boughtSeats.some((s) => s.row == row && s.seat == seat)
       const isVip = currentHall.isVipSeats && currentHall.VIPSeats.some((vip) => vip.row == row && vip.seat == seat)
       const isSelected = selectedSeats.some((s) => s.row == row && s.seat == seat)
+      
       let seatColor = COLORS.free
       const x = GAP + (seat - 1) * (seatWidth + GAP)
       const y = GAP + (row - 1) * (seatHeight + GAP)
@@ -235,7 +235,7 @@ const drawSeats = useCallback(()=>{
       else if(isBought){
         seatColor = COLORS.bought
       }
-      else if(isSelected){
+      if(isSelected){
         seatColor = COLORS.selected
       }
       else if (isVip) {
@@ -248,6 +248,20 @@ const drawSeats = useCallback(()=>{
     }
   }
 },[cinema,session,selectedSeats,seatsConfig])
+useEffect(() => {
+  if (!socket) return;
+
+  const handleSeatsPurchased = (updatedCinema) => {
+    setCinema(updatedCinema);
+    drawSeats();
+  };
+
+  socket.on('seatsPurchased', handleSeatsPurchased);
+  
+  return () => {
+    socket.off('seatsPurchased', handleSeatsPurchased);
+  };
+}, [socket, drawSeats])
 useEffect(() => {
   if(!socket){
     return
@@ -328,7 +342,7 @@ const addTicket = ()=>{
           ? { ...h, reservedSeats: [...h.reservedSeats, { ...tempSeat, reservedAt: new Date() }] }
           : h
       );
-      return { ...prev, halls };
+      return { ...prev, halls }
     })
     // socket.emit('reserveSeat',{
     //   cinemaId: cinema._id,
@@ -366,18 +380,33 @@ const handlePayment = async () => {
       cinemaId: cinema._id,
       hall: session.hall
     }
-    
-    localStorage.setItem('currentReservation', JSON.stringify(reservationData))
-    setData(reservationData)
-    // Резервируем места через API
-    await axios.post('/api/cinemas/reserve', {
+    const checkResponse = await axios.post('/api/cinemas/check-seats', {
       cinemaId: cinema._id,
       hall: session.hall,
-      seats: selectedSeats.map((s) => ({ row: s.row, seat: s.seat })),
-      userId: tokenUser?._id
+      seats: selectedSeats.map(s => ({ row: s.row, seat: s.seat })),
     })
-
-    router.push(`/events/${params.id}/${params.nestedId}/buy`)
+    if(checkResponse){
+      localStorage.setItem('currentReservation', JSON.stringify(reservationData))
+      setData(reservationData)
+      await axios.post('/api/cinemas/reserve', {
+        cinemaId: cinema._id,
+        hall: session.hall,
+        seats: selectedSeats.map((s) => ({ row: s.row, seat: s.seat })),
+        userId: tokenUser?._id
+      })
+      socket.emit('purchaseSeats', {
+        cinemaId: cinema._id,
+        hall: session.hall,
+        seats: selectedSeats,
+        sessionId: params.nestedId
+      })
+      router.push(`/events/${params.id}/${params.nestedId}/buy`)
+    }
+    else{
+      toast.error('Некоторые места уже заняты')
+      setSelectedSeats([])
+    }
+    // router.push(`/events/${params.id}/${params.nestedId}/buy`)
   }
   catch(error){
     console.error('Ошибка при бронировании:', error)

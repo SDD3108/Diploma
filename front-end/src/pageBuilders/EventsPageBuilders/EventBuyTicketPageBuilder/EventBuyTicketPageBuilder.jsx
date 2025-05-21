@@ -118,7 +118,7 @@ const EventBuyTicketPageBuilder = () => {
       }
       await axios.post('/api/users/add-purchase',{userId:tokenUser?._id,purchase: purchaseData})
       await axios.post(`/api/users/${tokenUser?._id}/add-message`,{title: event?.title})
-      await axios.post(`${backendApi}/send-email`,{
+      await axios.post(`http://localhost:3002/send-email`,{
         from: 'mrbimson1@gmail.com',
         to: tokenUser?.email,
         subject: 'Квитанция о покупке',

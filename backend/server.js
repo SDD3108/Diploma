@@ -155,7 +155,7 @@ io.on('connection',(socket)=>{
       console.error('Ошибка резервирования места:', error)
     }
   })
-  socket.on('cancelReservation', async(data)=>{
+  socket.on('cancelReservation',async(data)=>{
     try{
       const cinema = await TicketFlow.findById(data.cinemaId)
       const hall = cinema.halls.find((h) => h.name == data.hall)
@@ -170,7 +170,7 @@ io.on('connection',(socket)=>{
       console.error('Ошибка отмены резервации:',error)
     }
   })
-  socket.on('confirmPurchase', async(data)=>{
+  socket.on('confirmPurchase',async(data)=>{
     try{
       const cinema = await TicketFlow.findById(data.cinemaId)
       const hall = cinema.halls.find((h) => h.name == data.hall)
@@ -184,6 +184,26 @@ io.on('connection',(socket)=>{
     }
     catch(error){
       console.error('ошибка подтверждения покупки', error)
+    }
+  })
+  socket.on('purchaseSeats',async(data)=>{
+    try{
+      const cinema = await TicketFlow.findById(data.cinemaId)
+      const hall = cinema.halls.find(h => h.name == data.hall)
+      data.seats.forEach((seat) => {
+        hall.reservedSeats.push({
+          ...seat,
+          reservedAt: new Date(),
+          userId: data.userId,
+        })
+      })
+      await cinema.save()
+      
+      const room = `${data.cinemaId}_${data.sessionId}`
+      io.to(room).emit('seatsPurchased', cinema)
+    }
+    catch(error){
+      console.error('Purchase error:',error)
     }
   })
 })
