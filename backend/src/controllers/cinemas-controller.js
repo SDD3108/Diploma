@@ -68,6 +68,38 @@ const reserveSeats = async (req,res)=>{
   catch(error){
     res.status(500).json({error:'ошибка бронирования'})
   }
+  // try {
+  //   const { cinemaId, hall, seats, userId, sessionId } = req.body;
+    
+  //   const cinema = await TicketFlow.findById(cinemaId);
+  //   const hallConfig = cinema.halls.find(h => h.name === hall);
+    
+  //   // Проверка доступности всех мест
+  //   const isAnySeatOccupied = seats.some(seat => 
+  //     hallConfig.reservedSeats.some(s => s.row === seat.row && s.seat === seat.seat) ||
+  //     hallConfig.boughtSeats.some(s => s.row === seat.row && s.seat === seat.seat)
+  //   );
+
+  //   if (isAnySeatOccupied) {
+  //     return res.status(400).json({ success: false, message: 'Некоторые места уже заняты' });
+  //   }
+
+  //   // Добавляем резервации
+  //   const reservations = seats.map(seat => ({
+  //     ...seat,
+  //     userId,
+  //     reservedAt: new Date(),
+  //     sessionId
+  //   }));
+
+  //   hallConfig.reservedSeats.push(...reservations);
+  //   await cinema.save();
+
+  //   res.json({ success: true });
+  // }
+  // catch(error){
+  //   res.status(500).json({ success: false, message: 'Ошибка сервера' });
+  // }
 }
 
 const purchaseSeats = async(req,res)=>{
@@ -181,4 +213,5 @@ const seatsCheck = async(req,res)=>{
     res.status(500).json({error: 'Server error'})
   }
 }
+
 module.exports = {seatsCheck,getAllCinemas,getCinemaById,createCinema,updateCinema,reserveSeats,purchaseSeats,checkReservation,confirmPurchase}

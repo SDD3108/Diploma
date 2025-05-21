@@ -8,12 +8,15 @@ import { GetCinemaById } from '@/src/utils/GetCinemas/GetCinemas'
 import { Separator } from '@radix-ui/react-separator'
 import '@/i18n'
 import { useTranslation } from 'react-i18next'
+import { io } from 'socket.io-client'
+
 // import GetToken from '@/src/store/AuthStore/authStore'
 
 const EventBuyTicketPageBuilder = () => {
   const { t } = useTranslation('common')
   const { tokenUser } = GetToken()
   const router = useRouter()
+  const [socket, setSocket] = useState(null)
   const [reservation, setReservation] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -22,6 +25,32 @@ const EventBuyTicketPageBuilder = () => {
   const [cinema, setCinema] = useState(null)
   const [displaySize,setDisplaySize] = useState(window.innerWidth,)
   const backendApi = process.env.NEXT_PUBLIC_SOCKET_URL
+  useEffect(()=>{
+    const newSocket = io(process.env.NEXT_PUBLIC_SOCKET_URL,{
+      transports:['websocket'],
+      path:'/socket.io',
+    })
+    setSocket(newSocket)
+    return () => newSocket.disconnect()
+  },[])
+  useEffect(()=>{
+    const saved = JSON.parse(localStorage.getItem('currentReservation'))
+    if(!saved){
+      setLoading(false)
+      return 
+    }
+    // проверяем, действительно ли резервы всё ещё актуальны
+    axios.get('/api/cinemas/check-reservation',{params: saved})
+    .then((res)=>{
+      if (!res.data.valid) throw new Error('Устарело')
+      setReservation(saved)
+    })
+    .catch(()=>{
+      toast.error('Резерв не найден или устарел')
+      router.push(-1)
+    })
+    .finally(() => setLoading(false))
+  }, [])
   useEffect(()=>{
     const loadReservation = async () => {
       try{
@@ -127,6 +156,11 @@ const EventBuyTicketPageBuilder = () => {
           <p>Благодарим вас уважаемый <strong>${tokenUser?.name},</strong></p>
           <p>вы успешно приобрели билет на фильм: <strong>${event?.title}.</strong></p>
         `
+      })
+      socket.emit('purchaseSeats', {
+        cinemaId: reservation.cinemaId,
+        sessionId: reservation.sessionId,
+        seats: reservation.seats
       })
       localStorage.removeItem('currentReservation')
       // после успешной оплаты добавляем покупку пользователю в purchasedTickets

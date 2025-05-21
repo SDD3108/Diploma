@@ -155,6 +155,39 @@ io.on('connection',(socket)=>{
       console.error('Ошибка резервирования места:', error)
     }
   })
+  // socket.on('reserveSeats', async (data) => {
+  // try {
+  //   const cinema = await Cinema.findById(data.cinemaId);
+  //   const hall = cinema.halls.find(h => h.name === data.hall);
+    
+  //   const existingSeats = new Set(
+  //     hall.reservedSeats
+  //       .filter(s => s.sessionId === data.sessionId)
+  //       .map(s => `${s.row}-${s.seat}`)
+  //   );
+
+  //   const newReservations = data.seats
+  //     .filter(seat => !existingSeats.has(`${seat.row}-${seat.seat}`))
+  //     .map(seat => ({
+  //       ...seat,
+  //       userId: data.userId,
+  //       reservedAt: new Date(),
+  //       sessionId: data.sessionId
+  //     }));
+
+  //   hall.reservedSeats.push(...newReservations);
+  //   await cinema.save();
+
+  //   // Рассылаем обновление всем клиентам
+  //   io.to(data.sessionId).emit('seatsReserved', {
+  //     cinemaId: data.cinemaId,
+  //     hall: data.hall,
+  //     seats: newReservations
+  //   });
+  // } catch (error) {
+  //   console.error('Socket error:', error);
+  // }
+  // })
   socket.on('cancelReservation',async(data)=>{
     try{
       const cinema = await TicketFlow.findById(data.cinemaId)
