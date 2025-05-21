@@ -219,24 +219,56 @@ io.on('connection',(socket)=>{
       console.error('ошибка подтверждения покупки', error)
     }
   })
-  socket.on('purchaseSeats',async(data)=>{
-    try{
+  // socket.on('purchaseSeats',async(data)=>{
+  //   try{
+  //     const cinema = await TicketFlow.findById(data.cinemaId)
+  //     const hall = cinema.halls.find(h => h.name == data.hall)
+  //     data.seats.forEach((seat) => {
+  //       hall.reservedSeats.push({
+  //         ...seat,
+  //         reservedAt: new Date(),
+  //         userId: data.userId,
+  //       })
+  //     })
+  //     await cinema.save()
+      
+  //     const room = `${data.cinemaId}_${data.sessionId}`
+  //     io.to(room).emit('seatsPurchased', cinema)
+  //   }
+  //   catch(error){
+  //     console.error('Purchase error:',error)
+  //   }
+  // })
+  socket.on('purchaseSeats', async (data) => {
+    try {
       const cinema = await TicketFlow.findById(data.cinemaId)
       const hall = cinema.halls.find(h => h.name == data.hall)
-      data.seats.forEach((seat) => {
-        hall.reservedSeats.push({
-          ...seat,
-          reservedAt: new Date(),
-          userId: data.userId,
-        })
-      })
-      await cinema.save()
       
-      const room = `${data.cinemaId}_${data.sessionId}`
-      io.to(room).emit('seatsPurchased', cinema)
-    }
-    catch(error){
-      console.error('Purchase error:',error)
+      // Переносим из резервированных в купленные
+      const seatsToPurchase = hall.reservedSeats.filter(s => 
+        data.seats.some(seat => seat.row === s.row && seat.seat === s.seat)
+      );
+      
+      hall.reservedSeats = hall.reservedSeats.filter(s => 
+        !data.seats.some(seat => seat.row === s.row && seat.seat === s.seat)
+      );
+      
+      hall.boughtSeats.push(...seatsToPurchase.map(s => ({
+        row: s.row,
+        seat: s.seat,
+        userId: s.userId,
+        purchasedAt: new Date()
+      })));
+
+      await cinema.save();
+
+      // Рассылаем обновление
+      const room = `${data.cinemaId}_${data.sessionId}`;
+      io.to(room).emit('seatsPurchased', cinema);
+      res.json({ success: true });
+    } catch (error) {
+      console.error('Purchase error:', error);
+      res.status(500).json({ success: false });
     }
   })
 })

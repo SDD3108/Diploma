@@ -348,8 +348,8 @@ const addTicket = ()=>{
         })
         toast('Упс, место уже заняли!')
       }
-    })
-  }
+    }
+  )}
   setIsDialogOpen(false)
   setTicketType('adult')
   setIsTempSeatVip(false)
