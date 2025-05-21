@@ -65,7 +65,7 @@ const AdminPageBuilder = () => {
                             <TableCell>{event?.title}</TableCell>
                             <TableCell>{event?.type}</TableCell>
                             <TableCell>{event?.genre}</TableCell>
-                            <TableCell className="text-right">{event?.age}</TableCell>
+                            <TableCell className="text-right">{event?.age}+</TableCell>
                         </TableRow>
                     ))}
                 </TableBody>

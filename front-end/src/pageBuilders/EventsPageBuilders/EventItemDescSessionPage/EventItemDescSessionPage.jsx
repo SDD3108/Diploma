@@ -67,9 +67,6 @@ const cinemas = [
     ],
   },
 ]
-
-
-
 const EventItemDescSessionPage = () => {
   // const { cinema } = GetCinemaByName()
   const { t } = useTranslation('common')
@@ -333,23 +330,23 @@ const addTicket = ()=>{
       );
       return { ...prev, halls };
     })
-    socket.emit('reserveSeat',{
-      cinemaId: cinema._id,
-      hall: session.hall,
-      seat: tempSeat,
-      userId: tokenUser?._id,
-      sessionId: params.nestedId
-    },
-    (response)=>{
-      if(response.status == 'error'){
-        setCinema(prev => {
-          const halls = prev.halls.map((h) => h.name == session.hall ? {...h,reservedSeats: h.reservedSeats.filter((s) => !(s.row == tempSeat.row && s.seat == tempSeat.seat)) }: h)
-          return {...prev, halls}
-        })
-        toast('Упс, место уже заняли!')
-      }
-    }
-  )}
+    // socket.emit('reserveSeat',{
+    //   cinemaId: cinema._id,
+    //   hall: session.hall,
+    //   seat: tempSeat,
+    //   userId: tokenUser?._id,
+    //   sessionId: params.nestedId
+    // },
+    // (response)=>{
+    //   if(response.status == 'error'){
+    //     setCinema(prev => {
+    //       const halls = prev.halls.map((h) => h.name == session.hall ? {...h,reservedSeats: h.reservedSeats.filter((s) => !(s.row == tempSeat.row && s.seat == tempSeat.seat)) }: h)
+    //       return {...prev, halls}
+    //     })
+    //     toast('Упс, место уже заняли!')
+    //   }
+    // })
+  }
   setIsDialogOpen(false)
   setTicketType('adult')
   setIsTempSeatVip(false)

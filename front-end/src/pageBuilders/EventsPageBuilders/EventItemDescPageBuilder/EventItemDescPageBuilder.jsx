@@ -126,7 +126,7 @@ const EventItemDescPageBuilder = () => {
   const TicketsContent = useMemo(()=> ()=>(
   <div>
     <div>
-      <div className='flex justify-between items-center px-2 md:px-2 sm:px-4 max-sm:px-2'>
+      <div className='flex sm:flex-row max-sm:flex-col justify-between items-center sm:items-center max-sm:items-start px-2 md:px-2 sm:px-4 max-sm:px-2'>
         <div>
           <h2 className='font-medium text-black/60 dark:text-slate-100'>{t('event.time')}</h2>
         </div>
@@ -187,15 +187,15 @@ const EventItemDescPageBuilder = () => {
                 <div className='w-[5.5rem] lg:w-[5.5rem] md:w-[3.5rem] sm:w-[3rem] max-sm:w-[2.6rem] flex items-center'>
                   {session.isAdultPrice ? (
                     <div>
-                      <h2 className='font-medium text-black/60'>{session.adultPrice} ₸</h2>
+                      <h2 className='font-medium text-black/60 text-nowrap'>{session.adultPrice} ₸</h2>
                     </div>
                   ) : (
                     <div>
-                      <h2 className='font-medium text-black/60'>–</h2>
+                      <h2 className='font-medium text-black/60 text-nowrap'>–</h2>
                     </div>
                   )}
                 </div>
-                <div className='w-[5.5rem] lg:w-[5.5rem] md:w-[3.5rem] sm:w-[3rem] max-sm:w-[2.6rem] flex items-center'>
+                <div className='w-[5.5rem] lg:w-[5.5rem] md:w-[3.5rem] sm:w-[3rem] max-sm:w-[2.6rem] flex items-center text-nowrap'>
                   {session.isChildPrice ? (
                     <div>
                       <h2 className='font-medium text-black/60'>{session.childPrice} ₸</h2>
@@ -206,7 +206,7 @@ const EventItemDescPageBuilder = () => {
                     </div>
                   )}
                 </div>
-                <div className='w-[5.5rem] lg:w-[5.5rem] md:w-[3.5rem] sm:w-[3rem] max-sm:w-[2.6rem] flex items-center'>
+                <div className='w-[5.5rem] lg:w-[5.5rem] md:w-[3.5rem] sm:w-[3rem] max-sm:w-[2.6rem] flex items-center text-nowrap'>
                   {session.isVIPPrice ? (
                     <div>
                       <h2 className='font-medium text-black/60'>{session.vipPrice} ₸</h2>
