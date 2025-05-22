@@ -24,6 +24,8 @@ const io = new Server(server,{
   path:'/socket.io',
 })
 
+// cinemaRoutes(app,io)
+
 app.use(cors({
   origin:'http://localhost:3000',
   methods:['GET','POST','PUT','DELETE','OPTIONS'],
@@ -125,6 +127,12 @@ io.on('connection',(socket)=>{
   socket.on('joinSession',({cinemaId,sessionId})=>{
     const room = `${cinemaId}_${sessionId}`
     socket.join(room)
+    console.log(`User joined room: ${room}`)
+  })
+  socket.on('seatsReserved',(cinema)=>{
+    const room = `${cinema._id}_${sessionId}`
+    socket.broadcast.to(room).emit('updateSeats', cinema)
+    socket.to(room).emit('seatsReserved', cinema)
   })
   socket.on('reserveSeat',async(data,callback)=>{
     try{
@@ -148,46 +156,13 @@ io.on('connection',(socket)=>{
 
       // io.emit('seatReserved',cinema)
       const room = `${data.cinemaId}_${data.sessionId}`
-      io.to(room).emit('seatReserved', cinema)
+      io.to(room).emit('seatsReserved', cinema)
       callback({ status: 'ok' })
     }
     catch(error){
       console.error('Ошибка резервирования места:', error)
     }
   })
-  // socket.on('reserveSeats', async (data) => {
-  // try {
-  //   const cinema = await Cinema.findById(data.cinemaId);
-  //   const hall = cinema.halls.find(h => h.name === data.hall);
-    
-  //   const existingSeats = new Set(
-  //     hall.reservedSeats
-  //       .filter(s => s.sessionId === data.sessionId)
-  //       .map(s => `${s.row}-${s.seat}`)
-  //   );
-
-  //   const newReservations = data.seats
-  //     .filter(seat => !existingSeats.has(`${seat.row}-${seat.seat}`))
-  //     .map(seat => ({
-  //       ...seat,
-  //       userId: data.userId,
-  //       reservedAt: new Date(),
-  //       sessionId: data.sessionId
-  //     }));
-
-  //   hall.reservedSeats.push(...newReservations);
-  //   await cinema.save();
-
-  //   // Рассылаем обновление всем клиентам
-  //   io.to(data.sessionId).emit('seatsReserved', {
-  //     cinemaId: data.cinemaId,
-  //     hall: data.hall,
-  //     seats: newReservations
-  //   });
-  // } catch (error) {
-  //   console.error('Socket error:', error);
-  // }
-  // })
   socket.on('cancelReservation',async(data)=>{
     try{
       const cinema = await TicketFlow.findById(data.cinemaId)
@@ -197,7 +172,7 @@ io.on('connection',(socket)=>{
       }
       hall.reservedSeats = hall.reservedSeats.filter((s) => !(s.row == data.seat.row && s.seat == data.seat.seat))
       await cinema.save()
-      io.emit('seatReserved',cinema)
+      io.emit('seatsReserved',cinema)
     }
     catch(error){
       console.error('Ошибка отмены резервации:',error)
@@ -219,26 +194,6 @@ io.on('connection',(socket)=>{
       console.error('ошибка подтверждения покупки', error)
     }
   })
-  // socket.on('purchaseSeats',async(data)=>{
-  //   try{
-  //     const cinema = await TicketFlow.findById(data.cinemaId)
-  //     const hall = cinema.halls.find(h => h.name == data.hall)
-  //     data.seats.forEach((seat) => {
-  //       hall.reservedSeats.push({
-  //         ...seat,
-  //         reservedAt: new Date(),
-  //         userId: data.userId,
-  //       })
-  //     })
-  //     await cinema.save()
-      
-  //     const room = `${data.cinemaId}_${data.sessionId}`
-  //     io.to(room).emit('seatsPurchased', cinema)
-  //   }
-  //   catch(error){
-  //     console.error('Purchase error:',error)
-  //   }
-  // })
   socket.on('purchaseSeats', async (data) => {
     try {
       const cinema = await TicketFlow.findById(data.cinemaId)

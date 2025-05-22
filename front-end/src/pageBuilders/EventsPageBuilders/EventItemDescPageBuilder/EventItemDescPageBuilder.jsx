@@ -126,11 +126,11 @@ const EventItemDescPageBuilder = () => {
   const TicketsContent = useMemo(()=> ()=>(
   <div>
     <div>
-      <div className='flex sm:flex-row max-sm:flex-col justify-between items-center sm:items-center max-sm:items-start px-2 md:px-2 sm:px-4 max-sm:px-2'>
+      <div className='flex sm:flex-row max-sm:flex-col justify-between items-center sm:items-center max-sm:items-end px-2 md:px-2 sm:px-4 max-sm:px-2'>
         <div>
-          <h2 className='font-medium text-black/60 dark:text-slate-100'>{t('event.time')}</h2>
+          <h2 className='font-medium text-black/60 dark:text-slate-100 text-left'>{t('event.time')}</h2>
         </div>
-        <div className='flex gap-2 lg:gap-2 sm:gap-9 max-sm:gap-9 font-medium text-black/60 dark:text-slate-100 text-base lg:text-base md:text-xs sm:text-base max-sm:text-sm'>
+        <div className='flex sm:justify-end gap-2 lg:gap-2 sm:gap-9 max-sm:gap-9 font-medium text-black/60 dark:text-slate-100 text-base lg:text-base md:text-xs sm:text-base max-sm:text-sm'>
           <div className='w-[5.5rem] lg:w-[5.5rem] md:w-[3.5rem] sm:w-[3rem] max-sm:w-[2.6rem]'>
             <h2>{t('event.language')}</h2>
           </div>
@@ -172,7 +172,7 @@ const EventItemDescPageBuilder = () => {
                   <h3 className='sm:text-base max-sm:text-xs'> {session.hall} </h3>
                 </div>
               </div>
-              <div className='flex items-center md:justify-normal sm:justify-end max-sm:justify-end gap-2 md:gap-2 sm:gap-9 max-sm:gap-9 text-base lg:text-base md:text-sm sm:text-base max-sm:text-sm '>
+              <div className='flex items-center md:items-center sm:items-end md:justify-normal sm:justify-end max-sm:justify-end gap-2 xl:gap-2 lg:gap-1.5 md:gap-2 sm:gap-9 max-sm:gap-9 text-base lg:text-base md:text-sm sm:text-base max-sm:text-sm '>
                 <div className='w-[5.5rem] lg:w-[5.5rem] md:w-[3.5rem] sm:w-[3rem] max-sm:w-[2.6rem] flex items-center'>
                   {session.isLanguage ? (
                     <div className=''>
@@ -231,7 +231,7 @@ const EventItemDescPageBuilder = () => {
   ),[event?.sessions,params.id,t])
   const AboutContent = useMemo(()=> ()=>(
   <div className='w-full'>
-    <div className='grid grid-cols-2 grid-rows-2 gap-x-8 gap-y-4'>
+    <div className='grid grid-cols-2 sm:grid-cols-2 max-sm:grid-cols-1 grid-rows-2 gap-x-8 gap-y-4'>
       {tabsPageLogic.map(({title,key,condition,render},index)=>(
         <div key={index} className={`w-full min-h-[9rem] flex flex-col ${!condition && 'hidden'}`}>
           {title && (

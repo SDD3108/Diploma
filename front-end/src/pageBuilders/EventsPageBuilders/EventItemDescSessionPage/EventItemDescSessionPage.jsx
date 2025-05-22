@@ -94,6 +94,17 @@ const EventItemDescSessionPage = () => {
   const [fixedMounth,setFixedMounth] = useState('')
   const [isTempSeatVip, setIsTempSeatVip] = useState(false)
   const [currentHall,setCurrentHall] = useState('')
+
+  useEffect(() => {
+    if (!socket || !cinema?._id || !session?._id) return;
+  
+    const roomData = {
+      cinemaId: cinema._id.toString(),
+      sessionId: session._id.toString(),
+    };
+    
+    socket.emit('joinSession', roomData)
+  }, [socket, cinema, session])
   
   useEffect(()=>{
     const newSocket = io(process.env.NEXT_PUBLIC_SOCKET_URL,{
@@ -252,6 +263,30 @@ const drawSeats = useCallback(()=>{
   }
 },[cinema,session,selectedSeats,seatsConfig])
 useEffect(() => {
+  if (!socket) return
+
+  const handleSeatsReserved = (updatedCinema)=>{
+    // setCinema(updatedCinema)
+    // drawSeats()
+
+    setCinema(prev => ({
+      ...prev,
+      halls: updatedCinema.halls.map(hall => ({
+        ...hall,
+        reservedSeats: [...hall.reservedSeats],
+        boughtSeats: [...hall.boughtSeats]
+      }))
+    }));
+    drawSeats()
+  }
+
+  socket.on('seatsReserved', handleSeatsReserved)
+
+  return () => {
+    socket.off('seatsReserved', handleSeatsReserved)
+  };
+}, [socket, drawSeats])
+useEffect(() => {
   if(!socket){
     return
   }
@@ -322,34 +357,33 @@ const addTicket = ()=>{
       ticketType,
       price: ticketType == 'vip' ? session.vipPrice : ticketType == 'adult' ? session.adultPrice : session.childPrice,
     }
-    const seatKey = `${tempSeat.row}-${tempSeat.seat}`
     setSelectedSeats((prev) => [...prev,newSeat])
 
-    setCinema(prev => {
-      const halls = prev.halls.map(h =>
-        h.name == session.hall
-          ? { ...h, reservedSeats: [...h.reservedSeats, { ...tempSeat, reservedAt: new Date() }] }
-          : h
-      );
-      return { ...prev, halls };
-    })
-    socket.emit('reserveSeat',{
-      cinemaId: cinema._id,
-      hall: session.hall,
-      seat: tempSeat,
-      userId: tokenUser?._id,
-      sessionId: params.nestedId
-    },
-    (response)=>{
-      if(response.status == 'error'){
-        setCinema(prev => {
-          const halls = prev.halls.map((h) => h.name == session.hall ? {...h,reservedSeats: h.reservedSeats.filter((s) => !(s.row == tempSeat.row && s.seat == tempSeat.seat)) }: h)
-          return {...prev, halls}
-        })
-        toast('Упс, место уже заняли!')
-      }
-    }
-  )}
+    // setCinema(prev => {
+    //   const halls = prev.halls.map(h =>
+    //     h.name == session.hall
+    //       ? { ...h, reservedSeats: [...h.reservedSeats, { ...tempSeat, reservedAt: new Date() }] }
+    //       : h
+    //   );
+    //   return { ...prev, halls };
+    // })
+    // socket.emit('reserveSeat',{
+    //   cinemaId: cinema._id,
+    //   hall: session.hall,
+    //   seat: tempSeat,
+    //   userId: tokenUser?._id,
+    //   sessionId: params.nestedId
+    // },
+    // (response)=>{
+    //   if(response.status == 'error'){
+    //     setCinema(prev => {
+    //       const halls = prev.halls.map((h) => h.name == session.hall ? {...h,reservedSeats: h.reservedSeats.filter((s) => !(s.row == tempSeat.row && s.seat == tempSeat.seat)) }: h)
+    //       return {...prev, halls}
+    //     })
+    //     toast('Упс, место уже заняли!')
+    //   }
+    // })
+  }
   setIsDialogOpen(false)
   setTicketType('adult')
   setIsTempSeatVip(false)
@@ -359,35 +393,57 @@ const removeTicket = ()=>{
   setTicketType('adult')
   setIsTempSeatVip(false)
 }
+const totalPrice = selectedSeats.reduce((acc, seat) => acc + seat.price, 0)
 const handlePayment = async () => {
   try{
-    const reservationData = {
-      eventId: params.id,
-      sessionId: params.nestedId,
-      seats: selectedSeats,
-      totalPrice,
-      cinemaId: cinema._id,
-      hall: session.hall
+    const seatsToReserve = selectedSeats.map((s) => ({ 
+      row: s.row, 
+      seat: s.seat,
+    }))
+    if(!cinema?._id || !session?.hall || !tokenUser?._id){
+      toast('Отсутствуют необходимые данные для бронирования')
+      return
     }
-    
-    localStorage.setItem('currentReservation', JSON.stringify(reservationData))
-    setData(reservationData)
-    // Резервируем места через API
-    await axios.post('/api/cinemas/reserve', {
+
+    const reserveResponse = await axios.post('/api/cinemas/reserve',{
       cinemaId: cinema._id,
       hall: session.hall,
-      seats: selectedSeats.map((s) => ({ row: s.row, seat: s.seat })),
-      userId: tokenUser?._id
+      seats: seatsToReserve,
+      userId: tokenUser?._id,
+      sessionId: params.nestedId
     })
+    if(reserveResponse.data.success){
+      const reservationData = {
+        eventId: params.id,
+        sessionId: params.nestedId,
+        seats: selectedSeats,
+        totalPrice,
+        cinemaId: cinema._id,
+        hall: session.hall
+      }
+      localStorage.setItem('currentReservation', JSON.stringify(reservationData))
+      router.push(`/events/${params.id}/${params.nestedId}/buy`)
+    }
+    else{
+      toast('Некоторые места уже заняты')
+      const occupiedSeats = reserveResponse.data.occupiedSeats
+      const updatedSeats = selectedSeats.filter(seat => 
+        !occupiedSeats.some(o => o.row == seat.row && o.seat == seat.seat)
+      )
+      setSelectedSeats(updatedSeats)
+    }
 
-    router.push(`/events/${params.id}/${params.nestedId}/buy`)
+    // localStorage.setItem('currentReservation', JSON.stringify(reservationData))
+    // setData(reservationData)
+    // // Резервируем места через API
+    // router.push(`/events/${params.id}/${params.nestedId}/buy`)
   }
   catch(error){
+
     console.error('Ошибка при бронировании:', error)
     toast('Не удалось забронировать места')
   }
 }
-const totalPrice = selectedSeats.reduce((acc, seat) => acc + seat.price, 0)
 
 if(!session || !cinema){
   return (

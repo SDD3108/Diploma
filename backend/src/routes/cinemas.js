@@ -16,3 +16,17 @@ router.post('/confirm-purchase', cinemaController.confirmPurchase)
 router.post('/check-seats',cinemaController.seatsCheck)
 
 module.exports = router
+
+// module.exports = (app,io)=>{
+//     const cinemaController = require('../controllers/cinemas-controller')(io)
+
+//     app.get('/', cinemaController.getAllCinemas)
+//     app.get('/:id', cinemaController.getCinemaById)
+//     app.post('/', cinemaController.createCinema)
+//     app.put('/:id', cinemaController.updateCinema)
+//     app.post('/reserve', cinemaController.reserveSeats)
+//     app.post('/purchase', cinemaController.purchaseSeats)
+//     app.get('/:id/check-reservation', cinemaController.checkReservation)
+//     app.post('/confirm-purchase', cinemaController.confirmPurchase)
+//     app.post('/check-seats',cinemaController.seatsCheck)
+// }
