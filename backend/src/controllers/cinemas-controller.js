@@ -213,5 +213,12 @@ const seatsCheck = async(req,res)=>{
     res.status(500).json({error: 'Server error'})
   }
 }
+const deleteCinema = async(req,res)=>{
+  const deletedCinema = await CinemaModel.findByIdAndDelete(req.params.id)
+  if(!deletedCinema){
+    return res.status(404).json({message: 'Кинотеатр не найден'})
+  }
+  res.status(200).json({message: 'Кинотеатр удален'})
+}
 
-module.exports = {seatsCheck,getAllCinemas,getCinemaById,createCinema,updateCinema,reserveSeats,purchaseSeats,checkReservation,confirmPurchase}
+module.exports = {seatsCheck,getAllCinemas,getCinemaById,createCinema,updateCinema,reserveSeats,purchaseSeats,checkReservation,confirmPurchase,deleteCinema}

@@ -19,15 +19,14 @@ const UserTicketsPageBuilder = () => {
   const [imageError, setImageError] = useState(false)
   const [combinedTickets, setCombinedTickets] = useState([])
   const [TicketInfoPage, setTicketInfoPage] = useState(false)
-// получаем eventId,пробигаемся циклом по events и ищем по eventId нужный нам объект
-// потом выводим event.image и event.title
-
-// по sessionId ищем нужный нам объект в sessions и выводим session.time,session.sessionLocation,session.hall
+  // получаем eventId,пробигаемся циклом по events и ищем по eventId нужный нам объект
+  // потом выводим event.image и event.title
+  // по sessionId ищем нужный нам объект в sessions и выводим session.time,session.sessionLocation,session.hall
   const purchasedTickets = tokenUser?.purchasedTickets || []
 
   useEffect(() => {
-    const getEventsAndSessions = async () => {
-      const eventPromises = purchasedTickets.map((ticket) =>
+    const getEventsAndSessions = async()=>{
+      const eventPromises = purchasedTickets.map((ticket)=>
         axios.get(`/api/events/${ticket.eventId}`)
       )
       const responses = await Promise.all(eventPromises)
@@ -35,10 +34,8 @@ const UserTicketsPageBuilder = () => {
         const eventResponse = responses[index]
         const event = eventResponse.data
         const session = event.sessions.find((s) => s._id == ticket._id)
-        return { ...ticket, event, session }
+        return {...ticket,event,session}
       }))
-      // console.log(combined);
-      
       setCombinedTickets(combined)
       // console.log(foundSessions);
     }
@@ -49,7 +46,6 @@ const UserTicketsPageBuilder = () => {
   }, [purchasedTickets])
   
   const test = (id)=>{
-    console.log('Переданные данные в test:', id)
     setData(id)
     setTicketInfoPage(true)
   }

@@ -47,7 +47,7 @@ const EventBuyTicketPageBuilder = () => {
     })
     .catch(()=>{
       toast.error('Резерв не найден или устарел')
-      router.push(-1)
+      router.go(-1)
     })
     .finally(() => setLoading(false))
   }, [])
@@ -119,6 +119,11 @@ const EventBuyTicketPageBuilder = () => {
 // console.log(displaySize);
 
   const handlePaymentConfirmation = async () => {
+    const user = JSON.parse(localStorage.getItem('user-token')) || {}
+    if(!tokenUser || !user._id){
+      router.go(-1)
+      return
+    }
     try{
       const now = new Date()
       const day = String(now.getDate()).padStart(2,'0')

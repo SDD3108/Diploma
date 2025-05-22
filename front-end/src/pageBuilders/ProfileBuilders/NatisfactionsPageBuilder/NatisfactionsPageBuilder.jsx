@@ -22,40 +22,9 @@ const NatisfactionsPageBuilder = () => {
   const [checkedAll, setCheckedAll] = useState(false)
   const [messageOpen, setMessageOpen] = useState(false)
   const [checkedItems, setCheckedItems] = useState([])
-  // const [messages, setMessages] = useState([
-  //   {
-  //     _id: 1,
-  //     isRead: true,
-  //     title: 'Уведомление',
-  //     briefDescription: 'Ваше бронирование успешно подтверждено',
-  //     description: 'Ваше бронирование успешно подтверждено. Вы можете просмотреть детали бронирования в вашем профиле.',
-  //     date: '2025-10-01T10:00:00Z',
-  //   },
-  //   {
-  //     _id: 2,
-  //     isRead: true,
-  //     title: 'Уведомление',
-  //     briefDescription: 'Ваше бронирование успешно подтверждено',
-  //     description: 'Ваше бронирование успешно подтверждено. Вы можете просмотреть детали бронирования в вашем профиле.',
-  //     date: '2025-10-01T10:00:00Z',
-  //   },
-  //   {
-  //     _id: 3,
-  //     isRead: false,
-  //     title: 'Уведомление',
-  //     briefDescription: 'Ваше бронирование успешно подтверждено',
-  //     description: 'Ваше бронирование успешно подтверждено. Вы можете просмотреть детали бронирования в вашем профиле.',
-  //     date: '2025-10-01T10:00:00Z',
-  //   }
-  // ])
-  
   useEffect(()=>{
     const closeMessagePage = secondGetData()
     setMessageOpen(closeMessagePage)
-    // const msgs = tokenUser?.messages || []
-    // setMessages(msgs)
-
-    // setCheckedItems(msgs.map(() => false))
     setCheckedItems(Array(messages.length).fill(false))
     setCheckedAll(false)
   },[tokenUser?.messages])
@@ -77,7 +46,7 @@ const NatisfactionsPageBuilder = () => {
       setCheckedAll(false)
     }
     catch(error){ 
-      toast.error(error.response?.data?.message || 'Ошибка удаления')
+      toast(error.response?.data?.message || 'Ошибка удаления')
       console.error('Ошибка', error.response?.data || error.message)
     }
   }

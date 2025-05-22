@@ -14,6 +14,7 @@ router.post('/confirm-purchase', cinemaController.confirmPurchase)
 // router.get('/:id/check-reservation', auth, cinemaController.checkReservation)
 // router.post('/confirm-purchase', auth, cinemaController.confirmPurchase)
 router.post('/check-seats',cinemaController.seatsCheck)
+router.delete('/:id',cinemaController.deleteCinema)
 
 module.exports = router
 

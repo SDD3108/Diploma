@@ -6,6 +6,7 @@ import { RadioGroup, RadioGroupItem } from "@/src/ui/radio-group"
 import { Label } from "@/src/ui/label"
 import '@/i18n'
 import { useTranslation } from 'react-i18next'
+
 const LanguagesPageBuilder = () => {
   const { t,i18n } = useTranslation('common')
   const [selectedLanguage, setSelectedLanguage] = useState('ru')
@@ -14,14 +15,15 @@ const LanguagesPageBuilder = () => {
     { value: 'kz', label: 'Қазақ' },
     { value: 'ru', label: 'Русский' },
   ]
-  const changeLanguage = (lng) => {
+  const changeLanguage = (lng)=>{
     if(i18n.changeLanguage){
-      i18n.changeLanguage(lng).then(() => {
+      i18n.changeLanguage(lng)
+      .then(()=>{
         setSelectedLanguage(lng)
       })
     }
     else{
-      console.error('changeLanguage is not a function on i18n:',i18n)
+      console.log('ошибка с измением языка',i18n)
     }
   }
   return (

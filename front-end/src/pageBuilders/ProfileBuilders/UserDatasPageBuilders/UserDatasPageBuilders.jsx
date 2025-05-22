@@ -43,7 +43,7 @@ const UserDatasPageBuilders = () => {
   const saveUpdatedDatas = async ()=>{
     try {
       if(formData.name.trim().length < 2){
-        toast.error('Имя должно содержать минимум 2 символа')
+        toast(t('toast.invalidName'))
         return
       }
       setIsSaving(true)
@@ -53,7 +53,7 @@ const UserDatasPageBuilders = () => {
           Authorization: `Bearer ${tokenUser.token}`
         }
       })
-      toast.success('Данные успешно обновлены!')
+      toast(t('toast.datasSucces'))
     }
     catch(error){
       toast.error(error.response?.data?.message || 'ошибка сохранения данных')

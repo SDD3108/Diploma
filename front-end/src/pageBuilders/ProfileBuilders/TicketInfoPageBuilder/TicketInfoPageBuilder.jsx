@@ -37,19 +37,7 @@ const TicketInfoPageBuilder = () => {
         getEvent()
     },[])
     const hallNumber = session?.hall?.replace(/\D/g, '')
-    const test = [{
-        ticketArray:[
-            {place:1, ticketType: 'Adult'},
-            {place:2, ticketType: 'VIP'},
-            {place:3, ticketType: 'Child'},
-            {place:4, ticketType: 'Child'},
-            {place:5, ticketType: 'Adult'},
-            {place:6, ticketType: 'VIP'},
-            {place:7, ticketType: 'VIP'},
-            {place:8, ticketType: 'Adult'},
-        ]
-    }]
-    const getSortedPlaces = () => {
+    const getSortPlaces = ()=>{
         if(tokenUser?.purchasedTickets?.length == 0){
             return []
         }
@@ -78,18 +66,17 @@ const TicketInfoPageBuilder = () => {
         if(!tokenUser?.purchasedTickets?.length || !sessionInfo){
             return []
         }
-        tokenUser?.purchasedTickets?.filter(ticket => ticket.eventId == eventId && ticket.sessionId == sessionId).forEach((element) => {
-            element.ticketArray.forEach((item)=>{
-                if(ticketTypes[item.ticketType]){
-                    ticketTypes[item.ticketType].count++
+        tokenUser?.purchasedTickets?.filter(ticket => ticket.eventId == eventId && ticket.sessionId == sessionId).forEach((element)=>{
+            element.ticketArray.forEach((element2)=>{
+                if(ticketTypes[element2.ticketType]){
+                    ticketTypes[element2.ticketType].count++
                 }
             })
         })
         return Object.values(ticketTypes).filter((type) => type.count > 0)
     }
     const ticketCounts = countTickets()
-    const places = getSortedPlaces()
-    // console.log(places);
+    const places = getSortPlaces()
     const placesText = places?.join(', ')
   return (
     <div className='flex flex-col gap-4'>

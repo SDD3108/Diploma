@@ -28,7 +28,7 @@
     }
   }
   
-.animate-wave {
+.animate-wave{
     animation: wave 20s linear infinite;
 }
 .animate-scrollRight{
