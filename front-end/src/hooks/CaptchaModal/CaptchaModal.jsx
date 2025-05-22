@@ -8,29 +8,15 @@ import { getData } from '@/src/utils/DataTransfer/DataTransfer'
 export const CaptchaModal = () => {
     const isVerifiedModal = getData()
     const [open, setOpen] = useState(false)
-    // const [isVerified, setIsVerified] = useState(false)
-    // console.log('isVerifiedModal',isVerifiedModal);
-    
     useEffect(()=>{
-        const passed = localStorage.getItem('captchaPassed') == 'true'
-        // console.log(!passed);
-        setOpen(!passed)
-    }, [])
+      const passed = localStorage.getItem('captchaPassed') == 'true'
+      setOpen(!passed)
+    },[])
     const handleSuccess = ()=>{
-        localStorage.setItem("captchaPassed", "true");
-        setOpen(false);
+      localStorage.setItem("captchaPassed", "true")
+      setOpen(false)
     }
   return (
-    // <div>
-    //     {/* <Dialog open={isVerifiedModal} onOpenChange={setOpen}> */}
-    //     <Dialog open={open} onOpenChange={setOpen}>
-    //         <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-    //             <DialogContent className="bg-background p-6 max-w-md w-full" hideClose>
-    //                 <Captcha success={checkSuccess} />
-    //             </DialogContent>
-    //         </div>
-    //     </Dialog>
-    // </div>
     <Dialog open={open} onOpenChange={setOpen} className="p-0 rounded-none ">
       <DialogPortal>
         <DialogOverlay className="fixed inset-0 bg-black/50 z-40"/>

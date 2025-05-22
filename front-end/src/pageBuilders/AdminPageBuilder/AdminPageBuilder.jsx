@@ -31,7 +31,6 @@ const AdminPageBuilder = () => {
         getUsersData()
     },[])
 
-    // console.log(users);
     const tags = Array.from({ length: 50 }).map(
         (_, i, a) => `v1.2.0-beta.${a.length - i}`
       )
@@ -42,7 +41,7 @@ const AdminPageBuilder = () => {
             toast(t('toast.notAdmin'))
             toast(t('toast.notForYou'))
             setTimeout(() => {
-                // router.push('/')    
+                router.push('/login')    
             }, 2000)
         }
     },[tokenUser])

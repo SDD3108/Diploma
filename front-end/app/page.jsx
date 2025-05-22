@@ -12,6 +12,9 @@ import MainImage from '@/images/mainPage/main.png'
 import SearchPage from '@/app/(pages)/SearchPage/page'
 import '@/i18n'
 import { useTranslation } from 'react-i18next'
+import { Ticket } from 'lucide-react';
+import { GetEvents } from "@/src/utils/GetEvents/GetEvents";
+
 
 export default function Home() {
   const { t } = useTranslation('common')
@@ -42,9 +45,14 @@ export default function Home() {
       image:'https://static.wikia.nocookie.net/netflix/images/5/54/Netflix_logo.png/revision/latest?cb=20190623201834&path-prefix=ru',
     },
   ])
+  // const getFirstSectionImages = async()=>{
+  //   const events = await GetEvents()
+  //   const images = events.map(event => event.image)
+  //   console.log();
+  //   // setArray()
+  // }
   // cot testUrl = 'https://static.wikia.nocookie.net/netflix/images/5/54/Netflix_logo.png/revision/latest?cb=20190623201834&path-prefix=ru'
-  return (
-    
+  return (  
     <div className="flex flex-col gap-20 my-20">
       <section className="px-5">
         <div className="w-full flex flex-col gap-[1.5rem]">
@@ -80,25 +88,40 @@ export default function Home() {
       <section className="">
         <SearchPage/>
       </section>
-      <section className="px-5 ">
-        <Card className="w-full h-[24rem] rounded-xl relative z-0"> 
-          <CardContent className="w-full h-full flex flex-col gap-5 bg-cover bg-center bg-no-repeat">
-            <div className="sticky z-2 w-full h-full flex flex-col justify-between">
-              <div className="flex flex-col gap-5 w-1/2 sm:w-1/2 max-sm:w-full">
-                <h1 className="text-3xl lg:text-2xl sm:text-lg max-sm:text-lg text-white font-bold whitespace-normal">{t('landing.hero.title')}</h1>
-                <p className="text-white text-lg">{t('landing.hero.description')}</p>
-              </div>
-              <div className="flex md:flex-row max-sm:flex-col gap-5 mt-5 w-1/4 mt-5 sm:w-1/4 max-sm:w-full">
-                <MyButton onClick={()=>router.push('/events')} className="bg-[#E50914] w-full text-white hover:bg-[#E50914] cursor-pointer">{t('landing.hero.buyTicket')}</MyButton>
-                <MyButton onClick={()=>router.push('/events')} className="bg-[#E50914] w-full text-white hover:bg-[#E50914] cursor-pointer">{t('landing.hero.viewEvents')}</MyButton>
-              </div>
+      <section className="px-5 relative">
+        <div className="absolute inset-0 bg-black/30 z-10 rounded-xl mx-5" ></div>
+        <Card className="w-full min-h-[24rem] rounded-xl relative overflow-hidden bg-gradient-to-br from-[#2a0b0e] to-[#0a0a2a]">
+          <CardContent className="w-full h-full flex flex-col justify-between relative z-20 max-sm:px-3 sm:px-6">
+            <div className="flex flex-col gap-6 sticky z-50">
+              <h1 className="text-4xl md:text-5xl font-bold text-white max-w-2xl leading-tight drop-shadow-xl">{t('landing.hero.title')}</h1>
+              <p className="text-lg md:text-xl text-white/90 max-w-xl">{t('landing.hero.description')}</p>
             </div>
-            <Image className="rounded-xl w-full z-1 h-full absolute top-0 left-0" src={MainImage} alt="not found" width={100} height={100}/>
-
+            <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto mt-4">
+              <MyButton onClick={() => router.push('/events')} className="bg-[#E50914] hover:bg-[#ff1a27] text-white py-6 px-4 text-lg rounded-lg transition-all transform hover:scale-105 shadow-xl flex items-center gap-2">
+                <Ticket className="w-5 h-5" />
+                {t('landing.hero.buyTicket')}
+              </MyButton>
+              <MyButton onClick={() => router.push('/events')} className="bg-transparent border-2 border-white hover:bg-white/10 text-white py-6 px-4 text-lg rounded-lg transition-all transform hover:scale-105 shadow-xl flex items-center gap-2">
+                <Ticket className="w-5 h-5" />
+                {t('landing.hero.viewEvents')}
+              </MyButton>
+            </div>
+            <div className="absolute inset-0 z-10 pointer-events-none">
+              <Ticket className="absolute md:block max-sm:hidden z-1 right-10 bottom-10 w-48 h-48 text-[#E50914]/10 rotate-12 text-neutral-400" strokeWidth={1}/>
+              <div className="absolute inset-0 opacity-5 "style={{
+                backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M2 8a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v2.05a2.5 2.5 0 0 0 0 4.9V16a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-2.05a2.5 2.5 0 0 0 0-4.9V8Z' stroke='%23E50914' stroke-width='0.5'/%3E%3C/svg%3E")`,
+                backgroundSize: '120px'
+              }}/>
+            </div>
           </CardContent>
-        </Card>
+
+          <div className="absolute inset-0 z-0">
+            <div className="absolute -right-20 -top-20 w-96 h-96 bg-[#E50914] rounded-full blur-[100px] opacity-20" />
+          
+          <div className="absolute -left-20 -bottom-20 w-96 h-96 bg-[#0a0a2a] rounded-full blur-[100px] opacity-30" />
+      </div>
+      </Card>
       </section>
-      
       <section className="">
         <EventsPageBuilder/>
       </section>

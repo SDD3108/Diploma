@@ -16,9 +16,40 @@
     }
 }
 
+@keyframes wave{
+    0%{
+        transform:translateX(0);
+    }
+    50%{
+        transform: translateX(-25%);
+    }
+    100%{
+        transform: translateX(0);
+    }
+  }
+  
+.animate-wave {
+    animation: wave 20s linear infinite;
+}
 .animate-scrollRight{
-  animation: scrollRight 30s linear infinite;
+    animation: scrollRight 30s linear infinite;
 }
 .animate-scrollLeft{
-  animation: scrollLeft 30s linear infinite;
+    animation: scrollLeft 30s linear infinite;
 }
+
+.transition-all {
+    transition-property: all;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 200ms;
+  }
+  
+  /* Градиентные тени */
+  .shadow-xl {
+    box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.25), 0 8px 10px -6px rgb(0 0 0 / 0.25);
+  }
+  
+  /* Кастомный радиальный градиент */
+  .bg-gradient-radial {
+    background-image: radial-gradient(circle at 50% 50%, var(--tw-gradient-stops));
+  }

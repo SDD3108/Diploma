@@ -29,7 +29,6 @@ const EventItemPageBuilder = ({object,loading,error}) => {
           <Skeleton className='w-1/3 h-[1rem] rounded-full mt-1.5'/>
           ) : (
           <h3 className='mt-1.5 font-medium text-sm'>{t(`event.genre.${object?.genre}`)}</h3>
-          // мне нужно сделать логику перевода если жанр там детский,война итд
         )}
         
       </div>

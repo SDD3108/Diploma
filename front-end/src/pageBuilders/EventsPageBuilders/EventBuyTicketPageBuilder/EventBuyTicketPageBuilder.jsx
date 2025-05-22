@@ -40,7 +40,6 @@ const EventBuyTicketPageBuilder = () => {
       setLoading(false)
       return 
     }
-    // проверяем, действительно ли резервы всё ещё актуальны
     axios.get('/api/cinemas/check-reservation',{params: saved})
     .then((res)=>{
       if (!res.data.valid) throw new Error('Устарело')
@@ -55,11 +54,9 @@ const EventBuyTicketPageBuilder = () => {
   useEffect(()=>{
     const loadReservation = async () => {
       try{
-        
         if(!savedData){
           return new Error('Бронирование не найдено')
         }
-        
         const response = await axios.get(`/api/cinemas/${savedData.cinemaId}/check-reservation`, {
           params: {
             hall: savedData.hall,
@@ -166,7 +163,6 @@ const EventBuyTicketPageBuilder = () => {
         userId: tokenUser?._id,
       })
       localStorage.removeItem('currentReservation')
-      // после успешной оплаты добавляем покупку пользователю в purchasedTickets
       router.push(`/profile`)
     }
     catch(error){

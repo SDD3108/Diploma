@@ -270,21 +270,18 @@ useEffect(() => {
   }
   
   const handleSeatUpdate = (updatedCinema)=>{
-    setCinema(prev => ({ 
-      ...prev,
-      halls: updatedCinema.halls.map(hall => ({
-        ...hall,
-        reservedSeats: [...hall.reservedSeats],
-        boughtSeats: [...hall.boughtSeats],
-      }))
-    }))
+    setCinema(prev => ({...prev,halls: updatedCinema.halls.map(hall => ({
+      ...hall,
+      reservedSeats: [...hall.reservedSeats],
+      boughtSeats: [...hall.boughtSeats],
+    }))}))
     drawSeats()
   }
-  socket.on('seatReserved', handleSeatUpdate)
-  socket.on('seatPurchased', handleSeatUpdate)
+  socket.on('seatReserved',handleSeatUpdate)
+  socket.on('seatPurchased',handleSeatUpdate)
   return () => {
-    socket.off('seatReserved', handleSeatUpdate)
-    socket.off('seatPurchased', handleSeatUpdate)
+    socket.off('seatReserved',handleSeatUpdate)
+    socket.off('seatPurchased',handleSeatUpdate)
   }
 },[socket, drawSeats])
 useEffect(()=>{

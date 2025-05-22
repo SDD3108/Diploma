@@ -14,24 +14,23 @@ const FooterCompanent = () => {
   const { t } = useTranslation('common')
   const [email, setEmail] = useState('')
   const mailingClick = async ()=>{
-    if (email.trim().length < 8) {
+    if(email.trim().length < 8){
       toast(t('toast.invalidEmail'))
       return
     }
-    try {
+    try{
       const backendApi = process.env.NEXT_PUBLIC_SOCKET_URL
-      const response = await axios.post(`${backendApi}/send-email`, {
+      const response = await axios.post(`${backendApi}/send-email`,{
         from:'mrbimson1@gmail.com',
         to: email,
         subject: 'Добро пожаловать!',
         text: 'Вы успешно авторизованы на платформе.',
         html: `<p>Здравствуйте!</p><p>Вы успешно авторизованы на платформе.</p>`
-      });
-      toast(t('toast.emailSent'));
+      })
+      toast(t('toast.emailSent'))
     }
     catch(err){
-      // console.error(err);
-      toast(t('toast.sendEmailError'));
+      toast(t('toast.sendEmailError'))
     }
   }
   return (
