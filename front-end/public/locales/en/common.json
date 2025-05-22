@@ -352,6 +352,24 @@
   "auth.changePasswordButton": "Change Password",
   "auth.passwordsNotMatch": "Passwords do not match",
   "auth.passwordChanged": "Password changed successfully!",
-  "auth.changePasswordError": "Error changing password"
+  "auth.changePasswordError": "Error changing password",
+
+  "toast.invalidEmail": "Please enter a valid email (minimum 8 characters)",
+  "toast.emailSent": "Email sent!",
+  "toast.sendEmailError": "Error sending email",
+  "toast.okak": "okak",
+  "toast.notAdmin": "You are not an admin",
+  "toast.notForYou": "This is not for you",
+  "toast.connectionError": "Connection error. Please refresh the page.",
+  "toast.placeTaken": "The seat is already taken!",
+  "toast.oopsPlaceTaken": "Oops, the seat has already been taken!",
+  "toast.bookingFailed": "Failed to book seats",
+  "toast.deleteMessageSelect": "To delete a message, select it",
+  "toast.selectImage": "Please select an image",
+  "toast.maxFileSize": "Maximum file size is 2MB",
+  "toast.avatarUpdated": "Avatar updated successfully!",
+  "toast.avatarUploadError": "Error uploading avatar",
+  "toast.avatarDeleted": "Avatar deleted",
+  "toast.avatarDeleteError": "Error deleting avatar"
   
 }

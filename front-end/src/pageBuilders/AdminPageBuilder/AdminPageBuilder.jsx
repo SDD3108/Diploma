@@ -8,12 +8,15 @@ import { ScrollArea } from "@/src/ui/scroll-area"
 import { Separator } from '@/src/ui/separator'
 import { GetEvents } from '@/src/utils/GetEvents/GetEvents'
 import { GetUsers } from '@/src/utils/GetUsers/GetUsers'
+import '@/i18n'
+import { useTranslation } from 'react-i18next'
 
 const AdminPageBuilder = () => {
     const router = useRouter()
     const { tokenUser } = GetToken()
     const [events,setEvents] = useState([])
     const [users,setUsers] = useState([])
+    const { t } = useTranslation('common')
 
     useEffect(()=>{
         const getEventsData = async()=>{
@@ -35,9 +38,9 @@ const AdminPageBuilder = () => {
 
     useEffect(()=>{
         if(!tokenUser || !tokenUser.isAdmin){
-            toast('окак')
-            toast('Ты не Админ')
-            toast('это не для тебя')
+            toast(t('toast.okak'))
+            toast(t('toast.notAdmin'))
+            toast(t('toast.notForYou'))
             setTimeout(() => {
                 // router.push('/')    
             }, 2000)

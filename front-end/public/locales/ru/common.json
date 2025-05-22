@@ -354,5 +354,23 @@
   "auth.changePasswordButton": "Сменить пароль",
   "auth.passwordsNotMatch": "Пароли не совпадают",
   "auth.passwordChanged": "Пароль успешно изменён!",
-  "auth.changePasswordError": "Ошибка при смене пароля"
+  "auth.changePasswordError": "Ошибка при смене пароля",
+  
+  "toast.invalidEmail": "Введите корректный email (минимум 8 символов)",
+  "toast.emailSent": "Письмо отправлено!",
+  "toast.sendEmailError": "Ошибка при отправке письма",
+  "toast.okak": "окак",
+  "toast.notAdmin": "Ты не Админ",
+  "toast.notForYou": "это не для тебя",
+  "toast.connectionError": "Ошибка соединения. Пожалуйста, обновите страницу.",
+  "toast.placeTaken": "Место уже занято!",
+  "toast.oopsPlaceTaken": "Упс, место уже заняли!",
+  "toast.bookingFailed": "Не удалось забронировать места",
+  "toast.deleteMessageSelect": "Чтоб удалить сообщение выбери его",
+  "toast.selectImage": "Пожалуйста, выберите изображение",
+  "toast.maxFileSize": "Максимальный размер файла - 2MB",
+  "toast.avatarUpdated": "Аватар успешно обновлён!",
+  "toast.avatarUploadError": "Ошибка при загрузке аватарки",
+  "toast.avatarDeleted": "Аватар удалён",
+  "toast.avatarDeleteError": "Ошибка при удалении аватара"
 }

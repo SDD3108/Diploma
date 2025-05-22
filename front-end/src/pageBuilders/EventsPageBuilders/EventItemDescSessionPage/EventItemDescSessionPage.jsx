@@ -105,7 +105,7 @@ const EventItemDescSessionPage = () => {
     })
 
     newSocket.on('connect_error',(err)=>{
-      toast('Connection error. Please refresh the page.')
+      toast(t('toast.connectionError'))
     })
     setSocket(newSocket)
     return () => newSocket.disconnect()
@@ -320,7 +320,7 @@ const handleCanvasClick = (e)=>{
   const isBought = currentHall.boughtSeats.some((s) => s.row == clickedRow && s.seat == clickedSeat)
   const isVip = currentHall?.VIPSeats.some((vip) => vip.row == clickedRow && vip.seat == clickedSeat)
   if(isReserved || isBought){
-    toast('Место уже занято!')
+    toast(t('toast.placeTaken'))
     return
   }
   setTempSeat({row: clickedRow,seat: clickedSeat})
@@ -358,7 +358,7 @@ const addTicket = ()=>{
           const halls = prev.halls.map((h) => h.name == session.hall ? {...h,reservedSeats: h.reservedSeats.filter((s) => !(s.row == tempSeat.row && s.seat == tempSeat.seat)) }: h)
           return {...prev, halls}
         })
-        toast('Упс, место уже заняли!')
+        toast(t('toast.oopsPlaceTaken'))
       }
     }
   )}
@@ -396,8 +396,8 @@ const handlePayment = async () => {
     router.push(`/events/${params.id}/${params.nestedId}/buy`)
   }
   catch(error){
-    console.error('Ошибка при бронировании:', error)
-    toast('Не удалось забронировать места')
+    console.error('Ошибка при бронировании', error)
+    toast(t("toast.bookingFailed"))
   }
 }
 const totalPrice = selectedSeats.reduce((acc, seat) => acc + seat.price, 0)

@@ -15,7 +15,7 @@ const FooterCompanent = () => {
   const [email, setEmail] = useState('')
   const mailingClick = async ()=>{
     if (email.trim().length < 8) {
-      toast('Введите корректный email (минимум 8 символов)')
+      toast(t('toast.invalidEmail'))
       return
     }
     try {
@@ -27,11 +27,11 @@ const FooterCompanent = () => {
         text: 'Вы успешно авторизованы на платформе.',
         html: `<p>Здравствуйте!</p><p>Вы успешно авторизованы на платформе.</p>`
       });
-      toast('Письмо отправлено!');
+      toast(t('toast.emailSent'));
     }
     catch(err){
       // console.error(err);
-      toast('Ошибка при отправке письма');
+      toast(t('toast.sendEmailError'));
     }
   }
   return (

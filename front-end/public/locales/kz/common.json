@@ -352,7 +352,24 @@
   "auth.changePasswordButton": "Құпия сөзді өзгерту",
   "auth.passwordsNotMatch": "Құпия сөздер сәйкес емес",
   "auth.passwordChanged": "Құпия сөз сәтті өзгерді!",
-  "auth.changePasswordError": "Құпия сөзді өзгерту кезінде қате"
+  "auth.changePasswordError": "Құпия сөзді өзгерту кезінде қате",
 
+  "toast.invalidEmail": "Дұрыс email енгізіңіз (кемінде 8 таңба)",
+  "toast.emailSent": "Хат жіберілді!",
+  "toast.sendEmailError": "Хатты жіберу қатесі",
+  "toast.okak": "окак",
+  "toast.notAdmin": "Сіз әкімші емессіз",
+  "toast.notForYou": "Бұл сізге арналмаған",
+  "toast.connectionError": "Қосылу қатесі. Бетті жаңартыңыз.",
+  "toast.placeTaken": "Орын бұрыннан алынған!",
+  "toast.oopsPlaceTaken": "Ой, орын бұрын-ақ алынған!",
+  "toast.bookingFailed": "Орындарды брондау мүмкін болмады",
+  "toast.deleteMessageSelect": "Хабарламаны өшіру үшін оны таңдаңыз",
+  "toast.selectImage": "Суретті таңдаңыз, өтінеміз",
+  "toast.maxFileSize": "Файлдың максималды көлемі - 2MB",
+  "toast.avatarUpdated": "Аватар сәтті жаңартылды!",
+  "toast.avatarUploadError": "Аватарды жүктеу қатесі",
+  "toast.avatarDeleted": "Аватар жойылды",
+  "toast.avatarDeleteError": "Аватарды жою қатесі"
 
 }

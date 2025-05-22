@@ -1,13 +1,9 @@
 import { create } from 'zustand';
 import axios from 'axios';
-// const getUsers = async()=>{
-//   const response = await axios.get('/api/users')
-// }
-// getUsers()
 const loadUserFromLocalStorage = () => {
   try{
-    const userData = localStorage.getItem('user-token')
-    return userData ? userData : null
+    const userData = localStorage.getItem('user-token') || null
+    return userData
   }
   catch(error){
     return null
@@ -17,9 +13,27 @@ const useAuthStore = create((set) => ({
   user: loadUserFromLocalStorage(),
   isLoading: false,
   error: null,
-  // SD310807Sd$
-  // @gmail.com
-  login: async(email, password)=>{
+  messages:[],
+  loadMessages: async(userId)=>{
+    const response = await axios.get(`/api/users/${userId}`)
+    set({ messages: response.data.messages || [] })
+
+  },
+  deleteMessages: async(userId,messageIds)=>{
+    if(messageIds.length == 1){
+      await axios.delete(`/api/users/${userId}/messages/${messageIds[0]}`)
+    }
+    else{
+      await axios.delete(`/api/users/${userId}/messages`, {
+        data: {messageIds}
+      })
+    }
+    set(state => ({messages: state.messages.filter(msg => !messageIds.includes(msg._id))}))
+    
+    return true
+    
+  },
+  login: async(email,password)=>{
     set({ isLoading: true, error: null })
     try{
       const response = await axios.get('/api/users')
@@ -46,6 +60,7 @@ const useAuthStore = create((set) => ({
           token: user.token,
           name: user.name,
           password:user.password,
+          messages: user.messages || []
         }, 
         isLoading: false 
       })

@@ -128,20 +128,60 @@ const deleteUser = async (req,res)=>{
 }
 const deleteMessage = async (req,res)=>{
   try{
-    const messageId = req.params.id
-    const userId = req.body.userId
+    const { userId,messageId } = req.params
+    // const userId = req.body.userId
     const user = await TicketFlow.findById(userId)
     if(!user){
-      return res.status(404).json({message:'пользователь не найден'})
+      return res.status(404).json({success: false,message:'пользователь не найден'})
     }
-    const updatedMessages = user.messages.filter(message => message._id.toString() !== messageId)
-    user.messages = updatedMessages
+    const initialLength = user.messages.length
+    user.messages = user.messages.filter(
+      msg => msg._id.toString() !== messageId
+    )
+    if(initialLength === user.messages.length){
+      return res.status(404).json({success: false,message:'Сообщение не найдено'})
+    }
+    // const updatedMessages = user.messages.filter(message => message._id.toString() !== messageId)
+    // user.messages = updatedMessages
 
     await user.save()
-    res.status(200).json({message:'сообщение успешно удалено'})
+    res.status(200).json({success: true,message:'сообщение успешно удалено',updatedMessages: user.messages})
   }
   catch(error){
     res.status(500).json({message:'ошибка при удалении сообщения'})
+  }
+}
+const deleteMultipleMessages = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const { messageIds } = req.body;
+
+    const user = await TicketFlow.findById(userId);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'Пользователь не найден'
+      });
+    }
+
+    const filteredMessages = user.messages.filter(
+      msg => !messageIds.includes(msg._id.toString())
+    );
+
+    user.messages = filteredMessages;
+    await user.save();
+
+    res.status(200).json({
+      success: true,
+      message: 'Сообщения удалены',
+      updatedMessages: filteredMessages
+    });
+  } catch (error) {
+    console.error('Ошибка массового удаления:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Ошибка сервера'
+    })
   }
 }
 const updateUserAvatar = async (req,res)=>{
@@ -264,4 +304,5 @@ module.exports = {
   updateTempPassword,
   changePassword,
   addMessage,
+  deleteMultipleMessages,
 }

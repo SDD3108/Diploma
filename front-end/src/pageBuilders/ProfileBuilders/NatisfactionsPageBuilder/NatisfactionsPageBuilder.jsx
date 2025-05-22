@@ -12,72 +12,74 @@ import '@/i18n'
 import { useTranslation } from 'react-i18next'
 import { Skeleton } from '@/src/ui/skeleton'
 import { toast } from 'sonner'
+import useAuthStore from '@/src/store/AuthStore/authStore'
+
 
 const NatisfactionsPageBuilder = () => {
   const { t } = useTranslation('common')
   const { tokenUser } = GetToken()
+  const { messages, deleteMessages } = useAuthStore()
   const [checkedAll, setCheckedAll] = useState(false)
   const [messageOpen, setMessageOpen] = useState(false)
   const [checkedItems, setCheckedItems] = useState([])
-  const [messages, setMessages] = useState([
-    {
-      _id: 1,
-      isRead: true,
-      title: 'Уведомление',
-      briefDescription: 'Ваше бронирование успешно подтверждено',
-      description: 'Ваше бронирование успешно подтверждено. Вы можете просмотреть детали бронирования в вашем профиле.',
-      date: '2025-10-01T10:00:00Z',
-    },
-    {
-      _id: 2,
-      isRead: true,
-      title: 'Уведомление',
-      briefDescription: 'Ваше бронирование успешно подтверждено',
-      description: 'Ваше бронирование успешно подтверждено. Вы можете просмотреть детали бронирования в вашем профиле.',
-      date: '2025-10-01T10:00:00Z',
-    },
-    {
-      _id: 3,
-      isRead: false,
-      title: 'Уведомление',
-      briefDescription: 'Ваше бронирование успешно подтверждено',
-      description: 'Ваше бронирование успешно подтверждено. Вы можете просмотреть детали бронирования в вашем профиле.',
-      date: '2025-10-01T10:00:00Z',
-    }
-  ])
+  // const [messages, setMessages] = useState([
+  //   {
+  //     _id: 1,
+  //     isRead: true,
+  //     title: 'Уведомление',
+  //     briefDescription: 'Ваше бронирование успешно подтверждено',
+  //     description: 'Ваше бронирование успешно подтверждено. Вы можете просмотреть детали бронирования в вашем профиле.',
+  //     date: '2025-10-01T10:00:00Z',
+  //   },
+  //   {
+  //     _id: 2,
+  //     isRead: true,
+  //     title: 'Уведомление',
+  //     briefDescription: 'Ваше бронирование успешно подтверждено',
+  //     description: 'Ваше бронирование успешно подтверждено. Вы можете просмотреть детали бронирования в вашем профиле.',
+  //     date: '2025-10-01T10:00:00Z',
+  //   },
+  //   {
+  //     _id: 3,
+  //     isRead: false,
+  //     title: 'Уведомление',
+  //     briefDescription: 'Ваше бронирование успешно подтверждено',
+  //     description: 'Ваше бронирование успешно подтверждено. Вы можете просмотреть детали бронирования в вашем профиле.',
+  //     date: '2025-10-01T10:00:00Z',
+  //   }
+  // ])
   
   useEffect(()=>{
     const closeMessagePage = secondGetData()
     setMessageOpen(closeMessagePage)
-    const msgs = tokenUser?.messages || []
-    setMessages(msgs)
+    // const msgs = tokenUser?.messages || []
+    // setMessages(msgs)
 
     // setCheckedItems(msgs.map(() => false))
-    setCheckedItems(Array(msgs.length).fill(false))
+    setCheckedItems(Array(messages.length).fill(false))
     setCheckedAll(false)
   },[tokenUser?.messages])
   console.log(messages);
   
-  const deleteMessages = async ()=>{
-    const selectedIds = messages.filter((_, index) => checkedItems[index]).map(message => message._id)
-
+  const deleteSelectedMessages = async()=>{
+    const selectedIds = messages.filter((_, index) => checkedItems[index]).map((message) => message._id)
     if(selectedIds.length == 0){
+      toast(t('toast.deleteMessageSelect'))
       return
     }
-
     try{
-      await Promise.all(selectedIds.map(id => 
-        axios.delete(`/api/users/messages/${id}`)
-      ))
-      const newMessages = messages.filter((_, index) => !checkedItems[index])
-      setMessages(newMessages)
-      setCheckedItems(newMessages.map(() => false))
+      const resp = await deleteMessages(tokenUser._id,selectedIds)
+      if(resp){
+        toast(selectedIds.length > 1 ? t('notifications.deletedPlural') : t('notifications.deletedSingular'))
+      }
+      const newMessages = messages.filter((msg) => !selectedIds.includes(msg._id))
+      setCheckedItems(Array(newMessages.length).fill(false))
       setCheckedAll(false)
     }
-    catch(error){
-      toast('ошибка при удалении')
+    catch(error){ 
+      toast.error(error.response?.data?.message || 'Ошибка удаления')
+      console.error('Ошибка', error.response?.data || error.message)
     }
-
   }
   const getDaysAgo = (dateString)=>{
     const [dayStr, monthStr, yearStr] = dateString.split(' ')
@@ -115,11 +117,6 @@ const NatisfactionsPageBuilder = () => {
     next[index] = !next[index]
     setCheckedItems(next)
     setCheckedAll(next.length == messages.length && next.every(Boolean))
-    // setCheckedAll(next.every(Boolean))
-    // const newCheckedItems = [...checkedItems]
-    // newCheckedItems[index] = !newCheckedItems[index]
-    // setCheckedItems(newCheckedItems)
-    // setCheckedAll(newCheckedItems.every(Boolean))
   }
   const openMessagePage = (message)=>{
     setMessageOpen(true)
@@ -148,33 +145,33 @@ const NatisfactionsPageBuilder = () => {
                   <AlertDialogTrigger asChild>
                     <h3 className='font-medium hover:underline cursor-pointer'>{t('notifications.delete')}</h3>
                   </AlertDialogTrigger>
-                  <AlertDialogContent>
+                  <AlertDialogContent className='bg-white'>
                     <AlertDialogHeader>
                       <AlertDialogTitle>{t('notifications.confirm.title')}</AlertDialogTitle>
                       <AlertDialogDescription>{t('notifications.confirm.description')}</AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
-                      <AlertDialogCancel>{t('notifications.confirm.cancel')}</AlertDialogCancel>
-                      <AlertDialogAction onClick={deleteMessages}className="bg-red-600 hover:bg-red-700">{t('notifications.confirm.action')}</AlertDialogAction>
+                      <AlertDialogCancel className='cursor-pointer'>{t('notifications.confirm.cancel')}</AlertDialogCancel>
+                      <AlertDialogAction onClick={deleteSelectedMessages} className="bg-red-600 hover:bg-red-700 cursor-pointer">{t('notifications.confirm.action')}</AlertDialogAction>
                     </AlertDialogFooter>
                   </AlertDialogContent>
                 </AlertDialog>
               </div>
             </div>
             <div className='flex flex-col'>
-              {tokenUser?.messages?.length == 0 ? (
+              {messages.length == 0 ? (
                 <div className='flex flex-col gap-2'>
                   <Skeleton className='w-full h-[4rem] bg-neutral-300 rounded-t-none'/>
                   <Skeleton className='w-full h-[4rem] bg-neutral-300 '/>
                   <Skeleton className='w-full h-[4rem] bg-neutral-300 '/>
                 </div>
               ) : (
-                tokenUser?.messages?.map((message,index)=>(
+                messages.map((message,index)=>(
                   <div key={index}>
                     <div className='flex sm:flex-row max-sm:flex-col justify-between items-center sm:items-center max-sm:items-end pl-2 pr-[4rem] sm:pr-[4rem] max-sm:pr-4 py-1 min-h-[4rem]'>
                       <div className='flex items-center gap-[1.5rem] w-full'>
                         <div className='flex items-center gap-2'>
-                          {message.isRead ? (
+                          {!message.isRead ? (
                             <div className='w-2 h-2 rounded-full bg-[#0969da]'></div>
                           ) : (
                             <div className='w-2 h-2'></div>
@@ -190,7 +187,7 @@ const NatisfactionsPageBuilder = () => {
                         <h3>{formatDaysAgo(getDaysAgo(message.date))}</h3>
                       </div>
                     </div>
-                    {index !== tokenUser?.messages?.length - 1 && (
+                    {index !== messages.length - 1 && (
                       <Separator key={index} className='w-full h-[1px] bg-[#e4e7ec] my-2' />
                     )}
                   </div>

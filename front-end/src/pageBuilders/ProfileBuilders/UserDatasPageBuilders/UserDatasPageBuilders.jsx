@@ -71,13 +71,11 @@ const UserDatasPageBuilders = () => {
 
     try {
       if(!file.type.startsWith('image/')){
-        toast('Пожалуйста, выберите изображение')
+        toast(t('toast.selectImage'))
         return;
       }
-
-      // Проверка размера файла (пример: до 2MB)
-      if (file.size > 2 * 1024 * 1024) {
-        toast('Максимальный размер файла - 2MB')
+      if(file.size > 2 * 1024 * 1024){
+        toast(t("toast.maxFileSize"))
         return
       }
 
@@ -86,15 +84,15 @@ const UserDatasPageBuilders = () => {
 
       const response = await axios.post(`/api/users/${tokenUser._id}/avatar`,formData);
 
-      // Обновляем данные пользователя
       setFormData(prev => ({
         ...prev,
         avatar: response.data.avatarUrl
-      }));
+      }))
       
-      toast('Аватар успешно обновлён!');
-    } catch (error) {
-      toast('Ошибка при загрузке аватарки');
+      toast(t('toast.avatarUpdated'))
+    }
+    catch(error){
+      toast(t('toast.avatarUploadError'))
       // console.error('Upload error:', error);
     }
   }
@@ -112,10 +110,10 @@ const UserDatasPageBuilders = () => {
         avatar: ''
       }));
       
-      toast('Аватар удалён');
+      toast(t('toast.avatarDeleted'))
     }
     catch(error){
-      toast('Ошибка при удалении аватара')
+      toast(t('toast.avatarDeleteError'))
       // console.error('Delete error:', error);
     }
   }

@@ -20,7 +20,7 @@ const cinemasSchema = new Schema({
     cinemaRate: { type: Number,required: true,default:5,min: 0,max: 5 }, 
     reviewsCount: { type: Number,default: 0 },
     reviews: [{
-        userId: { type: [Object],required: true },
+        userId: { type: String,required: true },
         text: { type: String,required: true },
         grade: { type: Number,required: true,min: 0,max: 5 },
     }],

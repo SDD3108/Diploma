@@ -3,7 +3,7 @@ import useAuthStore from "@/src/store/AuthStore/authStore"
 import { jwtDecode } from 'jwt-decode'
 import axios from 'axios'
 export const GetToken = () => {
-  const {user} = useAuthStore()
+  const {user,messages,loadMessages} = useAuthStore()
   const [tokenUser,setTokenUser] = useState({})
   const [loading,setLoading] = useState(true)
   useEffect(()=>{
@@ -14,6 +14,7 @@ export const GetToken = () => {
         const currentUser = response.data.find((u) => u._id == decoded.userId)
         setTokenUser(currentUser)
         setLoading(false)
+        loadMessages(currentUser._id)
       }
       else{
         console.error('токен отсутствует')
@@ -21,7 +22,7 @@ export const GetToken = () => {
       }
     }
     setUser(user)
-  },[user])
-  return { tokenUser,loading }
+  },[user,loadMessages])
+  return { tokenUser,loading,messages }
 }
 // export GetToken
