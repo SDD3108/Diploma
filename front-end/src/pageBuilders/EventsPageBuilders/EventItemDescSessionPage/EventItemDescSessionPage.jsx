@@ -252,6 +252,19 @@ const drawSeats = useCallback(()=>{
   }
 },[cinema,session,selectedSeats,seatsConfig])
 useEffect(() => {
+  if (!socket) return
+
+  const handlePurchaseUpdate = (updatedCinema) => {
+    setCinema(updatedCinema)
+    drawSeats()
+  }
+
+  socket.on('seatPurchased', handlePurchaseUpdate)
+  return () => {
+    socket.off('seatPurchased', handlePurchaseUpdate)
+  };
+},[socket, drawSeats])
+useEffect(() => {
   if(!socket){
     return
   }
@@ -358,6 +371,7 @@ const removeTicket = ()=>{
   setTicketType('adult')
   setIsTempSeatVip(false)
 }
+
 const handlePayment = async () => {
   try{
     const reservationData = {

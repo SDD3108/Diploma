@@ -158,10 +158,12 @@ const EventBuyTicketPageBuilder = () => {
           <p>вы успешно приобрели билет на фильм: <strong>${event?.title}.</strong></p>
         `
       })
-      socket.emit('purchaseSeats', {
+      socket.emit('confirmPurchase',{
         cinemaId: reservation.cinemaId,
         sessionId: reservation.sessionId,
-        seats: reservation.seats
+        hall: reservation.hall,
+        seats: reservation.seats.map(s => ({ row: s.row, seat: s.seat })),
+        userId: tokenUser?._id,
       })
       localStorage.removeItem('currentReservation')
       // после успешной оплаты добавляем покупку пользователю в purchasedTickets

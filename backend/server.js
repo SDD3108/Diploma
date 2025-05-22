@@ -177,10 +177,24 @@ io.on('connection',(socket)=>{
       if(!hall){
         return
       }
-      hall.reservedSeats = hall.reservedSeats.filter((s) => !(s.row == data.seat.row && s.seat == data.seat.seat))
-      hall.boughtSeats.push(data.seat)
+      const seatsToPurchase = hall.reservedSeats.filter(s => 
+        data.seats.some(seat => seat.row === s.row && seat.seat === s.seat)
+      )
+      hall.reservedSeats = hall.reservedSeats.filter(s => 
+        !data.seats.some(seat => seat.row === s.row && seat.seat === s.seat)
+      )
+      hall.boughtSeats.push(...seatsToPurchase.map(s => ({
+        row: s.row,
+        seat: s.seat,
+        userId: s.userId,
+        purchasedAt: new Date()
+      })))
+      // hall.reservedSeats = hall.reservedSeats.filter((s) => !(s.row == data.seat.row && s.seat == data.seat.seat))
+      // hall.boughtSeats.push(data.seat)
       await cinema.save()
-      io.emit('seatPurchased', cinema)
+      const room = `${data.cinemaId}_${data.sessionId}`
+      io.to(room).emit('seatPurchased',cinema)
+      // io.emit('seatPurchased', cinema)
     }
     catch(error){
       console.error('ошибка подтверждения покупки', error)
@@ -211,7 +225,7 @@ io.on('connection',(socket)=>{
 
       // Рассылаем обновление
       const room = `${data.cinemaId}_${data.sessionId}`;
-      io.to(room).emit('seatsPurchased', cinema);
+      io.to(room).emit('seatPurchased', cinema);
       res.json({ success: true });
     } catch (error) {
       console.error('Purchase error:', error);
