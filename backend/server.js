@@ -24,8 +24,6 @@ const io = new Server(server,{
   path:'/socket.io',
 })
 
-// cinemaRoutes(app,io)
-
 app.use(cors({
   origin:'http://localhost:3000',
   methods:['GET','POST','PUT','DELETE','OPTIONS'],
@@ -127,12 +125,6 @@ io.on('connection',(socket)=>{
   socket.on('joinSession',({cinemaId,sessionId})=>{
     const room = `${cinemaId}_${sessionId}`
     socket.join(room)
-    console.log(`User joined room: ${room}`)
-  })
-  socket.on('seatsReserved',(cinema)=>{
-    const room = `${cinema._id}_${sessionId}`
-    socket.broadcast.to(room).emit('updateSeats', cinema)
-    socket.to(room).emit('seatsReserved', cinema)
   })
   socket.on('reserveSeat',async(data,callback)=>{
     try{
@@ -156,7 +148,7 @@ io.on('connection',(socket)=>{
 
       // io.emit('seatReserved',cinema)
       const room = `${data.cinemaId}_${data.sessionId}`
-      io.to(room).emit('seatsReserved', cinema)
+      io.to(room).emit('seatReserved', cinema)
       callback({ status: 'ok' })
     }
     catch(error){
@@ -172,7 +164,7 @@ io.on('connection',(socket)=>{
       }
       hall.reservedSeats = hall.reservedSeats.filter((s) => !(s.row == data.seat.row && s.seat == data.seat.seat))
       await cinema.save()
-      io.emit('seatsReserved',cinema)
+      io.emit('seatReserved',cinema)
     }
     catch(error){
       console.error('Ошибка отмены резервации:',error)
