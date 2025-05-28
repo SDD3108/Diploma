@@ -9,7 +9,7 @@ export const CaptchaModal = () => {
     const isVerifiedModal = getData()
     const [open, setOpen] = useState(false)
     useEffect(()=>{
-      const passed = localStorage.getItem('captchaPassed') == 'true'
+      const passed = localStorage.getItem('captchaPassed') == 'true' || 'false'
       setOpen(!passed)
     },[])
     const handleSuccess = ()=>{

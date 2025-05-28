@@ -12,7 +12,7 @@ const ModsPageBuilder = () => {
   const { t } = useTranslation('common')
   const [isDark, setIsDark] = useState(()=>{
     if(typeof window !== 'undefined'){
-      const savedTheme = localStorage.getItem('theme')
+      const savedTheme = localStorage.getItem('theme') || null
       return savedTheme ? savedTheme == 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches
     }
     return false

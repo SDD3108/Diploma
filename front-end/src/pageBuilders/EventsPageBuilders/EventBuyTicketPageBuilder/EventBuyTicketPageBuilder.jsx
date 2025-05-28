@@ -22,7 +22,7 @@ const EventBuyTicketPageBuilder = () => {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [event, setEvent] = useState(null)
-  const savedData = JSON.parse(localStorage.getItem('currentReservation'))
+  const savedData = JSON.parse(localStorage.getItem('currentReservation')) || {}
   const [cinema, setCinema] = useState(null)
   const [displaySize,setDisplaySize] = useState(window.innerWidth,)
   const backendApi = process.env.NEXT_PUBLIC_SOCKET_URL
@@ -35,7 +35,7 @@ const EventBuyTicketPageBuilder = () => {
     return () => newSocket.disconnect()
   },[])
   useEffect(()=>{
-    const saved = JSON.parse(localStorage.getItem('currentReservation'))
+    const saved = JSON.parse(localStorage.getItem('currentReservation')) || {}
     if(!saved){
       setLoading(false)
       return 
