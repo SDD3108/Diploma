@@ -1,4 +1,4 @@
-"use client" 
+"use client";
 import React,{useState,useEffect} from 'react'
 import { SearchAndSort } from '../../hooks/SearchAndSort/SearchAndSort'
 import { GetEvents } from '../../../src/utils/GetEvents/GetEvents'
@@ -10,8 +10,7 @@ import { Slider } from "@/src/ui/slider"
 import { Star } from 'lucide-react'
 import { Carousel,CarouselContent,CarouselItem,CarouselNext,CarouselPrevious, } from "@/src/ui/carousel"
 import EventItemPage from '@/app/(pages)/EventItemPage/page';
-import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { useRouter } from 'next/navigation';
 import '@/i18n'
 import { useTranslation } from 'react-i18next'
 

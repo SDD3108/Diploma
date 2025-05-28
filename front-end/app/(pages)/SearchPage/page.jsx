@@ -1,3 +1,4 @@
+"use client";
 import React from 'react'
 import SearchPageBuilder from '../../../src/pageBuilders/SearchPageBuilder/SearchPageBuilder'
 
