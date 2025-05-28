@@ -1,5 +1,3 @@
-import React from 'react'
-
 let storedData = null
 export const setData =(data)=>{    
     storedData = data

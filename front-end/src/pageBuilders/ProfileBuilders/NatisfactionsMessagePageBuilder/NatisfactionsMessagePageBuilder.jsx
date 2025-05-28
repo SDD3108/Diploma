@@ -1,3 +1,4 @@
+"use client"
 import React from 'react';
 import { getData } from '@/src/utils/DataTransfer/DataTransfer'
 import '@/i18n'
