@@ -1,3 +1,4 @@
+"use client" 
 import React,{useState,useEffect} from 'react'
 import { SearchAndSort } from '../../hooks/SearchAndSort/SearchAndSort'
 import { GetEvents } from '../../../src/utils/GetEvents/GetEvents'
