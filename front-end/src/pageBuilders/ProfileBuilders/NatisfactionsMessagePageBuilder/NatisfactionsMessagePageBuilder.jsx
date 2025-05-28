@@ -1,4 +1,4 @@
-import React from 'react'
+import React from 'react';
 import { getData } from '@/src/utils/DataTransfer/DataTransfer'
 import '@/i18n'
 import { useTranslation } from 'react-i18next'
@@ -9,7 +9,6 @@ const NatisfactionsMessagePageBuilder = () => {
   return (
     <div className='space-y-[2rem] md:mb-0 sm:mb-[2rem] max-sm:mb-[2rem]'>
       <div className='text-3xl text-[#101828] leading-[129%] font-semibold dark:text-white'>
-        {/* <h2>{message.title}</h2> */}
         {t('notifications.heading')}
       </div>
       <div className='w-full flex flex-col shadow-lg min-h-[24rem] rounded-md'>
@@ -25,7 +24,6 @@ const NatisfactionsMessagePageBuilder = () => {
           <div className='text-[#667085] text-[0.875rem] leading-[150%] font-normal text-end'>
             <p>{message.date}</p>
           </div>
-          {/* <X className='absolute top-4 right-4 cursor-pointer' onClick={()=>secondSetData(false)} /> */}
         </div>
       </div>
     </div>

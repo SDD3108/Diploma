@@ -6,6 +6,7 @@ const loadUserFromLocalStorage = () => {
     return userData
   }
   catch(error){
+    console.log(error);
     return null
   }
 }
@@ -39,6 +40,7 @@ const useAuthStore = create((set) => ({
       const response = await axios.get('/api/users')
       const user = response.data.find((u) => u.email == email && u.password == password || u.tempPassword == password)
       const userTempPassword = response.data.find((u) => u.tempPassword == password)
+      console.log(userTempPassword);
       if(!user){
         set({error:'Неверные данные',isLoading:false})
         return {success:false}
@@ -67,6 +69,7 @@ const useAuthStore = create((set) => ({
       return { success: true }
     }
     catch(error){
+      console.log(error);
       set({error: 'ошибка сервера при авторизации', isLoading:false})
       return { success: false }
     }
@@ -117,6 +120,8 @@ const useAuthStore = create((set) => ({
         userId: user._id,
         newPassword
       })
+      console.log(response)
+      
       set((state) => ({user:{...state.user,password:newPassword}}))
       
       return {success:true}

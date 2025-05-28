@@ -1,3 +1,4 @@
+"use client"
 import React,{useState,useEffect} from 'react'
 import { getData } from '@/src/utils/DataTransfer/DataTransfer'
 import { GetSession } from '@/src/utils/GetSessions/GetSessions'
