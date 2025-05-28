@@ -22,10 +22,17 @@ const EventBuyTicketPageBuilder = () => {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [event, setEvent] = useState(null)
-  const savedData = JSON.parse(localStorage.getItem('currentReservation')) || {}
+  const [savedData,setSavedData] = useState(null)
   const [cinema, setCinema] = useState(null)
   const [displaySize,setDisplaySize] = useState(window.innerWidth,)
+  const [user,setUser] = useState(null)
   const backendApi = process.env.NEXT_PUBLIC_SOCKET_URL
+  useEffect(()=>{
+    const localSavedData = JSON.parse(localStorage.getItem('currentReservation')) || {}
+    const localUser = JSON.parse(localStorage.getItem('user-token')) || {}
+    setSavedData(localSavedData)
+    setUser(localUser)
+  },[])
   useEffect(()=>{
     const newSocket = io(process.env.NEXT_PUBLIC_SOCKET_URL,{
       transports:['websocket'],
@@ -119,7 +126,6 @@ const EventBuyTicketPageBuilder = () => {
 // console.log(displaySize);
 
   const handlePaymentConfirmation = async () => {
-    const user = JSON.parse(localStorage.getItem('user-token')) || {}
     if(!tokenUser || !user._id){
       router.go(-1)
       return

@@ -10,9 +10,13 @@ import { useTranslation } from 'react-i18next'
 
 const ModsPageBuilder = () => {
   const { t } = useTranslation('common')
+  const [savedTheme,setSavedTheme] = useState(null)
+  useEffect(()=>{
+    const localSavedTheme = localStorage.getItem('theme')
+    setSavedTheme(localSavedTheme)
+  },[])
   const [isDark, setIsDark] = useState(()=>{
     if(typeof window !== 'undefined'){
-      const savedTheme = localStorage.getItem('theme') || null
       return savedTheme ? savedTheme == 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches
     }
     return false

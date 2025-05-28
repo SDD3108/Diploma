@@ -2,6 +2,9 @@
 import { create } from 'zustand';
 import axios from 'axios';
 const loadUserFromLocalStorage = () => {
+  if(typeof window == 'undefined'){
+    return null
+  }
   try{
     const userData = localStorage.getItem('user-token') || null
     return userData
