@@ -3,7 +3,7 @@ import React, { useEffect, useRef, useState,useCallback } from 'react'
 import { useParams, useRouter } from "next/navigation"
 import axios from 'axios'
 import ErrorCompanent from "../../../../src/components/error/ErrorCompanent"
-import NotFoundCompanent from "../../../../src/components/not found/NotFoundCompanent"
+import NotFoundCompanent from "../../../components/not-found/NotFoundCompanent"
 import { Skeleton } from "@/src/ui/skeleton"
 import Image from 'next/image'
 import { Button } from '@/src/ui/button'
@@ -18,6 +18,7 @@ import { toast } from 'sonner'
 import { setData } from '@/src/utils/DataTransfer/DataTransfer'
 import '@/i18n'
 import { useTranslation } from 'react-i18next'
+import useAuthStore from '../../../../src/store/AuthStore/authStore'
 const cinemas = [
   {
     id: 1,
@@ -72,6 +73,7 @@ const cinemas = [
 
 const EventItemDescSessionPage = () => {
   // const { cinema } = GetCinemaByName()
+  const { setCurrentReservation } = useAuthStore() 
   const { t } = useTranslation('common')
   const { tokenUser } = GetToken()
   const [socket, setSocket] = useState(null)
@@ -379,8 +381,8 @@ const handlePayment = async () => {
       cinemaId: cinema._id,
       hall: session.hall
     }
-    
-    localStorage.setItem('currentReservation', JSON.stringify(reservationData))
+    setCurrentReservation(reservationData)
+    // localStorage.setItem('currentReservation', JSON.stringify(reservationData))
     setData(reservationData)
     // Резервируем места через API
     await axios.post('/api/cinemas/reserve', {

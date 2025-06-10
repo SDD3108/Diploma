@@ -3,7 +3,7 @@ import React, { useState } from 'react'
 import Image from 'next/image'
 import { Skeleton } from "@/src/ui/skeleton"
 import { Button } from '@/src/ui/button'
-import '@/i18n'
+// import '@/i18n'
 import { useTranslation } from 'react-i18next'
 
 const EventItemPageBuilder = ({object,loading,error}) => {

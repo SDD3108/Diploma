@@ -1,6 +1,7 @@
 import type { NextConfig } from 'next';
 /** @type {import('next').NextConfig} */
 const nextConfig: NextConfig = {
+  // staticPageGenerationTimeout: 300,
   typescript:{
     ignoreBuildErrors: true,
   },

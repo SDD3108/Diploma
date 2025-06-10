@@ -6,10 +6,11 @@ import { GetToken } from '@/src/utils/GetToken/GetToken'
 import { GetEvent } from '@/src/utils/GetEvents/GetEvents'
 import { GetCinemaById } from '@/src/utils/GetCinemas/GetCinemas'
 import { Separator } from '@radix-ui/react-separator'
-import '@/i18n'
+// import '@/i18n'
 import { useTranslation } from 'react-i18next'
 import { io } from 'socket.io-client'
 import { toast } from 'sonner'
+import useAuthStore from '../../../store/AuthStore/authStore'
 
 // import GetToken from '@/src/store/AuthStore/authStore'
 
@@ -22,17 +23,15 @@ const EventBuyTicketPageBuilder = () => {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [event, setEvent] = useState(null)
-  const [savedData,setSavedData] = useState(null)
+  // const [currentReservation,setcurrentReservation] = useState(null)
   const [cinema, setCinema] = useState(null)
   const [displaySize,setDisplaySize] = useState(window.innerWidth,)
-  const [user,setUser] = useState(null)
+  const { setCurrentReservation,currentReservation } = useAuthStore()
+  // const [user,setUser] = useState(null)
   const backendApi = process.env.NEXT_PUBLIC_SOCKET_URL
-  useEffect(()=>{
-    const localSavedData = JSON.parse(localStorage.getItem('currentReservation')) || {}
-    const localUser = JSON.parse(localStorage.getItem('user-token')) || {}
-    setSavedData(localSavedData)
-    setUser(localUser)
-  },[])
+  // useEffect(()=>{  
+  //   // setcurrentReservation(currentReservation)
+  // },[])
   useEffect(()=>{
     const newSocket = io(process.env.NEXT_PUBLIC_SOCKET_URL,{
       transports:['websocket'],
@@ -61,13 +60,13 @@ const EventBuyTicketPageBuilder = () => {
   useEffect(()=>{
     const loadReservation = async () => {
       try{
-        if(!savedData){
+        if(!currentReservation){
           return new Error('Бронирование не найдено')
         }
-        const response = await axios.get(`/api/cinemas/${savedData.cinemaId}/check-reservation`, {
+        const response = await axios.get(`/api/cinemas/${currentReservation.cinemaId}/check-reservation`, {
           params: {
-            hall: savedData.hall,
-            seats: savedData.seats
+            hall: currentReservation.hall,
+            seats: currentReservation.seats
           }
         })
         // console.log(response.data);
@@ -75,10 +74,10 @@ const EventBuyTicketPageBuilder = () => {
         if(!response.data.valid){
           throw new Error('Бронирование устарело или места уже заняты')
         }
-        setReservation(savedData)
+        setReservation(currentReservation)
         const [eventData, cinemaData] = await Promise.all([
-          GetEvent(savedData.eventId),
-          GetCinemaById(savedData.cinemaId)
+          GetEvent(currentReservation.eventId),
+          GetCinemaById(currentReservation.cinemaId)
         ])
         setEvent(eventData)
         setCinema(cinemaData)
@@ -93,9 +92,9 @@ const EventBuyTicketPageBuilder = () => {
     }
     const getEventRequest = async () => {
       try{
-        console.log(savedData);
+        console.log(currentReservation);
         
-        const eventData = await GetEvent(savedData?.eventId)
+        const eventData = await GetEvent(currentReservation?.eventId)
         setEvent(eventData)
       }
       catch(error){
@@ -105,7 +104,7 @@ const EventBuyTicketPageBuilder = () => {
     }
     const getCinemaRequest = async () => {
       try{
-        const cinemaData = await GetCinemaById(savedData?.cinemaId)
+        const cinemaData = await GetCinemaById(currentReservation?.cinemaId)
         setCinema(cinemaData)
       }
       catch(error){
@@ -126,7 +125,7 @@ const EventBuyTicketPageBuilder = () => {
 // console.log(displaySize);
 
   const handlePaymentConfirmation = async () => {
-    if(!tokenUser || !user._id){
+    if(!tokenUser){
       router.go(-1)
       return
     }
@@ -154,9 +153,10 @@ const EventBuyTicketPageBuilder = () => {
           ticketType: seat.ticketType == 'vip' ? 'VIP' : seat.ticketType == 'child' ? 'Child' : 'Adult'
         }))
       }
+      const backendApi = process.env.NEXT_PUBLIC_SOCKET_URL
       await axios.post('/api/users/add-purchase',{userId:tokenUser?._id,purchase: purchaseData})
       await axios.post(`/api/users/${tokenUser?._id}/add-message`,{title: event?.title})
-      await axios.post(`http://localhost:3002/send-email`,{
+      await axios.post(`${backendApi}/send-email`,{
         from: 'mrbimson1@gmail.com',
         to: tokenUser?.email,
         subject: 'Квитанция о покупке',
@@ -173,7 +173,8 @@ const EventBuyTicketPageBuilder = () => {
         seats: reservation.seats.map(s => ({ row: s.row, seat: s.seat })),
         userId: tokenUser?._id,
       })
-      localStorage.removeItem('currentReservation')
+      setCurrentReservation({})
+      // localStorage.removeItem('currentReservation')
       router.push(`/profile`)
     }
     catch(error){

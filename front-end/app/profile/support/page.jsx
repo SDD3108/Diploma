@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic'
 import React from 'react'
 import SupportPageBuilder from "@/src/pageBuilders/ProfileBuilders/SupportPageBuilder/SupportPageBuilder"
 

@@ -1,8 +1,9 @@
 "use client"
+export const dynamic = 'force-dynamic'
 import React from 'react';
 import { AuthForm } from '../../../src/feature/auth form/AuthForm';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '../../../src/ui/card';
-import '@/i18n'
+// import '@/i18n'
 import { useTranslation } from 'react-i18next'
 export default function RegisterPage() {
   const { t } = useTranslation('common')

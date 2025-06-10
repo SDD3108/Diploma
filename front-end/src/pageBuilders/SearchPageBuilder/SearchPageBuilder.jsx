@@ -1,4 +1,7 @@
-"use client";
+"use client"
+export const dynamic = 'force-dynamic'
+// "use client";
+// export const dynamic = 'force-dynamic'
 import React,{useState,useEffect} from 'react'
 import { SearchAndSort } from '../../hooks/SearchAndSort/SearchAndSort'
 import { GetEvents } from '../../../src/utils/GetEvents/GetEvents'
@@ -11,7 +14,7 @@ import { Star } from 'lucide-react'
 import { Carousel,CarouselContent,CarouselItem,CarouselNext,CarouselPrevious, } from "@/src/ui/carousel"
 import EventItemPage from '@/app/(pages)/EventItemPage/page';
 import { useRouter } from 'next/navigation';
-import '@/i18n'
+// import '@/i18n'
 import { useTranslation } from 'react-i18next'
 
 const SearchPageBuilder = () => {

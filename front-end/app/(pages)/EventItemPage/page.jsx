@@ -1,8 +1,8 @@
+export const dynamic = 'force-dynamic'
 import React from 'react'
-import EventItemPageBuilder from '@/src/pageBuilders/EventsPageBuilders/EventItemPageBuilder/Event'
-/**
- * @param {{ object: any, loading: boolean, error: any }} props
- */
+// import EventItemPageBuilder from '@/src/pageBuilders/EventsPageBuilders/EventItemPageBuilder/Event'
+// import EventItemPageBuilder from '@/src/pageBuilders/EventsPageBuilders/EventItemPageBuilder/Event'
+import EventItemPageBuilder from '../../../src/pageBuilders/EventsPageBuilders/EventItemPageBuilder/Event'
 
 const EventItemPage = ({object,loading,error}) => {
   return (

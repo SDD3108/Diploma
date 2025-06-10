@@ -6,7 +6,7 @@ import axios from 'axios';
 import { Card, CardContent } from "@/src/ui/card"
 import { Carousel,CarouselContent,CarouselItem,CarouselNext,CarouselPrevious, } from "@/src/ui/carousel"
 import ErrorCompanent from "@/src/components/error/ErrorCompanent"
-import NotFoundCompanent from "@/src/components/not found/NotFoundCompanent"
+import NotFoundCompanent from "@/src/components/not-found/NotFoundCompanent"
 // import NavToEvent from "@/src/fea`ture/Navigations/navToEvent/NavToEvent"
 import { getData } from '@/src/utils/DataTransfer/DataTransfer';
 import '@/i18n'

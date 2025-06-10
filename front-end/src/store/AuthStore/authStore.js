@@ -1,6 +1,6 @@
-'use client'
 import { create } from 'zustand';
 import axios from 'axios';
+const backendApi = process.env.NEXT_PUBLIC_SOCKET_URL
 const loadUserFromLocalStorage = () => {
   if(typeof window == 'undefined'){
     return null
@@ -16,8 +16,13 @@ const loadUserFromLocalStorage = () => {
 }
 const useAuthStore = create((set) => ({
   user: loadUserFromLocalStorage(),
+  userToken:null,
   isLoading: false,
   error: null,
+  captchaPassed:false,
+  forcePasswordChange:false,
+  currentReservation:{},
+  theme:'light',
   messages:[],
   loadMessages: async(userId)=>{
     const response = await axios.get(`/api/users/${userId}`)
@@ -50,7 +55,8 @@ const useAuthStore = create((set) => ({
         return {success:false}
       }
       else if(user.tempPassword == password){
-        localStorage.setItem('force-password-change','true')
+        // localStorage.setItem('force-password-change','true')
+        set({forcePasswordChange:true})
         set({user: {_id: user._id,},isLoading:false })
         return { success: true, needsPasswordChange: true }
       }
@@ -68,7 +74,8 @@ const useAuthStore = create((set) => ({
           password:user.password,
           messages: user.messages || []
         }, 
-        isLoading: false 
+        userToken:user.token,
+        isLoading:false,
       })
       return { success: true }
     }
@@ -94,7 +101,7 @@ const useAuthStore = create((set) => ({
         return {success:false}
       }
       localStorage.setItem('user-token', newUser.token)
-      set({ user: newUser, isLoading: false })
+      set({ user: newUser,isLoading:false,userToken:newUser.token })
       return {success:true}
     }
     catch(error){
@@ -106,6 +113,7 @@ const useAuthStore = create((set) => ({
   logout:()=>{
     localStorage.removeItem('user-token')
     set({user:null})
+    set({userToken:null})
   },
   setTempPassword: async(email,tempPassword)=>{
     const response = await axios.get('/api/users')
@@ -133,6 +141,26 @@ const useAuthStore = create((set) => ({
     catch(error){
       return {success:false,error: error.message}
     }
+  },
+  setCaptchaPassed:(passed)=>{
+    set({captchaPassed:passed})
+  },
+  setForcePasswordChange:(value)=>{
+    set({forcePasswordChange:value})
+  },
+  setCurrentReservation:(obj)=>{
+    set({currentReservation:obj})
+  },
+  setTheme:(mode)=>{
+    set({theme:mode})
+  },
+  setUserToken:async()=>{
+    set({userToken:token})
+    // const user = await axios.get(`${backendApi}/users`)
+  },
+  setUser:async()=>{
+
+    const user = await axios.get(`${backendApi}/users/`)
   }
 }))
 

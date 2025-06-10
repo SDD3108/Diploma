@@ -3,7 +3,8 @@
 # dependencies
 /node_modules
 /.pnp
-.pnp.*
+.pnp.*NEXT_PUBLIC_SOCKET_URL=http://localhost:3002
+
 .yarn/*
 !.yarn/patches
 !.yarn/plugins
@@ -31,11 +32,11 @@ yarn-error.log*
 .pnpm-debug.log*
 
 # env files (can opt-in for committing if needed)
-.env*
+# .env*
 
 # vercel
 .vercel
 
 # typescript
 *.tsbuildinfo
-next-env.d.ts
+# next-env.d.ts

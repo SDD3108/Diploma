@@ -4,16 +4,19 @@ import React,{ useState, useEffect } from 'react'
 import { Dialog,DialogTrigger,DialogContent,DialogOverlay,DialogPortal,DialogHeader,DialogClose } from "@/src/ui/dialog";
 import { Captcha } from '../../utils/Captcha/Captcha'
 import { getData } from '@/src/utils/DataTransfer/DataTransfer'
+import useAuthStore from '@/src/store/AuthStore/authStore';
 
 export const CaptchaModal = () => {
     const isVerifiedModal = getData()
+    const {setCaptchaPassed,captchaPassed} = useAuthStore()
     const [open, setOpen] = useState(false)
     useEffect(()=>{
-      const passed = localStorage.getItem('captchaPassed') == 'true' || 'false'
-      setOpen(!passed)
-    },[])
+      // const passed = localStorage.getItem('captchaPassed') == 'true' || 'false'
+      // const { captchaPassed } = useAuthStore()
+      setOpen(!captchaPassed)
+    },[captchaPassed])
     const handleSuccess = ()=>{
-      localStorage.setItem("captchaPassed", "true")
+      setCaptchaPassed(true)
       setOpen(false)
     }
   return (

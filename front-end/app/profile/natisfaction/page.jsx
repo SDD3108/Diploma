@@ -1,6 +1,8 @@
-"use client"
+export const dynamic = 'force-dynamic'
+// "use client"
 import React from 'react'
-import NatisfactionsPageBuilder from "@/src/pageBuilders/ProfileBuilders/NatisfactionsPageBuilder/NatisfactionsPageBuilder"
+// import NatisfactionsPageBuilder from "@/src/pageBuilders/ProfileBuilders/NatisfactionsPageBuilder/NatisfactionsPageBuilder"
+import NatisfactionsPageBuilder from "../../../src/pageBuilders/ProfileBuilders/NatisfactionsPageBuilder/NatisfactionsPageBuilder"
 
 const ProfileNatisfaction = () => {
   return (

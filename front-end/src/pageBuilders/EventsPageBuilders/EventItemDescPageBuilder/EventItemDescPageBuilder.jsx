@@ -3,7 +3,7 @@ import React, { useEffect, useState, useMemo,useRef } from 'react'
 import { useParams,useRouter } from "next/navigation";
 import { Button } from "@/src/ui/button"
 import ErrorCompanent from "@/src/components/error/ErrorCompanent"
-import NotFoundCompanent from "@/src/components/not found/NotFoundCompanent"
+import NotFoundCompanent from "@/src/components/not-found/NotFoundCompanent"
 import axios from 'axios';
 import Image from 'next/image'
 import { Separator } from "@/src/ui/separator";

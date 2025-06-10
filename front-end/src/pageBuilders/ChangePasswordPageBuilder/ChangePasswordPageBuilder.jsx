@@ -6,7 +6,7 @@ import { Input } from "@/src/ui/input"
 import { Button } from "@/src/ui/button"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
-import '@/i18n'
+// import '@/i18n'
 import { useTranslation } from 'react-i18next'
 import { Label } from "@/src/ui/label"
 import { Card,CardContent,CardDescription,CardFooter,CardHeader,CardTitle } from "@/src/ui/card"
@@ -18,7 +18,7 @@ const ChangePasswordPageBuilder = () => {
     const [passwordError, setPasswordError] = useState('')
     const [showPassword,setShowPassword] = useState(false)
     const [showPasswordRepeat,setShowPasswordRepeat] = useState(false)
-    const { user } = useAuthStore()
+    const { user,setForcePasswordChange } = useAuthStore()
     const router = useRouter()
     const { t } = useTranslation('common')
     useEffect(()=>{
@@ -39,7 +39,8 @@ const ChangePasswordPageBuilder = () => {
         userId: user._id,
         newPassword
       })
-      localStorage.removeItem('force-password-change',{icon:<CheckCircle2 className="text-green-500"/>})
+      // localStorage.removeItem('force-password-change',{icon:<CheckCircle2 className="text-green-500"/>})
+      setForcePasswordChange(false)
       router.push('/profile')
     }
     // SDSD310807Sd$

@@ -1,7 +1,8 @@
-"use client"
+export const dynamic = 'force-dynamic'
+// "use client"
 import React from 'react'
-import EventsPage from '@/app/(pages)/EventsPage/page';
-// import EventsCom
+// import EventsPage from '@/app/(pages)/EventsPage/page';
+import EventsPage from '../../app/(pages)/EventsPage/page';
 
 const Events = () => {
   return (

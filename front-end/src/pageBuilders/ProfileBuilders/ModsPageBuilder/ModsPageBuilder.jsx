@@ -7,28 +7,32 @@ import { Label } from '@/src/ui/label'
 import { Moon, Sun } from 'lucide-react'
 import '@/i18n'
 import { useTranslation } from 'react-i18next'
+import useAuthStore from '../../../store/AuthStore/authStore'
 
 const ModsPageBuilder = () => {
+  const { setTheme,theme } = useAuthStore()
   const { t } = useTranslation('common')
-  const [savedTheme,setSavedTheme] = useState(null)
-  useEffect(()=>{
-    const localSavedTheme = localStorage.getItem('theme')
-    setSavedTheme(localSavedTheme)
-  },[])
+  // const [savedTheme,setSavedTheme] = useState(null)
+  // useEffect(()=>{
+  //   const localSavedTheme = localStorage.getItem('theme')
+  //   setSavedTheme(localSavedTheme)
+  // },[])
   const [isDark, setIsDark] = useState(()=>{
     if(typeof window !== 'undefined'){
-      return savedTheme ? savedTheme == 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches
+      return theme ? theme == 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches
     }
     return false
   })
   useEffect(()=>{
     if(isDark){
       document.documentElement.classList.add('dark')
-      localStorage.setItem('theme','dark')
+      // localStorage.setItem('theme','dark')
+      setTheme('dark')
     }
     else{
       document.documentElement.classList.remove('dark')
-      localStorage.setItem('theme','light')
+      // localStorage.setItem('theme','light')
+      setTheme('light')
     }
   }, [isDark])
   return (
